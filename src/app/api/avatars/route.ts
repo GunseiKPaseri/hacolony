@@ -75,6 +75,7 @@ export async function POST(request: Request) {
         description,
         imageUrl,
         userId: session.user.id,
+        hidden: true,
       },
     });
 
