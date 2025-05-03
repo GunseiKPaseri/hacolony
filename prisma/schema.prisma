@@ -1,0 +1,83 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output = "../src/generated/client"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./db/dev.db"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  avatar    Avatar?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Avatar {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  imageUrl    String?
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id])
+  posts       Post[]
+  replies     Reply[]
+  quotes      Quote[]
+  followers   Follow[] @relation("Following")
+  following   Follow[] @relation("Followers")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  content   String
+  avatarId  String
+  avatar    Avatar   @relation(fields: [avatarId], references: [id])
+  replies   Reply[]
+  quotes    Quote[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Reply {
+  id        String   @id @default(cuid())
+  content   String
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id])
+  avatarId  String
+  avatar    Avatar   @relation(fields: [avatarId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Quote {
+  id        String   @id @default(cuid())
+  content   String
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id])
+  avatarId  String
+  avatar    Avatar   @relation(fields: [avatarId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Follow {
+  id          String   @id @default(cuid())
+  followerId  String
+  followingId String
+  follower    Avatar   @relation("Following", fields: [followerId], references: [id])
+  following   Avatar   @relation("Followers", fields: [followingId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([followerId, followingId])
+} 
