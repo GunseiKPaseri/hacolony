@@ -1,3 +1,5 @@
+.env:
+	./tools/create-env.sh
 dev:
 	npm run dev
 studio:
