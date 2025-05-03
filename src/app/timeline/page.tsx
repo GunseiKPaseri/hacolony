@@ -15,7 +15,7 @@ interface Post {
 }
 
 export default function TimelinePage() {
-  const { data: session } = useSession();
+  const { data: _session } = useSession();
   const [posts, setPosts] = useState<Post[]>([]);
   const [content, setContent] = useState("");
   const [error, setError] = useState<string | null>(null);

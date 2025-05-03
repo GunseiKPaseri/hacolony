@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { prisma } from "@/lib/prisma";
 
 export default function RegisterPage() {
   const router = useRouter();

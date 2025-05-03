@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
 import { useState, useEffect } from "react";
 
 interface Avatar {
@@ -9,13 +10,13 @@ interface Avatar {
   name: string;
   description: string | null;
   imageUrl: string | null;
-  posts: any[];
-  replies: any[];
-  quotes: any[];
+  posts: unknown[];
+  replies: unknown[];
+  quotes: unknown[];
 }
 
 export default function ProfilePage() {
-  const { data: session } = useSession();
+  const { data: _session } = useSession();
   const [avatars, setAvatars] = useState<Avatar[]>([]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -142,7 +143,7 @@ export default function ProfilePage() {
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2">
                     {avatar.imageUrl && (
-                      <img
+                      <Image
                         src={avatar.imageUrl}
                         alt={avatar.name}
                         className="h-10 w-10 rounded-full"

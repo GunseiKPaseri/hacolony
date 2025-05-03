@@ -28,7 +28,7 @@ export default function LoginPage() {
       } else {
         router.push("/timeline");
       }
-    } catch (error) {
+    } catch (_e) {
       setError("ログイン中にエラーが発生しました");
     }
   };

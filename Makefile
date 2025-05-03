@@ -9,3 +9,5 @@ migrate:
 syncdb:
 	npx prisma generate
 	npx prisma db push
+lint:
+	npm run lint
