@@ -16,16 +16,7 @@ export async function GET() {
 
     const posts = await prisma.post.findMany({
       where: {
-        avatar: {
-          user: {
-            id: session.user.id,
-          },
-        },
-      },
-      include: {
-        avatar: true,
-        replies: true,
-        quotes: true,
+        postedById: session.user.id,
       },
       orderBy: {
         createdAt: "desc",
@@ -67,11 +58,11 @@ export async function POST(request: Request) {
         id: session.user.id,
       },
       include: {
-        avatar: true,
+        selfAvatar: true,
       },
     });
 
-    if (!user?.avatar) {
+    if (!user?.selfAvatar) {
       return NextResponse.json(
         { message: "アバターが見つかりません" },
         { status: 404 }
@@ -81,7 +72,7 @@ export async function POST(request: Request) {
     const post = await prisma.post.create({
       data: {
         content,
-        avatarId: user.avatar.id,
+        postedById: user.selfAvatar.id,
       },
     });
 

@@ -6,8 +6,11 @@ studio:
 	npx prisma studio
 migrate:
 	npx prisma migrate dev
-syncdb:
+generate:
 	npx prisma generate
+syncdb: generate
 	npx prisma db push
+syncdb-force:
+	npx prisma db push --force-reset
 lint:
 	npm run lint

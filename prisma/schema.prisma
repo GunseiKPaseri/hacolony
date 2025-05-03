@@ -3,7 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output = "../src/generated/client"
+  output   = "../src/generated/client"
 }
 
 datasource db {
@@ -12,73 +12,67 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  password  String
-  avatar    Avatar?
+  id       String @id @default(cuid())
+  name     String
+  email    String @unique
+  password String
+
+  ownAvatars   Avatar[] @relation("UserOwnsAvatars")
+  selfAvatar   Avatar?  @relation("UserSelfAvatar", fields: [selfAvatarId], references: [id])
+  selfAvatarId String?  @unique
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Avatar {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   name        String
   description String?
   imageUrl    String?
-  userId      String   @unique
-  user        User     @relation(fields: [userId], references: [id])
-  posts       Post[]
-  replies     Reply[]
-  quotes      Quote[]
-  followers   Follow[] @relation("Following")
-  following   Follow[] @relation("Followers")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
   hidden      Boolean
+
+  owner    User   @relation("UserOwnsAvatars", fields: [ownerId], references: [id])
+  ownerId  String
+  selfUser User?  @relation("UserSelfAvatar")
+
+  followers Follow[] @relation("AvatarFollowers")
+  following Follow[] @relation("AvatarFollowing")
+
+  posts Post[] @relation("AvatarPosts")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Post {
-  id        String   @id @default(cuid())
-  content   String
-  avatarId  String
-  avatar    Avatar   @relation(fields: [avatarId], references: [id])
-  replies   Reply[]
-  quotes    Quote[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
+  id      String @id @default(cuid())
+  content String
 
-model Reply {
-  id        String   @id @default(cuid())
-  content   String
-  postId    String
-  post      Post     @relation(fields: [postId], references: [id])
-  avatarId  String
-  avatar    Avatar   @relation(fields: [avatarId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
+  postedBy   Avatar @relation("AvatarPosts", fields: [postedById], references: [id])
+  postedById String
 
-model Quote {
-  id        String   @id @default(cuid())
-  content   String
-  postId    String
-  post      Post     @relation(fields: [postId], references: [id])
-  avatarId  String
-  avatar    Avatar   @relation(fields: [avatarId], references: [id])
+  replyTo   Post?   @relation("PostReplies", fields: [replyToId], references: [id])
+  replyToId String?
+  replies   Post[]  @relation("PostReplies")
+
+  quotedPost   Post?   @relation("PostQuotes", fields: [quotedPostId], references: [id])
+  quotedPostId String?
+  quotes       Post[]  @relation("PostQuotes")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Follow {
-  id          String   @id @default(cuid())
+  id String @id @default(cuid())
+
+  follower    Avatar @relation("AvatarFollowers", fields: [followerId], references: [id])
   followerId  String
+  following   Avatar @relation("AvatarFollowing", fields: [followingId], references: [id])
   followingId String
-  follower    Avatar   @relation("Following", fields: [followerId], references: [id])
-  following   Avatar   @relation("Followers", fields: [followingId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+
+  createdAt DateTime @default(now())
 
   @@unique([followerId, followingId])
-} 
+}

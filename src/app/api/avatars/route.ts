@@ -16,12 +16,10 @@ export async function GET() {
 
     const avatars = await prisma.avatar.findMany({
       where: {
-        userId: session.user.id,
+        ownerId: session.user.id,
       },
       include: {
         posts: true,
-        replies: true,
-        quotes: true,
       },
     });
 
@@ -57,7 +55,7 @@ export async function POST(request: Request) {
 
     const existingAvatar = await prisma.avatar.findFirst({
       where: {
-        userId: session.user.id,
+        ownerId: session.user.id,
         name,
       },
     });
@@ -74,7 +72,7 @@ export async function POST(request: Request) {
         name,
         description,
         imageUrl,
-        userId: session.user.id,
+        ownerId: session.user.id,
         hidden: true,
       },
     });

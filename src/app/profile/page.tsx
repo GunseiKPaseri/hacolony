@@ -160,8 +160,6 @@ export default function ProfilePage() {
                   </div>
                   <div className="flex space-x-2 text-sm text-gray-500">
                     <div>投稿: {avatar.posts.length}</div>
-                    <div>返信: {avatar.replies.length}</div>
-                    <div>引用: {avatar.quotes.length}</div>
                   </div>
                 </div>
               </div>
