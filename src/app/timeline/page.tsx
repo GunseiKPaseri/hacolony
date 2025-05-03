@@ -15,7 +15,7 @@ interface Post {
 }
 
 export default function TimelinePage() {
-  const { data: _session } = useSession();
+  const { data: session } = useSession();
   const [posts, setPosts] = useState<Post[]>([]);
   const [content, setContent] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -146,6 +146,18 @@ export default function TimelinePage() {
             </div>
 
             <div className="space-y-4">
+              {/* 自分のアバター */}
+              {session?.user && (
+                <div className="flex items-center space-x-2">
+                  <div className="h-8 w-8 rounded-full bg-indigo-500 flex items-center justify-center text-white font-medium">
+                    {session.user.name?.charAt(0)}
+                  </div>
+                  <div>
+                    <div className="font-medium">{session.user.name}</div>
+                    <div className="text-sm text-gray-500">({session.user.email})</div>
+                  </div>
+                </div>
+              )}
               <div className="rounded-lg border bg-card p-4">
                 <h3 className="font-medium">フォロー中のアバター</h3>
                 <div className="mt-4 space-y-4">
