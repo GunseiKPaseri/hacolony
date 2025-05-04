@@ -1,8 +1,9 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { NextAuthOptions } from "next-auth";
-import { prisma } from "@/lib/prisma";
+import NextAuth, { NextAuthOptions } from "next-auth";
+import { prisma } from "@/server/prisma/prisma";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
+import { dbUserRepository } from "@/server/repository/repository";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -18,15 +19,7 @@ export const authOptions: NextAuthOptions = {
           throw new Error("メールアドレスとパスワードを入力してください");
         }
 
-        const user = await prisma.user.findUnique({
-          where: {
-            email: credentials.email,
-          },
-        });
-
-        if (!user) {
-          throw new Error("ユーザーが見つかりません");
-        }
+        const user = await dbUserRepository.getUserByEmail(credentials.email);
 
         const isPasswordValid = await bcrypt.compare(
           credentials.password,
@@ -67,6 +60,5 @@ export const authOptions: NextAuthOptions = {
   },
 };
 
-import NextAuth from "next-auth";
 const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST }; 
