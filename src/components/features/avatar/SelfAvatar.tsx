@@ -1,5 +1,5 @@
 import React, { Suspense } from "react";
-import { selfAvatarAtom } from "@/state/selfavatar";
+import { selfAvatarAtom } from "@/stores/selfavatar";
 import { useAtom } from "jotai";
 import IDText from "@/components/ui/IDText";
 import AvatarIcon from "./AvatarIcon";

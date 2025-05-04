@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import SelfAvatar from "@/components/features/avatar/SelfAvatar";
 import { PostForm } from "@/components/features/timeline/PostForm";
 import { PostList } from "@/components/features/timeline/PostList";
-import { usePostsAtomRefetch } from "@/state/posts";
+import { usePostsAtomRefetch } from "@/stores/posts";
 
 export default function TimelinePage() {
   const refetch = usePostsAtomRefetch();

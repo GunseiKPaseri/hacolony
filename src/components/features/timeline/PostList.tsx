@@ -2,7 +2,7 @@
 
 import { Suspense } from "react";
 import { PostItem } from "./PostItem";
-import { usePostsAtomValue } from '@/state/posts';
+import { usePostsAtomValue } from '@/stores/posts';
 
 interface PostListProps {
   onReply: (postId: string, content: string) => void;
