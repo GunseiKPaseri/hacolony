@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
-import SelfAvatar from "@/components/SelfAvatar";
+import SelfAvatar from "@/components/features/avatar/SelfAvatar";
 
 interface Post {
   id: string;
