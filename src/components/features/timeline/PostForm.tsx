@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
 interface PostFormProps {
-  onSubmit: (content: string) => void;
+  onSubmit: (replyId: string | null, content: string) => void;
   error: string | null;
 }
 
@@ -14,7 +14,7 @@ export function PostForm({ onSubmit, error }: PostFormProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!content.trim()) return;
-    onSubmit(content);
+    onSubmit(null, content);
     setContent("");
   };
 

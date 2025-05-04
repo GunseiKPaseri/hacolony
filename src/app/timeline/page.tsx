@@ -13,17 +13,13 @@ export default function TimelinePage() {
   const refetch = usePostsAtomRefetch();
   const { data: _session } = useSession();
   const [error, setError] = useState<string | null>(null);
-  const [replyToId, setReplyToId] = useState<string | null>(null);
-  
+
   useEffect(() => {
     refetch();
   }, [refetch]);
 
-  const handleReply = (postId: string) => {
-    setReplyToId(postId);
-  };
+  const handleSubmit = async (replyToId: string | null, content: string) => {
 
-  const handleSubmit = async (content: string) => {
     if (!content.trim()) return;
     
     try {
@@ -40,7 +36,6 @@ export default function TimelinePage() {
       }
       
       refetch();
-      setReplyToId(null);
     } catch (error) {
       console.error("Error creating post:", error);
       setError("投稿の作成中にエラーが発生しました");
@@ -77,7 +72,7 @@ export default function TimelinePage() {
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             <div className="md:col-span-2">
               <PostForm onSubmit={handleSubmit} error={error} />
-              <PostList onReply={handleReply} />
+              <PostList onReply={handleSubmit} />
             </div>
 
             <div className="space-y-4">

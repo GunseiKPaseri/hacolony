@@ -4,7 +4,7 @@ import { PostItem } from "./PostItem";
 import { usePostsAtomValue } from '@/state/posts';
 
 interface PostListProps {
-  onReply: (postId: string) => void;
+  onReply: (postId: string, content: string) => void;
 }
 
 export function PostList({ onReply }: PostListProps) {
@@ -14,7 +14,7 @@ export function PostList({ onReply }: PostListProps) {
     <div className="space-y-4">
       {posts && posts.map((post) => (
         <div key={post.id} className="space-y-2">
-          <PostItem post={post} onReply={onReply} />
+          <PostItem post={post} onReply={(id, content) => onReply(id, content)} />
           {post.replies && post.replies.length > 0 && (
             <div className="ml-6 border-l pl-4 space-y-2">
               {post.replies.map((reply) => (
