@@ -10,6 +10,21 @@ export default function LoginPage() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
 
+  const checkAvatar = async () => {
+    try {
+      const response = await fetch('/api/selfavatar');
+      const avatars = await response.json();
+      if (avatars.length === 0) {
+        router.push('/avatars/create');
+      } else {
+        router.push('/timeline');
+      }
+    } catch (err) {
+      console.error('Avatar check failed:', err);
+      router.push('/timeline');
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -26,7 +41,7 @@ export default function LoginPage() {
       if (result?.error) {
         setError(result.error);
       } else {
-        router.push("/timeline");
+        await checkAvatar();
       }
     } catch (_e) {
       setError("ログイン中にエラーが発生しました");

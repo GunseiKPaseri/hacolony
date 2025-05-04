@@ -24,7 +24,7 @@ export default function CreateAvatarPage() {
     const description = formData.get("description");
     const imageUrl = formData.get("imageUrl");
 
-    const response = await fetch("/api/avatars", {
+    const response = await fetch("/api/selfavatar", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, description, imageUrl, userId: session?.user?.id }),
@@ -39,7 +39,7 @@ export default function CreateAvatarPage() {
 
   return (
     <div className="max-w-md mx-auto mt-10">
-      <h1 className="text-2xl font-bold mb-4">アバターを作成</h1>
+      <h1 className="text-2xl font-bold mb-4">自分自身のアバターを作成</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-sm font-medium mb-1">名前</label>
