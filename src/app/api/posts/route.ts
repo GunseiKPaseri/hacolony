@@ -14,13 +14,36 @@ export async function GET() {
       );
     }
 
+    const user = await prisma.user.findUnique({
+      where: {
+        id: session.user.id,
+      },
+      include: {
+        selfAvatar: true,
+      },
+    });
+
+    if (!user?.selfAvatar || user?.selfAvatarId === null) {
+      return NextResponse.json(
+        { message: "アバターが見つかりません" },
+        { status: 404 }
+      );
+    }
+
     const posts = await prisma.post.findMany({
       where: {
-        postedById: session.user.id,
+        postedById: user.selfAvatarId,
       },
       orderBy: {
         createdAt: "desc",
       },
+      include: {
+        postedBy: {
+          select: {
+            name: true,
+          },
+        },
+      }
     });
 
     return NextResponse.json(posts);

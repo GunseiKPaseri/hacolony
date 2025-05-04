@@ -5,20 +5,13 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import SelfAvatar from "@/components/features/avatar/SelfAvatar";
-
-interface Post {
-  id: string;
-  content: string;
-  createdAt: string;
-  avatar: {
-    name: string;
-  };
-}
+import { PostForm } from "@/components/features/timeline/PostForm";
+import { PostList } from "@/components/features/timeline/PostList";
+import { Post } from "@/eintities/post";
 
 export default function TimelinePage() {
   const { data: _session } = useSession();
   const [posts, setPosts] = useState<Post[]>([]);
-  const [content, setContent] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -28,6 +21,7 @@ export default function TimelinePage() {
   const fetchPosts = async () => {
     try {
       const response = await fetch("/api/posts");
+      console.log("Response:", response);
       if (!response.ok) {
         throw new Error("投稿の取得に失敗しました");
       }
@@ -39,8 +33,7 @@ export default function TimelinePage() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (content: string) => {
     if (!content.trim()) return;
 
     try {
@@ -56,7 +49,6 @@ export default function TimelinePage() {
         throw new Error("投稿の作成に失敗しました");
       }
 
-      setContent("");
       fetchPosts();
     } catch (error) {
       console.error("Error creating post:", error);
@@ -93,57 +85,8 @@ export default function TimelinePage() {
         <div className="container py-6">
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             <div className="md:col-span-2">
-              <div className="space-y-4">
-                <div className="rounded-lg border bg-card p-4">
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    {error && (
-                      <div className="rounded-md bg-red-50 p-4">
-                        <div className="text-sm text-red-700">{error}</div>
-                      </div>
-                    )}
-                    <div className="flex items-start space-x-4">
-                      <div className="flex-1 space-y-2">
-                        <textarea
-                          className="w-full resize-none rounded-md border p-2 focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                          placeholder="何を考えていますか？"
-                          rows={3}
-                          value={content}
-                          onChange={(e) => setContent(e.target.value)}
-                        />
-                        <div className="flex justify-end">
-                          <Button type="submit">投稿</Button>
-                        </div>
-                      </div>
-                    </div>
-                  </form>
-                </div>
-
-                <div className="space-y-4">
-                  {posts.map((post) => (
-                    <div
-                      key={post.id}
-                      className="rounded-lg border bg-card p-4"
-                    >
-                      <div className="flex items-start space-x-4">
-                        <div className="flex-1 space-y-2">
-                          <div className="flex items-center space-x-2">
-                            <div className="font-medium">{post.avatar.name}</div>
-                            <div className="text-sm text-gray-500">
-                              {new Date(post.createdAt).toLocaleString()}
-                            </div>
-                          </div>
-                          <div className="text-sm">{post.content}</div>
-                          <div className="flex space-x-4 text-sm text-gray-500">
-                            <button className="hover:text-indigo-600">返信</button>
-                            <button className="hover:text-indigo-600">引用</button>
-                            <button className="hover:text-indigo-600">いいね</button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <PostForm onSubmit={handleSubmit} error={error} />
+              <PostList posts={posts} />
             </div>
 
             <div className="space-y-4">

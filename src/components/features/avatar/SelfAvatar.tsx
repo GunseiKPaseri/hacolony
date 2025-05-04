@@ -1,4 +1,4 @@
-import { use, Suspense } from "react";
+import React, { use, Suspense } from "react";
 import Image from "next/image";
 
 type AvatarResponse = {

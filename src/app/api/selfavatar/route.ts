@@ -23,8 +23,6 @@ export async function GET() {
       },
     });
 
-    console.log(user)
-
     if (!user?.selfAvatar) {
       return NextResponse.json(
         { message: "アバターが見つかりません" },
