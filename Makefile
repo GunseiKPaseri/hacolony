@@ -3,14 +3,14 @@
 dev:
 	npm run dev
 studio:
-	npx prisma studio
+	npx prisma studio --schema ./src/server/prisma/schema.prisma
 migrate:
-	npx prisma migrate dev
+	npx prisma migrate dev --schema ./src/server/prisma/schema.prisma
 generate:
-	npx prisma generate
+	npx prisma generate --schema ./src/server/prisma/schema.prisma
 syncdb: generate
-	npx prisma db push
+	npx prisma db push --schema ./src/server/prisma/schema.prisma
 syncdb-force:
-	npx prisma db push --force-reset
+	npx prisma db push --force-reset --schema ./src/server/prisma/schema.prisma
 lint:
 	npm run lint
