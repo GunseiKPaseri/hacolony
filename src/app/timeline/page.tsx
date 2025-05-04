@@ -3,35 +3,17 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import SelfAvatar from "@/components/features/avatar/SelfAvatar";
 import { PostForm } from "@/components/features/timeline/PostForm";
 import { PostList } from "@/components/features/timeline/PostList";
-import { Post } from "@/eintities/post";
+import { useAtom } from "jotai";
+import { postsAtom } from "@/state/posts";
 
 export default function TimelinePage() {
+  const [{refetch}] = useAtom(postsAtom)
   const { data: _session } = useSession();
-  const [posts, setPosts] = useState<Post[]>([]);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetchPosts();
-  }, []);
-
-  const fetchPosts = async () => {
-    try {
-      const response = await fetch("/api/posts");
-      console.log("Response:", response);
-      if (!response.ok) {
-        throw new Error("投稿の取得に失敗しました");
-      }
-      const data = await response.json();
-      setPosts(data);
-    } catch (error) {
-      console.error("Error fetching posts:", error);
-      setError("投稿の取得中にエラーが発生しました");
-    }
-  };
 
   const handleSubmit = async (content: string) => {
     if (!content.trim()) return;
@@ -49,7 +31,7 @@ export default function TimelinePage() {
         throw new Error("投稿の作成に失敗しました");
       }
 
-      fetchPosts();
+      refetch();
     } catch (error) {
       console.error("Error creating post:", error);
       setError("投稿の作成中にエラーが発生しました");
@@ -86,7 +68,7 @@ export default function TimelinePage() {
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             <div className="md:col-span-2">
               <PostForm onSubmit={handleSubmit} error={error} />
-              <PostList posts={posts} />
+              <PostList />
             </div>
 
             <div className="space-y-4">

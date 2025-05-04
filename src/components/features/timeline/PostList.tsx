@@ -1,16 +1,14 @@
 "use client";
 
-import type { Post } from "@/eintities/post";
 import { PostItem } from "./PostItem";
+import { useAtom } from 'jotai';
+import { postsAtom } from '@/state/posts';
 
-interface PostListProps {
-  posts: Post[];
-}
-
-export function PostList({ posts }: PostListProps) {
+export function PostList() {
+  const [{data: posts}] = useAtom(postsAtom);
   return (
     <div className="space-y-4">
-      {posts.map((post) => (
+      {posts && posts.map((post) => (
         <PostItem key={post.id} post={post} />
       ))}
     </div>

@@ -1,20 +1,11 @@
-import React, { use, Suspense } from "react";
+import React, { Suspense } from "react";
 import Image from "next/image";
+import { selfAvatarAtom } from "@/state/selfavatar";
+import { useAtom } from "jotai";
 
-type AvatarResponse = {
-  name: string;
-  hidden: boolean;
-  id: string;
-  description: string | null;
-  imageUrl: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-  ownerId: string;
-} | {message: string};
+const SelfAvatarLoader = () => {
 
-const SelfAvatarLoader = ({avatarLoader}: {avatarLoader: Promise<AvatarResponse>}) => {
-
-  const selfAvatar = use<AvatarResponse>(avatarLoader);
+  const [{data: selfAvatar}] = useAtom(selfAvatarAtom);
 
   if (!selfAvatar || "message" in selfAvatar) {
     return <div className="h-8 w-8 rounded-full bg-gray-200 animate-pulse"></div>;
@@ -32,6 +23,7 @@ const SelfAvatarLoader = ({avatarLoader}: {avatarLoader: Promise<AvatarResponse>
     </div>
   );
 }
+
 const SelfAvatarLoading = () => {
   return (
     <div className="flex items-center space-x-2">
@@ -49,7 +41,7 @@ export default function SelfAvatar() {
   return (
     <div className="flex items-center space-x-2">
       <Suspense fallback={<SelfAvatarLoading />}>
-        <SelfAvatarLoader avatarLoader={fetch("/api/selfavatar").then(res => res.json())} />
+        <SelfAvatarLoader />
       </Suspense>
     </div>
   );
