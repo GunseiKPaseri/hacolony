@@ -43,7 +43,7 @@ export async function GET() {
             name: true,
           },
         },
-      }
+      },
     });
 
     return NextResponse.json(posts);
@@ -67,7 +67,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { content } = await request.json();
+    const { content, replyToId } = await request.json();
 
     if (!content) {
       return NextResponse.json(
@@ -92,10 +92,25 @@ export async function POST(request: Request) {
       );
     }
 
+    // 投稿作成時にリプライ先の存在を検証
+    if (replyToId) {
+      const parentPost = await prisma.post.findUnique({
+        where: { id: replyToId },
+      });
+      
+      if (!parentPost) {
+        return NextResponse.json(
+          { message: "リプライ先の投稿が存在しません" },
+          { status: 404 }
+        );
+      }
+    }
+
     const post = await prisma.post.create({
       data: {
         content,
         postedById: user.selfAvatar.id,
+        replyToId: replyToId || null,
       },
     });
 

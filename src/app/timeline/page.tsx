@@ -3,35 +3,44 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SelfAvatar from "@/components/features/avatar/SelfAvatar";
 import { PostForm } from "@/components/features/timeline/PostForm";
 import { PostList } from "@/components/features/timeline/PostList";
-import { useAtom } from "jotai";
-import { postsAtom } from "@/state/posts";
+import { usePostsAtomRefetch } from "@/state/posts";
 
 export default function TimelinePage() {
-  const [{refetch}] = useAtom(postsAtom)
+  const refetch = usePostsAtomRefetch();
   const { data: _session } = useSession();
   const [error, setError] = useState<string | null>(null);
+  const [replyToId, setReplyToId] = useState<string | null>(null);
+  
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
+
+  const handleReply = (postId: string) => {
+    setReplyToId(postId);
+  };
 
   const handleSubmit = async (content: string) => {
     if (!content.trim()) return;
-
+    
     try {
       const response = await fetch("/api/posts", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ content }),
+        body: JSON.stringify({ content, replyToId }),
       });
-
+      
       if (!response.ok) {
         throw new Error("投稿の作成に失敗しました");
       }
-
+      
       refetch();
+      setReplyToId(null);
     } catch (error) {
       console.error("Error creating post:", error);
       setError("投稿の作成中にエラーが発生しました");
@@ -68,7 +77,7 @@ export default function TimelinePage() {
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             <div className="md:col-span-2">
               <PostForm onSubmit={handleSubmit} error={error} />
-              <PostList />
+              <PostList onReply={handleReply} />
             </div>
 
             <div className="space-y-4">
@@ -92,4 +101,4 @@ export default function TimelinePage() {
       </main>
     </div>
   );
-} 
+}

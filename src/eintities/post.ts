@@ -5,4 +5,6 @@ export interface Post {
   postedBy: {
     name: string;
   };
+  replyToId: string | null;
+  replies: Post[];
 }
