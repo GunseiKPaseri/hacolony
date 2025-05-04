@@ -40,6 +40,7 @@ export async function GET() {
       include: {
         postedBy: {
           select: {
+            id: true,
             name: true,
           },
         },

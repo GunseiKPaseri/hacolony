@@ -7,6 +7,7 @@ interface PostResponse {
   content: string;
   createdAt: string;
   postedBy: {
+    id: string;
     name: string;
   };
   replyToId: string | null;

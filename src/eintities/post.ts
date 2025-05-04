@@ -3,6 +3,7 @@ export interface Post {
   content: string;
   createdAt: string;
   postedBy: {
+    id: string;
     name: string;
   };
   replyToId: string | null;

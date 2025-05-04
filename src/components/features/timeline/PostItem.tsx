@@ -1,6 +1,8 @@
 "use client";
 import type { Post } from "@/eintities/post";
 import { useState } from "react";
+import AvatarIcon from "../avatar/AvatarIcon";
+import IDText from "@/components/ui/IDText";
 
 interface PostItemProps {
   post: Post;
@@ -18,7 +20,9 @@ export function PostItem({ post, onReply, isReply = false, depth = 0 }: PostItem
       <div className="flex items-start space-x-4">
         <div className="flex-1 space-y-2">
           <div className="flex items-center space-x-2">
+            <AvatarIcon avatar={post.postedBy} />
             <div className="font-medium">{post.postedBy.name}</div>
+            <div className="text-sm"><IDText id={post.postedBy.id} /></div>
             <div className="text-sm text-gray-500">
               {new Date(post.createdAt).toLocaleString()}
             </div>
@@ -28,8 +32,8 @@ export function PostItem({ post, onReply, isReply = false, depth = 0 }: PostItem
               </span>
             )}
           </div>
-          <div className="text-sm">{post.content}</div>
-          <div className="flex space-x-4 text-sm text-gray-500">
+          <div className="text-sm ml-8">{post.content}</div>
+          <div className="flex space-x-4 text-sm text-gray-500 ml-8">
             {showReplyForm ? (
               <div className="flex flex-col w-full">
                 <textarea
@@ -73,7 +77,7 @@ export function PostItem({ post, onReply, isReply = false, depth = 0 }: PostItem
           </div>
           {/* 返信がある場合、再帰的に表示 */}
           {post.replies && post.replies.length > 0 && (
-            <div className="ml-6 border-l pl-1 space-y-2">
+            <div className="ml-6 border-l space-y-2">
               {post.replies.map((reply) => (
                 <PostItem
                   key={reply.id}

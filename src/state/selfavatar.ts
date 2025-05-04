@@ -1,6 +1,6 @@
 import { atomWithQuery } from 'jotai-tanstack-query'
 
-type AvatarResponse = {
+export type Avatar = {
   name: string;
   hidden: boolean;
   id: string;
@@ -9,7 +9,9 @@ type AvatarResponse = {
   createdAt: Date;
   updatedAt: Date;
   ownerId: string;
-} | {message: string};
+}
+
+export type AvatarResponse = Avatar | {message: string};
 
 // Atom for storing all posts
 export const selfAvatarAtom = atomWithQuery<AvatarResponse>((_get) => ({

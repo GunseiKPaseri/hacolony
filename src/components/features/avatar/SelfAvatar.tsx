@@ -1,7 +1,8 @@
 import React, { Suspense } from "react";
-import Image from "next/image";
 import { selfAvatarAtom } from "@/state/selfavatar";
 import { useAtom } from "jotai";
+import IDText from "@/components/ui/IDText";
+import AvatarIcon from "./AvatarIcon";
 
 const SelfAvatarLoader = () => {
 
@@ -13,12 +14,10 @@ const SelfAvatarLoader = () => {
 
   return (
     <div className="flex items-center space-x-2">
-      <div className="h-8 w-8 rounded-full bg-purple-500 text-white flex items-center justify-center text-xs font-bold">{
-        selfAvatar.imageUrl ? <Image src={selfAvatar.imageUrl} alt={selfAvatar.name} className="h-8 w-8 rounded-full" /> : <div className="">{selfAvatar.name.charAt(0)}</div>
-        }</div>
+      <AvatarIcon avatar={selfAvatar} />
       <div>
         <div className="h-4 w-24">{selfAvatar.name}</div>
-        <div className="h-4 w-32 text-gray-400">@{selfAvatar.id}</div>
+        <div className="h-4 w-32"><IDText id={selfAvatar.id} /></div>
       </div>
     </div>
   );
