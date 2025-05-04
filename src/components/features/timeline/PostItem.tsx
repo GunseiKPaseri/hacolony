@@ -6,14 +6,15 @@ interface PostItemProps {
   post: Post;
   onReply: (postId: string, content: string) => void;
   isReply?: boolean;
+  depth?: number;
 }
 
-export function PostItem({ post, onReply, isReply = false }: PostItemProps) {
+export function PostItem({ post, onReply, isReply = false, depth = 0 }: PostItemProps) {
   const [showReplyForm, setShowReplyForm] = useState(false);
   const [replyContent, setReplyContent] = useState('');
   
   return (
-    <div className="rounded-lg border bg-card p-4">
+    <div className={"rounded-lg bg-card p-4" + (depth === 0 ? " border" : "")}>
       <div className="flex items-start space-x-4">
         <div className="flex-1 space-y-2">
           <div className="flex items-center space-x-2">
@@ -70,6 +71,20 @@ export function PostItem({ post, onReply, isReply = false }: PostItemProps) {
             <button className="hover:text-indigo-600">引用</button>
             <button className="hover:text-indigo-600">いいね</button>
           </div>
+          {/* 返信がある場合、再帰的に表示 */}
+          {post.replies && post.replies.length > 0 && (
+            <div className="ml-6 border-l pl-1 space-y-2">
+              {post.replies.map((reply) => (
+                <PostItem
+                  key={reply.id}
+                  post={reply}
+                  onReply={onReply}
+                  isReply={true}
+                  depth={depth + 1}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

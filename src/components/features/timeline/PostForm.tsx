@@ -19,7 +19,7 @@ export function PostForm({ onSubmit, error }: PostFormProps) {
   };
 
   return (
-    <div className="rounded-lg border bg-card p-4">
+    <div className="rounded-lg border bg-card p-4 mb-4">
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
           <div className="rounded-md bg-red-50 p-4">

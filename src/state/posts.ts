@@ -23,32 +23,32 @@ const fetchPosts = async (cursor: string | null) => {
   return {data, cursor: data[0]?.id || null};
 }
 
-const mergePosts = (prevPosts: Post[], newPosts: PostResponse[]) => {
-  let posts = prevPosts;
-  const oldIDs = new Set(posts.map(post => post.id));
+type PostsAtomState = {
+  originlist: Map<string, Post>;
+  timeline: Post[];
+}
 
+const mergePosts = (prevPosts: PostsAtomState, newPosts: PostResponse[]): PostsAtomState => {
   for (const newPost of newPosts.reverse()) {
-    if (oldIDs.has(newPost.id)) {
+    if (prevPosts.originlist.has(newPost.id)) {
       continue; // Skip if the post already exists
     }
-    const newPostObject = {...newPost, replies: []}
+    const newPostObject = {...newPost, replies: [] }
+    prevPosts.originlist.set(newPost.id, newPostObject)
     if(newPost.replyToId) {
-      const parentPost = posts.find(post => post.id === newPost.replyToId);
+      const parentPost = prevPosts.originlist.get(newPost.replyToId);
       if (parentPost) {
-        if(parentPost.replies.map(reply => reply.id).includes(newPost.id)){
-          continue;
-        }
         parentPost.replies.push(newPostObject);
-        posts = [parentPost, ...posts.filter(post => post.id !== parentPost.id)];
-      } else {
-        posts = [newPostObject, ...posts];
+        if(parentPost.replyToId === null) {
+          prevPosts.timeline = [parentPost, ...prevPosts.timeline.filter(post => post.id !== parentPost.id)];
+        }
       }
     } else {
-      posts = [newPostObject, ...posts];
+      prevPosts.timeline = [newPostObject, ...prevPosts.timeline];
     }
   }
 
-  return posts;
+  return {...prevPosts};
 }
 
 const lastCursorAtom = atom<string | null>(null);
@@ -63,7 +63,7 @@ const realtimeDataAtom = atomWithSuspenseQuery<{data: PostResponse[], cursor: st
   }
 });
 
-const postsAtom = atom<Post[]>([])
+const postsAtom = atom<PostsAtomState>({originlist: new Map(), timeline: []})
 
 const updatePostsAtom = atom(null, async (get, set) => {
   const x = await get(realtimeDataAtom);
@@ -73,5 +73,5 @@ const updatePostsAtom = atom(null, async (get, set) => {
   set(lastCursorAtom, data.cursor);
 });
 
-export const usePostsAtomValue = () => useAtomValue(postsAtom);
+export const usePostsAtomValue = () => useAtomValue(postsAtom).timeline;
 export const usePostsAtomRefetch = () => useSetAtom(updatePostsAtom);
