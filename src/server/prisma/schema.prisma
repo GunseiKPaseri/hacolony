@@ -41,8 +41,18 @@ model Avatar {
 
   posts Post[] @relation("AvatarPosts")
 
+  botConfig BotConfig?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model BotConfig {
+  id     String @id @default(cuid())
+  prompt String
+
+  avatar   Avatar @relation(fields: [avatarId], references: [id])
+  avatarId String @unique
 }
 
 model Post {

@@ -1,13 +1,11 @@
-import type { PrismaClient } from "@/generated/client";
 import type { PostRepository } from "./interface";
-import { prisma } from "../prisma/prisma";
-import { InvalidInputError, NotFoundError } from "./util";
+import { type DBClient, InvalidInputError, NotFoundError } from "./util";
 
 export default class DBPostRepository implements PostRepository {
-  constructor(private prisma: PrismaClient) {}
+  constructor(private prisma: DBClient) {}
 
   async getPostsByUserId(userId: string) {
-    const user = await prisma.user.findUnique({
+    const user = await this.prisma.user.findUnique({
       where: {
         id: userId,
       },
@@ -20,7 +18,7 @@ export default class DBPostRepository implements PostRepository {
       throw new NotFoundError("アバターが見つかりません");
     }
 
-    const posts = await prisma.post.findMany({
+    const posts = await this.prisma.post.findMany({
       where: {
         postedById: user.selfAvatarId,
       },
@@ -49,7 +47,7 @@ export default class DBPostRepository implements PostRepository {
 
     // 投稿作成時にリプライ先の存在を検証
     if (props.replyToId) {
-      const parentPost = await prisma.post.findUnique({
+      const parentPost = await this.prisma.post.findUnique({
         where: { id: props.replyToId },
       });
       
@@ -68,7 +66,7 @@ export default class DBPostRepository implements PostRepository {
   }
 
   async createPostByAvatarId(props: {content: string, postedByAvatarId: string, replyToId: string | null}) {
-    const avatar = await prisma.avatar.findUnique({
+    const avatar = await this.prisma.avatar.findUnique({
       select: {
         id: true,
       },
@@ -87,7 +85,7 @@ export default class DBPostRepository implements PostRepository {
   }
 
   async createPostByUserId(props: {content: string, postedByUserId: string, replyToId: string | null}) {
-    const user = await prisma.user.findUnique({
+    const user = await this.prisma.user.findUnique({
       where: {
         id: props.postedByUserId,
       },

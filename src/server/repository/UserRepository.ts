@@ -1,10 +1,9 @@
-import type { PrismaClient } from "@/generated/client";
 import type { UserRepository } from "./interface";
-import { InvalidInputError, NotFoundError } from "./util";
+import { type DBClient, InvalidInputError, NotFoundError } from "./util";
 import bcrypt from "bcryptjs";
 
 export default class DBUserRepository implements UserRepository {
-  constructor(private prisma: PrismaClient) {}
+  constructor(private prisma: DBClient) {}
 
   async createUser(props: {
     name: string;
@@ -84,6 +83,23 @@ export default class DBUserRepository implements UserRepository {
     }
 
     return !!user.selfAvatarId;
+  }
+
+  async getAvatar(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        selfAvatar: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundError("ユーザーが見つかりません");
+    }
+
+    return user.selfAvatar;
   }
 
   async createSelfAvatar(props: {userId: string, name: string, description?: string, imageUrl?: string, hidden?: boolean}) {

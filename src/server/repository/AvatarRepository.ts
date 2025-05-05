@@ -1,10 +1,8 @@
-import type { PrismaClient } from "@/generated/client";
-import { prisma } from "../prisma/prisma";
 import { AvatarRepository } from "./interface";
-import { InvalidInputError } from "./util";
+import { type DBClient, InvalidInputError } from "./util";
 
 export default class DBAvatarRepository implements AvatarRepository {
-  constructor(private prisma: PrismaClient) {}
+  constructor(private prisma: DBClient) {}
 
   async createAvatar(props: { name: string; userId: string; description?: string; imageUrl?: string; hidden?: boolean }) {
     const { name, userId, description, imageUrl, hidden } = props;
@@ -46,7 +44,7 @@ export default class DBAvatarRepository implements AvatarRepository {
   }
 
   async getAvatarsByUserId(userId: string) {
-    const avatars = await prisma.avatar.findMany({
+    const avatars = await this.prisma.avatar.findMany({
       where: {
         ownerId: userId,
       },

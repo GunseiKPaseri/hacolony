@@ -12,7 +12,7 @@ export default function LoginPage() {
 
   const checkAvatar = async () => {
     try {
-      const response = await fetch('/api/selfavatar');
+      const response = await fetch('/api/avatar/self');
       const avatars = await response.json();
       if (avatars.length === 0) {
         router.push('/avatars/create');

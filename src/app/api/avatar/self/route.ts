@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/route";
+import { authOptions } from "../../auth/[...nextauth]/route";
 import { InvalidInputError, NotFoundError } from "@/server/repository/util";
-import { dbUserRepository } from "@/server/repository/repository";
+import { dbUserRepository, transaction } from "@/server/repository/repository";
 
 export async function GET() {
   try {
@@ -53,12 +53,38 @@ export async function POST(request: Request) {
 
     const { name, description, imageUrl } = await request.json();
 
-    const avatar = await dbUserRepository.createSelfAvatar({
-      name,
-      description,
-      imageUrl,
-      userId: session.user.id,
-      hidden: true,
+    // トランザクションでアバターとBotConfigを作成
+    const avatar = await transaction(async ({txFollowRepository, txUserRepository}) => {
+      // アバター作成
+      const avatar = await txUserRepository.createSelfAvatar({
+        name,
+        description,
+        imageUrl,
+        userId: session.user.id,
+        hidden: true,
+      });
+
+      // 自己アバター取得
+      const selfAvatar = await txUserRepository.getAvatar(session.user.id);
+
+      if (!selfAvatar) {
+        throw new NotFoundError("アバターが見つかりません");
+      }
+
+      await txFollowRepository.followAvatar([
+        // 新規アバターが自己アバターをフォロー
+        {
+          followerId: avatar.id,
+          followingId: selfAvatar.id,
+        },
+        // 自己アバターが新規アバターをフォロー
+        {
+          followerId: selfAvatar.id,
+          followingId: avatar.id,
+        },
+      ]);
+
+      return avatar;
     });
 
     return NextResponse.json(avatar, { status: 201 });
@@ -81,4 +107,4 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
-} 
+}

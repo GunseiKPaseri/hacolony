@@ -3,7 +3,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-export default function CreateAvatarPage() {
+export default function CreateAIAvatarPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
@@ -23,23 +23,30 @@ export default function CreateAvatarPage() {
     const name = formData.get("name");
     const description = formData.get("description");
     const imageUrl = formData.get("imageUrl");
+    const prompt = formData.get("prompt");
 
-    const response = await fetch("/api/avatar/self", {
+    const response = await fetch("/api/avatar/ai", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, description, imageUrl, userId: session?.user?.id }),
+      body: JSON.stringify({ 
+        name, 
+        description, 
+        imageUrl, 
+        prompt,
+        userId: session?.user?.id 
+      }),
     });
 
     if (response.ok) {
       router.push("/timeline");
     } else {
-      alert("アバターの作成に失敗しました");
+      alert("AIアバターの作成に失敗しました");
     }
   };
 
   return (
     <div className="max-w-md mx-auto mt-10">
-      <h1 className="text-2xl font-bold mb-4">自分自身のアバターを作成</h1>
+      <h1 className="text-2xl font-bold mb-4">AIアバターを作成</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-sm font-medium mb-1">名前</label>
@@ -55,6 +62,15 @@ export default function CreateAvatarPage() {
           <textarea
             name="description"
             className="w-full p-2 border rounded"
+          ></textarea>
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-1">プロンプト</label>
+          <textarea
+            name="prompt"
+            required
+            className="w-full p-2 border rounded"
+            placeholder="AIアバターのキャラ設定プロンプトを入力"
           ></textarea>
         </div>
         <div>

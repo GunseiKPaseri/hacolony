@@ -17,7 +17,7 @@ export type AvatarResponse = Avatar | {message: string};
 export const selfAvatarAtom = atomWithQuery<AvatarResponse>((_get) => ({
   queryKey: ['selfavatar'],
   queryFn: async () => {
-    const response = await fetch('/api/selfavatar');
+    const response = await fetch('/api/avatar/self');
     if (!response.ok) {
       throw new Error('Failed to fetch posts');
     }
