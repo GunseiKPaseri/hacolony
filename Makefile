@@ -14,3 +14,5 @@ syncdb-force:
 	npx prisma db push --force-reset --schema ./src/server/prisma/schema.prisma
 lint:
 	npm run lint
+fmt:
+	npm run fmt

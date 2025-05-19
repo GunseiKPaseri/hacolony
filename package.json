@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint && prisma validate --schema ./src/server/prisma/schema.prisma && prisma format --schema ./src/server/prisma/schema.prisma"
+    "lint": "next lint && prisma validate --schema ./src/server/prisma/schema.prisma && prisma format --schema ./src/server/prisma/schema.prisma",
+    "prisma:fmt": "prisma format --schema ./src/server/prisma/schema.prisma"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.9.0",
