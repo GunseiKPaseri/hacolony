@@ -3,10 +3,13 @@ import NextAuth, { NextAuthOptions } from "next-auth";
 import { prisma } from "@/server/prisma/prisma";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-import { dbUserRepository } from "@/server/repository/repository";
+import { container } from "@/server/di";
+import { UserService } from "@/server/services/userService";
+import { DI } from "@/server/di.type";
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  adapter: PrismaAdapter(prisma as any),
   providers: [
     CredentialsProvider({
       name: "credentials",
@@ -15,11 +18,12 @@ export const authOptions: NextAuthOptions = {
         password: { label: "パスワード", type: "password" },
       },
       async authorize(credentials) {
+        const userService = container.resolve<UserService>(DI.UserService);
         if (!credentials?.email || !credentials?.password) {
           throw new Error("メールアドレスとパスワードを入力してください");
         }
 
-        const user = await dbUserRepository.getUserByEmail(credentials.email);
+        const user = await userService.getUserByEmail(credentials.email);
 
         const isPasswordValid = await bcrypt.compare(
           credentials.password,

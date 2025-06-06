@@ -1,8 +1,11 @@
-import { BotConfigRepository } from "./interface";
+import { inject, injectable } from "tsyringe";
+import type { BotConfigRepository } from "./interface";
 import { type DBClient } from "./util";
+import { DI } from "../di.type";
 
-export default class DBBotConfigRepository implements BotConfigRepository {
-  constructor(private prisma: DBClient) {}
+@injectable()
+export class BotConfigRepositoryImpl implements BotConfigRepository {
+  constructor(@inject(DI.PrismaClient) private prisma: DBClient) {}
 
   async createBotConfig(props: {avatarId: string, prompt: string}) {
     const { avatarId, prompt } = props;
@@ -11,6 +14,20 @@ export default class DBBotConfigRepository implements BotConfigRepository {
       data: {
         prompt,
         avatarId,
+      },
+    });
+
+    return botConfig;
+  }
+
+  async getBotConfigByAvatarId(avatarId: string): Promise<{id: string, prompt: string} | null> {
+    const botConfig = await this.prisma.botConfig.findUnique({
+      where: {
+        avatarId,
+      },
+      select: {
+        id: true,
+        prompt: true,
       },
     });
 

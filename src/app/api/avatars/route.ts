@@ -2,7 +2,9 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
 import { InvalidInputError } from "@/server/repository/util";
-import { dbAvatarRepository } from "@/server/repository/repository";
+import { container } from "@/server/di";
+import { AvatarService } from "@/server/services/avatarService";
+import { DI } from "@/server/di.type";
 
 export async function GET() {
   try {
@@ -15,7 +17,8 @@ export async function GET() {
       );
     }
 
-    const avatars = await dbAvatarRepository.getAvatarsByUserId(session.user.id);
+    const avatarService = container.resolve<AvatarService>(DI.AvatarService);
+    const avatars = await avatarService.getAvatarsByUserId(session.user.id);
 
     return NextResponse.json(avatars);
   } catch (error) {
@@ -40,7 +43,8 @@ export async function POST(request: Request) {
 
     const { name, description, imageUrl } = await request.json();
 
-    const avatar = await dbAvatarRepository.createAvatar({
+    const avatarService = container.resolve<AvatarService>(DI.AvatarService);
+    const avatar = await avatarService.createAvatar({
       name,
       userId: session.user.id,
       description,

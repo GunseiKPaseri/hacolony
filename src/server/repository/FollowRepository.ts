@@ -1,8 +1,11 @@
-import { FollowRepository } from "./interface";
+import { inject, injectable } from "tsyringe";
+import type { FollowRepository } from "./interface";
 import { type DBClient } from "./util";
+import { DI } from "../di.type";
 
-export default class DBFollowRepository implements FollowRepository {
-  constructor(private prisma: DBClient) {}
+@injectable()
+export class FollowRepositoryImpl implements FollowRepository {
+  constructor(@inject(DI.PrismaClient) private prisma: DBClient) {}
 
   async followAvatar(following: {followerId: string, followingId: string}[]) {
     await this.prisma.follow.createMany({

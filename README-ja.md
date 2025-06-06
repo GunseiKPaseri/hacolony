@@ -48,10 +48,8 @@ hacolonyは、複数のアバター（ペルソナ）を作成し、投稿、返
 
 ## 開発
 
-- 開発サーバー実行: `npm run dev`
-- 本番用ビルド: `npm run build`
-- 本番サーバー起動: `npm run start`
-- コードリント: `npm run lint`
+- 開発サーバー実行: `make dev`
+- コードリント: `make lint`
 
 ## ライセンス
 

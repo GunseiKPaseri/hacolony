@@ -2,7 +2,9 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import { InvalidInputError, NotFoundError } from "@/server/repository/util";
-import { transaction } from "@/server/repository/repository";
+import { container } from "@/server/di";
+import { AvatarService } from "@/server/services/avatarService";
+import { DI } from "@/server/di.type";
 
 export async function POST(request: Request) {
   try {
@@ -17,45 +19,15 @@ export async function POST(request: Request) {
 
     const { name, description, imageUrl, prompt } = await request.json();
 
-    // トランザクションでアバターとBotConfigを作成
-    const avatar = await transaction(async ({ txAvatarRepository, txBotConfigRepository, txFollowRepository, txUserRepository }) => {
-      // アバター作成
-      const avatar = await txAvatarRepository.createAvatar({
-        name,
-        description,
-        imageUrl,
-        userId: session.user.id,
-        hidden: true,
-      });
-
-      // BotConfig作成
-      await txBotConfigRepository.createBotConfig({
-        prompt,
-        avatarId: avatar.id,
-      });
-
-      // 自己アバター取得
-      const selfAvatar = await txUserRepository.getAvatar(session.user.id);
-
-      if (!selfAvatar) {
-        throw new NotFoundError("アバターが見つかりません");
-      }
-
-      await txFollowRepository.followAvatar([
-        // 新規アバターが自己アバターをフォロー
-        {
-          followerId: avatar.id,
-          followingId: selfAvatar.id,
-        },
-        // 自己アバターが新規アバターをフォロー
-        {
-          followerId: selfAvatar.id,
-          followingId: avatar.id,
-        },
-      ]);
-
-      return avatar;
+    const avatarService = container.resolve<AvatarService>(DI.AvatarService);
+    const avatar = await avatarService.createAIAvatar({
+      name,
+      description,
+      imageUrl,
+      prompt,
+      userId: session.user.id,
     });
+    
     return NextResponse.json(avatar, { status: 201 });
   } catch (error) {
     if (error instanceof NotFoundError) {

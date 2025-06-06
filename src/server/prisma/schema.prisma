@@ -6,6 +6,10 @@ generator client {
   output   = "../../generated/client"
 }
 
+generator json {
+  provider = "prisma-json-types-generator"
+}
+
 datasource db {
   provider = "sqlite"
   url      = "file:./db/dev.db"
@@ -43,8 +47,11 @@ model Avatar {
 
   botConfig BotConfig?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  BotTaskQueue  BotTaskQueue[]
+  LlmTaskQueue  LlmTaskQueue[]
+  PostQueue     PostQueue[]
 }
 
 model BotConfig {
@@ -53,6 +60,57 @@ model BotConfig {
 
   avatar   Avatar @relation(fields: [avatarId], references: [id])
   avatarId String @unique
+}
+
+enum QueueState {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+model BotTaskQueue {
+  id        String     @id @default(cuid())
+  /// [TaskContext]
+  task      Json
+  avatar    Avatar     @relation(fields: [avatarId], references: [id])
+  avatarId  String
+  status    QueueState @default(PENDING)
+  priority  Int        @default(0)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  LlmTaskQueue LlmTaskQueue[]
+  PostQueue    PostQueue[]
+}
+
+model LlmTaskQueue {
+  id             String     @id @default(cuid())
+  prompt         String
+  /// [LLMContext]
+  context        Json?
+  avatar         Avatar     @relation(fields: [avatarId], references: [id])
+  avatarId       String
+  botTaskQueue   BotTaskQueue? @relation(fields: [botTaskQueueId], references: [id])
+  botTaskQueueId String?
+  status         QueueState @default(PENDING)
+  priority       Int        @default(0)
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+}
+
+model PostQueue {
+  id          String     @id @default(cuid())
+  content     String
+  avatar      Avatar     @relation(fields: [avatarId], references: [id])
+  avatarId    String
+  scheduledAt DateTime
+  status      QueueState @default(PENDING)
+  replyTo     Post?      @relation("PostRepliesQueue", fields: [replyToId], references: [id])
+  replyToId   String?
+  botTaskQueueId String?
+  botTaskQueue BotTaskQueue? @relation(fields: [botTaskQueueId], references: [id])
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 }
 
 model Post {
@@ -69,6 +127,8 @@ model Post {
   quotedPost   Post?   @relation("PostQuotes", fields: [quotedPostId], references: [id])
   quotedPostId String?
   quotes       Post[]  @relation("PostQuotes")
+
+  replyPostQueue PostQueue[] @relation("PostRepliesQueue")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

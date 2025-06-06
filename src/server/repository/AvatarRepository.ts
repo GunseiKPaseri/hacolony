@@ -1,8 +1,11 @@
-import { AvatarRepository } from "./interface";
+import { inject, injectable } from "tsyringe";
+import type { AvatarRepository } from "./interface";
 import { type DBClient, InvalidInputError } from "./util";
+import { DI } from "../di.type";
 
-export default class DBAvatarRepository implements AvatarRepository {
-  constructor(private prisma: DBClient) {}
+@injectable()
+export class AvatarRepositoryImpl implements AvatarRepository {
+  constructor(@inject(DI.PrismaClient) private prisma: DBClient) {}
 
   async createAvatar(props: { name: string; userId: string; description?: string; imageUrl?: string; hidden?: boolean }) {
     const { name, userId, description, imageUrl, hidden } = props;
@@ -54,4 +57,52 @@ export default class DBAvatarRepository implements AvatarRepository {
     });
     return avatars;
   }
+
+  async getBotFollowers(avatarId: string): Promise<{
+    botConfig: {
+        id: string;
+        avatarId: string;
+        prompt: string;
+    };
+    name: string;
+    id: string;
+    description: string | null;
+    imageUrl: string | null;
+    hidden: boolean;
+    ownerId: string;
+    createdAt: Date;
+    updatedAt: Date;
+}[]> {
+    const followers = await this.prisma.avatar.findMany({
+      where: {
+        followers: {
+          some: {
+            followingId: avatarId,
+          }
+        },
+        botConfig: {
+          isNot: null,
+        },
+      },
+      include: {
+        botConfig: true
+      }
+    })
+    return followers as {
+      botConfig: {
+        id: string;
+        avatarId: string;
+        prompt: string;
+      };
+      name: string;
+      id: string;
+      description: string | null;
+      imageUrl: string | null;
+      hidden: boolean;
+      ownerId: string;
+      createdAt: Date;
+      updatedAt: Date;
+    }[];
+  }
+
 }

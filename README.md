@@ -48,10 +48,8 @@ hacolony is a personal digital garden where you can create multiple avatars (per
 
 ## Development
 
-- Run development server: `npm run dev`
-- Build for production: `npm run build`
-- Start production server: `npm run start`
-- Lint code: `npm run lint`
+- Run development server: `make dev`
+- Lint code: `make lint`
 
 ## License
 

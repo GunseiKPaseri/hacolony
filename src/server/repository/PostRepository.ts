@@ -1,8 +1,11 @@
+import { inject, injectable } from "tsyringe";
 import type { PostRepository } from "./interface";
 import { type DBClient, InvalidInputError, NotFoundError } from "./util";
+import { DI } from "../di.type";
 
-export default class DBPostRepository implements PostRepository {
-  constructor(private prisma: DBClient) {}
+@injectable()
+export class PostRepositoryImpl implements PostRepository {
+  constructor(@inject(DI.PrismaClient) private prisma: DBClient) {}
 
   async getPostsByUserId(userId: string) {
     const user = await this.prisma.user.findUnique({
@@ -103,5 +106,27 @@ export default class DBPostRepository implements PostRepository {
       postedByAvatarId: user.selfAvatar.id,
       replyToId: props.replyToId,
     });
+  }
+
+  async getPostById(postId: string) {
+    const post = await this.prisma.post.findUnique({
+      where: {
+        id: postId,
+      },
+      include: {
+        postedBy: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    if (!post) {
+      throw new NotFoundError("投稿が見つかりません");
+    }
+
+    return post;
   }
 }

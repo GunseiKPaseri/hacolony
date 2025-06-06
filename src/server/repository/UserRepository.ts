@@ -1,9 +1,12 @@
+import { inject, injectable } from "tsyringe";
 import type { UserRepository } from "./interface";
 import { type DBClient, InvalidInputError, NotFoundError } from "./util";
 import bcrypt from "bcryptjs";
+import { DI } from "../di.type";
 
-export default class DBUserRepository implements UserRepository {
-  constructor(private prisma: DBClient) {}
+@injectable()
+export class UserRepositoryImpl implements UserRepository {
+  constructor(@inject(DI.PrismaClient) private prisma: DBClient) {}
 
   async createUser(props: {
     name: string;
@@ -29,6 +32,18 @@ export default class DBUserRepository implements UserRepository {
       },
     });
 
+    return user;
+  }
+
+  async getUserById(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+    if (!user) {
+      throw new NotFoundError("ユーザーが見つかりません");
+    }
     return user;
   }
 
@@ -85,7 +100,18 @@ export default class DBUserRepository implements UserRepository {
     return !!user.selfAvatarId;
   }
 
-  async getAvatar(userId: string) {
+  async addSelfAvatar(userId: string, avatarId: string) {
+    await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        selfAvatarId: avatarId,
+      },
+    });
+  }
+
+  async getSelfAvatar(userId: string) {
     const user = await this.prisma.user.findUnique({
       where: {
         id: userId,
@@ -100,54 +126,5 @@ export default class DBUserRepository implements UserRepository {
     }
 
     return user.selfAvatar;
-  }
-
-  async createSelfAvatar(props: {userId: string, name: string, description?: string, imageUrl?: string, hidden?: boolean}) {
-    const { userId, name, description, imageUrl, hidden } = props;
-
-    if (!name) {
-      throw new InvalidInputError("アバター名を入力してください");
-    }
-
-    const user = await this.prisma.user.findUnique({
-      where: {
-        id: props.userId,
-      },
-    });
-
-    if (!user) {
-      throw new NotFoundError("ユーザーが見つかりません");
-    }
-
-    const existingAvatar = await this.prisma.avatar.findFirst({
-      where: {
-        ownerId: userId,
-        name,
-      },
-    });
-
-    if(existingAvatar){
-      throw new InvalidInputError("この名前のアバターは既に存在します");
-    };
-
-    const avatar = await this.prisma.avatar.create({
-      data: {
-        name,
-        description,
-        imageUrl,
-        ownerId: userId,
-        hidden: hidden ?? false,
-      },
-    });
-
-    await this.prisma.user.update({
-      where: {
-        id: props.userId,
-      },
-      data: {
-        selfAvatarId: avatar.id,
-      },
-    });
-    return avatar;
   }
 }

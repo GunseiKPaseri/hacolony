@@ -2,7 +2,10 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import { InvalidInputError, NotFoundError } from "@/server/repository/util";
-import { dbUserRepository, transaction } from "@/server/repository/repository";
+import { container } from "@/server/di";
+import { UserService } from "@/server/services/userService";
+import { AvatarService } from "@/server/services/avatarService";
+import { DI } from "@/server/di.type";
 
 export async function GET() {
   try {
@@ -15,9 +18,10 @@ export async function GET() {
       );
     }
 
-    const user = await dbUserRepository.getUserByIdWithAvatar(session.user.id);
+    const userService = container.resolve<UserService>(DI.UserService);
+    const selfAvatar = await userService.getSelfAvatar(session.user.id);
 
-    return NextResponse.json(user.selfAvatar);
+    return NextResponse.json(selfAvatar);
   } catch (error) {
     if (error instanceof NotFoundError) {
       return NextResponse.json(
@@ -44,47 +48,14 @@ export async function POST(request: Request) {
       );
     }
 
-    if (await dbUserRepository.hasAvatar(session.user.id)) {
-      return NextResponse.json(
-        { message: "アバターは既に存在します" },
-        { status: 400 }
-      );
-    }
-
     const { name, description, imageUrl } = await request.json();
 
-    // トランザクションでアバターとBotConfigを作成
-    const avatar = await transaction(async ({txFollowRepository, txUserRepository}) => {
-      // アバター作成
-      const avatar = await txUserRepository.createSelfAvatar({
-        name,
-        description,
-        imageUrl,
-        userId: session.user.id,
-        hidden: true,
-      });
-
-      // 自己アバター取得
-      const selfAvatar = await txUserRepository.getAvatar(session.user.id);
-
-      if (!selfAvatar) {
-        throw new NotFoundError("アバターが見つかりません");
-      }
-
-      await txFollowRepository.followAvatar([
-        // 新規アバターが自己アバターをフォロー
-        {
-          followerId: avatar.id,
-          followingId: selfAvatar.id,
-        },
-        // 自己アバターが新規アバターをフォロー
-        {
-          followerId: selfAvatar.id,
-          followingId: avatar.id,
-        },
-      ]);
-
-      return avatar;
+    const avatarService = container.resolve<AvatarService>(DI.AvatarService);
+    const avatar = await avatarService.createSelfAvatar({
+      name,
+      description,
+      imageUrl,
+      userId: session.user.id,
     });
 
     return NextResponse.json(avatar, { status: 201 });

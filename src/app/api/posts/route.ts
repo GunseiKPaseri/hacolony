@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
+import { container } from "@/server/di";
 import { authOptions } from "../auth/[...nextauth]/route";
 import { InvalidInputError, NotFoundError } from "@/server/repository/util";
-import { dbPostRepository } from "@/server/repository/repository";
+import { PostService } from "@/server/services/postService";
+import { DI } from "@/server/di.type";
 
 export async function GET() {
   try {
@@ -14,7 +16,9 @@ export async function GET() {
         { status: 401 }
       );
     }
-    const posts = await dbPostRepository.getPostsByUserId(session.user.id);
+    
+    const postService = container.resolve<PostService>(DI.PostService);
+    const posts = await postService.getPostsByUserId(session.user.id);
     return NextResponse.json(posts);
   } catch (error) {
     if (error instanceof NotFoundError) {
@@ -45,7 +49,8 @@ export async function POST(request: Request) {
 
     const { content, replyToId } = await request.json();
 
-    const post = await dbPostRepository.createPostByUserId({
+    const postService = container.resolve<PostService>(DI.PostService);
+    const post = await postService.createPost({
       content,
       postedByUserId: session.user.id,
       replyToId: replyToId || null,
