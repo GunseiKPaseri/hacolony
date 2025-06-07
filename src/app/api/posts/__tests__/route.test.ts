@@ -17,13 +17,9 @@ vi.mock('next-auth', () => ({
   getServerSession: vi.fn()
 }))
 
-// authOptionsのモック
-vi.mock('../auth/[...nextauth]/route', () => ({
-  authOptions: {}
-}))
-
 describe('/api/posts', () => {
   let mockPostService: PostService
+  let mockGetServerSession: any
 
   beforeEach(() => {
     mockPostService = {
@@ -31,7 +27,9 @@ describe('/api/posts', () => {
       createPost: vi.fn()
     } as any
 
-    vi.mocked(container.resolve).mockReturnValue(mockPostService)
+    mockGetServerSession = vi.mocked(getServerSession)
+
+    ;(container.resolve as any).mockReturnValue(mockPostService)
     vi.spyOn(console, 'error').mockImplementation(() => {})
   })
 
@@ -45,8 +43,8 @@ describe('/api/posts', () => {
         { id: 'post2', content: 'テスト投稿2' }
       ]
 
-      vi.mocked(getServerSession).mockResolvedValue(mockSession)
-      vi.mocked(mockPostService.getPostsByUserId).mockResolvedValue(mockPosts)
+      mockGetServerSession.mockResolvedValue(mockSession)
+      ;(mockPostService.getPostsByUserId as any).mockResolvedValue(mockPosts)
 
       const response = await GET()
       const responseData = await response.json()
@@ -58,7 +56,7 @@ describe('/api/posts', () => {
     })
 
     it('should return 401 when not authenticated', async () => {
-      vi.mocked(getServerSession).mockResolvedValue(null)
+      mockGetServerSession.mockResolvedValue(null)
 
       const response = await GET()
       const responseData = await response.json()
@@ -73,8 +71,8 @@ describe('/api/posts', () => {
         user: { id: 'user1' }
       }
 
-      vi.mocked(getServerSession).mockResolvedValue(mockSession)
-      vi.mocked(mockPostService.getPostsByUserId).mockRejectedValue(
+      mockGetServerSession.mockResolvedValue(mockSession)
+      ;(mockPostService.getPostsByUserId as any).mockRejectedValue(
         new NotFoundError('ユーザーが見つかりません')
       )
 
@@ -90,8 +88,8 @@ describe('/api/posts', () => {
         user: { id: 'user1' }
       }
 
-      vi.mocked(getServerSession).mockResolvedValue(mockSession)
-      vi.mocked(mockPostService.getPostsByUserId).mockRejectedValue(
+      mockGetServerSession.mockResolvedValue(mockSession)
+      ;(mockPostService.getPostsByUserId as any).mockRejectedValue(
         new Error('データベースエラー')
       )
 
@@ -124,8 +122,8 @@ describe('/api/posts', () => {
         replyToId: null
       }
 
-      vi.mocked(getServerSession).mockResolvedValue(mockSession)
-      vi.mocked(mockPostService.createPost).mockResolvedValue(mockPost)
+      mockGetServerSession.mockResolvedValue(mockSession)
+      ;(mockPostService.createPost as any).mockResolvedValue(mockPost)
 
       const response = await POST(createRequest(requestBody))
       const responseData = await response.json()
@@ -148,8 +146,8 @@ describe('/api/posts', () => {
         replyToId: 'original-post-id'
       }
 
-      vi.mocked(getServerSession).mockResolvedValue(mockSession)
-      vi.mocked(mockPostService.createPost).mockResolvedValue({} as any)
+      mockGetServerSession.mockResolvedValue(mockSession)
+      ;(mockPostService.createPost as any).mockResolvedValue({} as any)
 
       await POST(createRequest(requestBody))
 
@@ -161,7 +159,7 @@ describe('/api/posts', () => {
     })
 
     it('should return 401 when not authenticated', async () => {
-      vi.mocked(getServerSession).mockResolvedValue(null)
+      mockGetServerSession.mockResolvedValue(null)
 
       const response = await POST(createRequest({}))
       const responseData = await response.json()
@@ -180,8 +178,8 @@ describe('/api/posts', () => {
         replyToId: null
       }
 
-      vi.mocked(getServerSession).mockResolvedValue(mockSession)
-      vi.mocked(mockPostService.createPost).mockRejectedValue(
+      mockGetServerSession.mockResolvedValue(mockSession)
+      ;(mockPostService.createPost as any).mockRejectedValue(
         new InvalidInputError('投稿内容を入力してください')
       )
 
@@ -201,8 +199,8 @@ describe('/api/posts', () => {
         replyToId: null
       }
 
-      vi.mocked(getServerSession).mockResolvedValue(mockSession)
-      vi.mocked(mockPostService.createPost).mockRejectedValue(
+      mockGetServerSession.mockResolvedValue(mockSession)
+      ;(mockPostService.createPost as any).mockRejectedValue(
         new Error('データベースエラー')
       )
 

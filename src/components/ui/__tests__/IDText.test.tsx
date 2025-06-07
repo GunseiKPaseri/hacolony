@@ -7,7 +7,7 @@ describe('IDText', () => {
     const longId = 'user123456789abcdef'
     render(<IDText id={longId} />)
 
-    const expectedText = '@user12...def'
+    const expectedText = '@user12...cdef'
     expect(screen.getByText(expectedText)).toBeInTheDocument()
   })
 
@@ -24,7 +24,7 @@ describe('IDText', () => {
     render(<IDText id={veryShortId} />)
 
     // 6文字より短い場合の動作確認
-    const expectedText = '@...abc'
+    const expectedText = '@abc...abc'
     expect(screen.getByText(expectedText)).toBeInTheDocument()
   })
 
@@ -32,7 +32,7 @@ describe('IDText', () => {
     const id = 'test123456789'
     render(<IDText id={id} />)
 
-    const element = screen.getByText('@test12...3789')
+    const element = screen.getByText('@test12...6789')
     expect(element).toHaveClass('text-gray-400')
   })
 

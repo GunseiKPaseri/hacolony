@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { PostForm } from '../PostForm'
 
@@ -8,6 +8,10 @@ describe('PostForm', () => {
 
   beforeEach(() => {
     mockOnSubmit.mockClear()
+  })
+
+  afterEach(() => {
+    cleanup()
   })
 
   it('should render form elements correctly', () => {
@@ -33,9 +37,9 @@ describe('PostForm', () => {
 
   it('should update textarea value when typing', async () => {
     const user = userEvent.setup()
-    render(<PostForm onSubmit={mockOnSubmit} error={null} />)
+    const { container } = render(<PostForm onSubmit={mockOnSubmit} error={null} />)
 
-    const textarea = screen.getByPlaceholderText('何を考えていますか？')
+    const textarea = container.querySelector('textarea[placeholder="何を考えていますか？"]') as HTMLTextAreaElement
     
     await user.type(textarea, 'テスト投稿内容')
 

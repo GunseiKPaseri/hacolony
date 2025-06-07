@@ -17,9 +17,18 @@ vi.mock('next/navigation', () => ({
 }))
 
 // Mock NextAuth
-vi.mock('next-auth', () => ({
-  default: vi.fn(),
-}))
+vi.mock('next-auth', async (importOriginal) => {
+  const actual = await importOriginal() as any
+  return {
+    ...actual,
+    default: vi.fn().mockReturnValue({
+      handlers: {
+        GET: vi.fn(),
+        POST: vi.fn(),
+      }
+    }),
+  }
+})
 
 vi.mock('next-auth/react', () => ({
   useSession: () => ({
@@ -28,4 +37,14 @@ vi.mock('next-auth/react', () => ({
   }),
   signIn: vi.fn(),
   signOut: vi.fn(),
+}))
+
+// Mock getServerSession for API routes
+vi.mock('next-auth/next', () => ({
+  getServerSession: vi.fn(),
+}))
+
+// Mock authOptions
+vi.mock('@/app/api/auth/[...nextauth]/route', () => ({
+  authOptions: {},
 }))
