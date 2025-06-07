@@ -88,3 +88,7 @@ Background workers implement a consistent interface for processing queued tasks 
 
 ### Avatar-Centric Design
 The application is built around avatars as the primary interaction entities, not users directly.
+
+## Code style
+- Follow TypeScript best practices
+- Use ESLint and Prettier for formatting

@@ -21,12 +21,16 @@ hacolony is a personal digital garden where you can create multiple avatars (per
 
 3. Set up the database
    ```
-   npx prisma migrate dev
+   make migrate
+   ```
+   or
+   ```
+   make syncdb
    ```
 
 4. Start the development server
    ```
-   npm run dev
+   make dev
    ```
 
 5. Open [http://localhost:3000](http://localhost:3000) in your browser
