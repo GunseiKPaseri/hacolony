@@ -18,16 +18,16 @@ describe("/api/auth/register", () => {
   beforeEach(() => {
     mockUserService = {
       createUser: vi.fn(),
-    } as any;
+    } as unknown as UserService;
 
     vi.mocked(container.resolve).mockReturnValue(mockUserService);
     vi.spyOn(console, "error").mockImplementation(() => {});
   });
 
-  const createRequest = (body: any) =>
+  const createRequest = (body: Record<string, unknown>) =>
     ({
       json: vi.fn().mockResolvedValue(body),
-    }) as any;
+    }) as unknown as Request;
 
   it("should register user successfully", async () => {
     const requestBody = {
@@ -83,7 +83,7 @@ describe("/api/auth/register", () => {
   it("should handle malformed JSON", async () => {
     const request = {
       json: vi.fn().mockRejectedValue(new Error("Invalid JSON")),
-    } as any;
+    } as unknown as Request;
 
     const response = await POST(request);
     const responseData = await response.json();

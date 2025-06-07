@@ -21,7 +21,7 @@ describe("PostService", () => {
     mockBotReplyService = {
       triggerBotReplies: vi.fn(),
       triggerRandomBotPosts: vi.fn(),
-    } as any;
+    } as unknown as BotReplyService;
 
     postService = new PostService(mockPostRepository, mockBotReplyService);
 
@@ -52,7 +52,7 @@ describe("PostService", () => {
           updatedAt: new Date(),
         },
       ];
-      (mockPostRepository.getPostsByUserId as any).mockResolvedValue(mockPosts);
+      vi.mocked(mockPostRepository.getPostsByUserId).mockResolvedValue(mockPosts);
 
       const result = await postService.getPostsByUserId("user1");
 
@@ -86,8 +86,8 @@ describe("PostService", () => {
     };
 
     it("should create post with valid input", async () => {
-      (mockPostRepository.createPostByUserId as any).mockResolvedValue(mockCreatedPost);
-      (mockBotReplyService.triggerBotReplies as any).mockResolvedValue();
+      vi.mocked(mockPostRepository.createPostByUserId).mockResolvedValue(mockCreatedPost);
+      vi.mocked(mockBotReplyService.triggerBotReplies).mockResolvedValue();
 
       const result = await postService.createPost(validInput);
 
@@ -104,8 +104,8 @@ describe("PostService", () => {
         content: "  テスト投稿です  ",
         postedByUserId: "user1",
       };
-      (mockPostRepository.createPostByUserId as any).mockResolvedValue(mockCreatedPost);
-      (mockBotReplyService.triggerBotReplies as any).mockResolvedValue();
+      vi.mocked(mockPostRepository.createPostByUserId).mockResolvedValue(mockCreatedPost);
+      vi.mocked(mockBotReplyService.triggerBotReplies).mockResolvedValue();
 
       await postService.createPost(input);
 
@@ -122,8 +122,8 @@ describe("PostService", () => {
         replyToId: "reply1",
       };
       const mockReplyPost = { ...mockCreatedPost, replyToId: "reply1" };
-      (mockPostRepository.createPostByUserId as any).mockResolvedValue(mockReplyPost);
-      (mockBotReplyService.triggerBotReplies as any).mockResolvedValue();
+      vi.mocked(mockPostRepository.createPostByUserId).mockResolvedValue(mockReplyPost);
+      vi.mocked(mockBotReplyService.triggerBotReplies).mockResolvedValue();
 
       await postService.createPost(input);
 
@@ -135,8 +135,8 @@ describe("PostService", () => {
     });
 
     it("should trigger bot replies in background", async () => {
-      (mockPostRepository.createPostByUserId as any).mockResolvedValue(mockCreatedPost);
-      (mockBotReplyService.triggerBotReplies as any).mockResolvedValue();
+      vi.mocked(mockPostRepository.createPostByUserId).mockResolvedValue(mockCreatedPost);
+      vi.mocked(mockBotReplyService.triggerBotReplies).mockResolvedValue();
 
       await postService.createPost(validInput);
 
@@ -165,8 +165,8 @@ describe("PostService", () => {
     });
 
     it("should handle bot reply trigger failure silently", async () => {
-      (mockPostRepository.createPostByUserId as any).mockResolvedValue(mockCreatedPost);
-      (mockBotReplyService.triggerBotReplies as any).mockRejectedValue(new Error("Bot error"));
+      vi.mocked(mockPostRepository.createPostByUserId).mockResolvedValue(mockCreatedPost);
+      vi.mocked(mockBotReplyService.triggerBotReplies).mockRejectedValue(new Error("Bot error"));
 
       const result = await postService.createPost(validInput);
 

@@ -16,3 +16,8 @@ lint:
 	npm run lint
 fmt:
 	npm run fmt
+check:
+	npm run check
+test:
+	npm run test
+pre-push: lint fmt check test

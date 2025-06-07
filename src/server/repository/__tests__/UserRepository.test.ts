@@ -23,13 +23,15 @@ describe("UserRepositoryImpl", () => {
         findUnique: vi.fn(),
         update: vi.fn(),
       },
-    } as any;
+    } as unknown as DBClient;
 
     userRepository = new UserRepositoryImpl(mockPrismaClient);
 
     // bcryptのモック設定
-    vi.mocked(bcrypt.genSalt).mockResolvedValue("salt123");
-    vi.mocked(bcrypt.hash).mockResolvedValue("hashedPassword123");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (vi.mocked(bcrypt.genSalt) as any).mockResolvedValue("salt123");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (vi.mocked(bcrypt.hash) as any).mockResolvedValue("hashedPassword123");
   });
 
   describe("createUser", () => {
@@ -40,7 +42,15 @@ describe("UserRepositoryImpl", () => {
     };
 
     it("should create user successfully", async () => {
-      const mockUser = { id: "1", ...userInput, password: "hashedPassword123" };
+      const mockUser = {
+        id: "1",
+        name: userInput.name,
+        email: userInput.email,
+        password: "hashedPassword123",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        selfAvatarId: null,
+      };
 
       // メール重複チェックで既存ユーザーなし
       vi.mocked(mockPrismaClient.user.findUnique).mockResolvedValue(null);
@@ -61,7 +71,15 @@ describe("UserRepositoryImpl", () => {
     });
 
     it("should throw error when email already exists", async () => {
-      const existingUser = { id: "1", email: "test@example.com" };
+      const existingUser = {
+        id: "1",
+        name: "Existing User",
+        email: "test@example.com",
+        password: "hashedPass",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        selfAvatarId: null,
+      };
       vi.mocked(mockPrismaClient.user.findUnique).mockResolvedValue(existingUser);
 
       await expect(userRepository.createUser(userInput)).rejects.toThrow(InvalidInputError);
@@ -71,7 +89,15 @@ describe("UserRepositoryImpl", () => {
 
   describe("getUserById", () => {
     it("should return user when found", async () => {
-      const mockUser = { id: "1", name: "テストユーザー", email: "test@example.com" };
+      const mockUser = {
+        id: "1",
+        name: "テストユーザー",
+        email: "test@example.com",
+        password: "hashedPass",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        selfAvatarId: null,
+      };
       vi.mocked(mockPrismaClient.user.findUnique).mockResolvedValue(mockUser);
 
       const result = await userRepository.getUserById("1");
@@ -91,7 +117,15 @@ describe("UserRepositoryImpl", () => {
 
   describe("getUserByEmail", () => {
     it("should return user when found", async () => {
-      const mockUser = { id: "1", name: "テストユーザー", email: "test@example.com" };
+      const mockUser = {
+        id: "1",
+        name: "テストユーザー",
+        email: "test@example.com",
+        password: "hashedPass",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        selfAvatarId: null,
+      };
       vi.mocked(mockPrismaClient.user.findUnique).mockResolvedValue(mockUser);
 
       const result = await userRepository.getUserByEmail("test@example.com");
@@ -115,12 +149,19 @@ describe("UserRepositoryImpl", () => {
         id: "1",
         name: "テストユーザー",
         email: "test@example.com",
+        password: "hashedPass",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        selfAvatarId: "avatar1",
         selfAvatar: {
           id: "avatar1",
           name: "アバター",
           description: null,
           imageUrl: null,
           hidden: false,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          postedById: "1",
         },
       };
       vi.mocked(mockPrismaClient.user.findUnique).mockResolvedValue(mockUser);
@@ -143,7 +184,15 @@ describe("UserRepositoryImpl", () => {
 
   describe("isExistUserByEmail", () => {
     it("should return true when user exists", async () => {
-      const mockUser = { id: "1", email: "test@example.com" };
+      const mockUser = {
+        id: "1",
+        name: "Test User",
+        email: "test@example.com",
+        password: "hashedPass",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        selfAvatarId: null,
+      };
       vi.mocked(mockPrismaClient.user.findUnique).mockResolvedValue(mockUser);
 
       const result = await userRepository.isExistUserByEmail("test@example.com");
@@ -162,7 +211,15 @@ describe("UserRepositoryImpl", () => {
 
   describe("hasAvatar", () => {
     it("should return true when user has avatar", async () => {
-      const mockUser = { selfAvatarId: "avatar1" };
+      const mockUser = {
+        id: "1",
+        name: "Test User",
+        email: "test@example.com",
+        password: "hashedPass",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        selfAvatarId: "avatar1",
+      };
       vi.mocked(mockPrismaClient.user.findUnique).mockResolvedValue(mockUser);
 
       const result = await userRepository.hasAvatar("1");
@@ -175,7 +232,15 @@ describe("UserRepositoryImpl", () => {
     });
 
     it("should return false when user has no avatar", async () => {
-      const mockUser = { selfAvatarId: null };
+      const mockUser = {
+        id: "1",
+        name: "Test User",
+        email: "test@example.com",
+        password: "hashedPass",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        selfAvatarId: null,
+      };
       vi.mocked(mockPrismaClient.user.findUnique).mockResolvedValue(mockUser);
 
       const result = await userRepository.hasAvatar("1");
@@ -204,12 +269,22 @@ describe("UserRepositoryImpl", () => {
   describe("getSelfAvatar", () => {
     it("should return self avatar when user found", async () => {
       const mockUser = {
+        id: "1",
+        name: "Test User",
+        email: "test@example.com",
+        password: "hashedPass",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        selfAvatarId: "avatar1",
         selfAvatar: {
           id: "avatar1",
           name: "アバター",
           description: null,
           imageUrl: null,
           hidden: false,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          postedById: "1",
         },
       };
       vi.mocked(mockPrismaClient.user.findUnique).mockResolvedValue(mockUser);

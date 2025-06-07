@@ -11,17 +11,25 @@ describe("UserService", () => {
   beforeEach(() => {
     mockUserRepository = {
       createUser: vi.fn(),
+      getUserById: vi.fn(),
       getUserByEmail: vi.fn(),
       getUserByIdWithAvatar: vi.fn(),
+      isExistUserByEmail: vi.fn(),
       hasAvatar: vi.fn(),
-    } as any;
+      addSelfAvatar: vi.fn(),
+      getSelfAvatar: vi.fn(),
+    } as unknown as UserRepository;
 
     mockAvatarRepository = {
       createUser: vi.fn(),
+      getUserById: vi.fn(),
       getUserByEmail: vi.fn(),
       getUserByIdWithAvatar: vi.fn(),
+      isExistUserByEmail: vi.fn(),
       hasAvatar: vi.fn(),
-    } as any;
+      addSelfAvatar: vi.fn(),
+      getSelfAvatar: vi.fn(),
+    } as unknown as UserRepository;
 
     userService = new UserService(mockAvatarRepository, mockUserRepository);
   });
@@ -86,7 +94,15 @@ describe("UserService", () => {
 
   describe("getUserByEmail", () => {
     it("should get user by email", async () => {
-      const mockUser = { id: "1", email: "test@example.com" };
+      const mockUser = {
+        id: "1",
+        name: "Test User",
+        email: "test@example.com",
+        password: "hashedPass",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        selfAvatarId: null,
+      };
       vi.mocked(mockUserRepository.getUserByEmail).mockResolvedValue(mockUser);
 
       const result = await userService.getUserByEmail("test@example.com");
@@ -96,7 +112,15 @@ describe("UserService", () => {
     });
 
     it("should trim and lowercase email", async () => {
-      const mockUser = { id: "1", email: "test@example.com" };
+      const mockUser = {
+        id: "1",
+        name: "Test User",
+        email: "test@example.com",
+        password: "hashedPass",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        selfAvatarId: null,
+      };
       vi.mocked(mockUserRepository.getUserByEmail).mockResolvedValue(mockUser);
 
       await userService.getUserByEmail("  TEST@EXAMPLE.COM  ");
@@ -119,12 +143,19 @@ describe("UserService", () => {
         id: "1",
         name: "テストユーザー",
         email: "test@example.com",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        password: "hashedPass",
+        selfAvatarId: "avatar1",
         selfAvatar: {
           id: "avatar1",
           name: "アバター",
           description: null,
           imageUrl: null,
           hidden: false,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ownerId: "1",
         },
       };
       vi.mocked(mockUserRepository.getUserByIdWithAvatar).mockResolvedValue(mockUser);
@@ -161,12 +192,19 @@ describe("UserService", () => {
         id: "1",
         name: "テストユーザー",
         email: "test@example.com",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        password: "hashedPass",
+        selfAvatarId: "avatar1",
         selfAvatar: {
           id: "avatar1",
           name: "アバター",
           description: null,
           imageUrl: null,
           hidden: false,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ownerId: "1",
         },
       };
       vi.mocked(mockUserRepository.getUserByIdWithAvatar).mockResolvedValue(mockUser);

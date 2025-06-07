@@ -10,7 +10,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm run dev` - Start Next.js development server with Turbopack
 - `npm run start:with-scheduler` - Start Next.js server with background workers enabled
 - `npm run build` - Build production application
-- `npm run lint` - Run ESLint, validate Prisma schema, and format schema
+- `npm run check` - Run type checks
+- `npm run fmt` - Format code using Prettier
+- `npm run lint` - Run ESLint, validate Prisma schema
+- `make check` - Run type checks and linting
 
 ### Database Operations
 
@@ -22,8 +25,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Makefile Commands
 
-- `make dev` - Alias for npm run dev
-- `make lint` - Alias for npm run lint
+- `make pre-push` - Run pre-push checks (lint, type check, format, test)
 - `make .env` - Generate environment file using tools/create-env.sh
 
 ## Architecture Overview

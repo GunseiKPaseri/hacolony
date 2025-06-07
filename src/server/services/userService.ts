@@ -13,12 +13,19 @@ export interface UserWithAvatar {
   id: string;
   name: string;
   email: string;
+  createdAt: Date;
+  updatedAt: Date;
+  password: string;
+  selfAvatarId: string | null;
   selfAvatar: {
     id: string;
     name: string;
     description: string | null;
     imageUrl: string | null;
     hidden: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+    ownerId: string;
   } | null;
 }
 

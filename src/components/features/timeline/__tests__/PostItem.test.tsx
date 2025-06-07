@@ -1,16 +1,16 @@
-import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { PostItem } from "../PostItem";
 import type { Post } from "@/eintities/post";
 
 // モックコンポーネント
 vi.mock("../../avatar/AvatarIcon", () => ({
-  default: ({ avatar }: any) => <div data-testid="avatar-icon">{avatar.name}</div>,
+  default: ({ avatar }: { avatar: { name: string } }) => <div data-testid="avatar-icon">{avatar.name}</div>,
 }));
 
 vi.mock("@/components/ui/IDText", () => ({
-  default: ({ id }: any) => <span data-testid="id-text">{id}</span>,
+  default: ({ id }: { id: string }) => <span data-testid="id-text">{id}</span>,
 }));
 
 describe("PostItem", () => {
@@ -19,15 +19,13 @@ describe("PostItem", () => {
   const mockPost: Post = {
     id: "post1",
     content: "テスト投稿内容です",
-    createdAt: new Date("2024-01-01T10:00:00Z"),
+    createdAt: "2024-01-01T10:00:00Z",
     postedBy: {
       id: "user1",
       name: "テストユーザー",
-      imageUrl: null,
-      description: null,
-      hidden: false,
     },
     replies: [],
+    replyToId: null,
   };
 
   beforeEach(() => {
@@ -62,7 +60,7 @@ describe("PostItem", () => {
     render(<PostItem post={mockPost} onReply={mockOnReply} isReply={false} />);
 
     const replyBadge = screen.queryByText(
-      (content, element) => content === "返信" && element?.classList.contains("bg-blue-100"),
+      (content, element) => content === "返信" && !!element?.classList.contains("bg-blue-100"),
     );
     expect(replyBadge).not.toBeInTheDocument();
   });
@@ -130,15 +128,13 @@ describe("PostItem", () => {
         {
           id: "reply1",
           content: "返信1の内容",
-          createdAt: new Date("2024-01-01T11:00:00Z"),
+          createdAt: "2024-01-01T11:00:00Z",
           postedBy: {
             id: "user2",
             name: "返信ユーザー",
-            imageUrl: null,
-            description: null,
-            hidden: false,
           },
           replies: [],
+          replyToId: "post1",
         },
       ],
     };

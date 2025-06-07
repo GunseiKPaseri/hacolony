@@ -2,9 +2,16 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { GET, POST } from "../route";
 import { InvalidInputError, NotFoundError } from "@/server/repository/util";
 import { container } from "@/server/di";
-import { PostService } from "@/server/services/postService";
+import { PostService, type CreatePostInput } from "@/server/services/postService";
 import { DI } from "@/server/di.type";
 import { getServerSession } from "next-auth";
+import type { Post } from "@/generated/client";
+
+// API用のPost型（日付が文字列）
+type ApiPost = Omit<Post, "createdAt" | "updatedAt"> & {
+  createdAt: string;
+  updatedAt: string;
+};
 
 // 依存関係をモック
 vi.mock("@/server/di", () => ({
@@ -17,18 +24,22 @@ vi.mock("next-auth", () => ({
   getServerSession: vi.fn(),
 }));
 
+// モック用のPostService型
+interface MockPostService {
+  getPostsByUserId: (userId: string) => Promise<ApiPost[]>;
+  createPost: (input: CreatePostInput) => Promise<ApiPost>;
+}
+
 describe("/api/posts", () => {
-  let mockPostService: PostService;
-  let mockGetServerSession: any;
+  let mockPostService: MockPostService;
 
   beforeEach(() => {
     mockPostService = {
       getPostsByUserId: vi.fn(),
       createPost: vi.fn(),
-    } as any;
+    };
 
-    mockGetServerSession = vi.mocked(getServerSession);
-    (container.resolve as any).mockReturnValue(mockPostService);
+    vi.mocked(container.resolve).mockReturnValue(mockPostService as unknown as PostService);
     vi.spyOn(console, "error").mockImplementation(() => {});
   });
 
@@ -37,13 +48,29 @@ describe("/api/posts", () => {
       const mockSession = {
         user: { id: "user1" },
       };
-      const mockPosts = [
-        { id: "post1", content: "テスト投稿1" },
-        { id: "post2", content: "テスト投稿2" },
+      const mockPosts: ApiPost[] = [
+        {
+          id: "post1",
+          content: "テスト投稿1",
+          createdAt: "2024-01-01T10:00:00.000Z",
+          updatedAt: "2024-01-01T10:00:00.000Z",
+          postedById: "user1",
+          replyToId: null,
+          quotedPostId: null,
+        },
+        {
+          id: "post2",
+          content: "テスト投稿2",
+          createdAt: "2024-01-01T10:00:00.000Z",
+          updatedAt: "2024-01-01T10:00:00.000Z",
+          postedById: "user1",
+          replyToId: null,
+          quotedPostId: null,
+        },
       ];
 
-      mockGetServerSession.mockResolvedValue(mockSession);
-      (mockPostService.getPostsByUserId as any).mockResolvedValue(mockPosts);
+      vi.mocked(getServerSession).mockResolvedValue(mockSession);
+      vi.mocked(mockPostService.getPostsByUserId).mockResolvedValue(mockPosts);
 
       const response = await GET();
       const responseData = await response.json();
@@ -55,7 +82,7 @@ describe("/api/posts", () => {
     });
 
     it("should return 401 when not authenticated", async () => {
-      mockGetServerSession.mockResolvedValue(null);
+      vi.mocked(getServerSession).mockResolvedValue(null);
 
       const response = await GET();
       const responseData = await response.json();
@@ -70,8 +97,8 @@ describe("/api/posts", () => {
         user: { id: "user1" },
       };
 
-      mockGetServerSession.mockResolvedValue(mockSession);
-      (mockPostService.getPostsByUserId as any).mockRejectedValue(new NotFoundError("ユーザーが見つかりません"));
+      vi.mocked(getServerSession).mockResolvedValue(mockSession);
+      vi.mocked(mockPostService.getPostsByUserId).mockRejectedValue(new NotFoundError("ユーザーが見つかりません"));
 
       const response = await GET();
       const responseData = await response.json();
@@ -85,8 +112,8 @@ describe("/api/posts", () => {
         user: { id: "user1" },
       };
 
-      mockGetServerSession.mockResolvedValue(mockSession);
-      (mockPostService.getPostsByUserId as any).mockRejectedValue(new Error("データベースエラー"));
+      vi.mocked(getServerSession).mockResolvedValue(mockSession);
+      vi.mocked(mockPostService.getPostsByUserId).mockRejectedValue(new Error("データベースエラー"));
 
       const response = await GET();
       const responseData = await response.json();
@@ -98,10 +125,10 @@ describe("/api/posts", () => {
   });
 
   describe("POST /api/posts", () => {
-    const createRequest = (body: any) =>
+    const createRequest = (body: Record<string, unknown>) =>
       ({
         json: vi.fn().mockResolvedValue(body),
-      }) as any;
+      }) as unknown as Request;
 
     it("should create post successfully", async () => {
       const mockSession = {
@@ -111,15 +138,18 @@ describe("/api/posts", () => {
         content: "テスト投稿です",
         replyToId: null,
       };
-      const mockPost = {
+      const mockPost: ApiPost = {
         id: "post1",
         content: "テスト投稿です",
-        postedByUserId: "user1",
+        postedById: "user1",
         replyToId: null,
+        quotedPostId: null,
+        createdAt: "2024-01-01T10:00:00.000Z",
+        updatedAt: "2024-01-01T10:00:00.000Z",
       };
 
-      mockGetServerSession.mockResolvedValue(mockSession);
-      (mockPostService.createPost as any).mockResolvedValue(mockPost);
+      vi.mocked(getServerSession).mockResolvedValue(mockSession);
+      vi.mocked(mockPostService.createPost).mockResolvedValue(mockPost);
 
       const response = await POST(createRequest(requestBody));
       const responseData = await response.json();
@@ -142,8 +172,8 @@ describe("/api/posts", () => {
         replyToId: "original-post-id",
       };
 
-      mockGetServerSession.mockResolvedValue(mockSession);
-      (mockPostService.createPost as any).mockResolvedValue({} as any);
+      vi.mocked(getServerSession).mockResolvedValue(mockSession);
+      vi.mocked(mockPostService.createPost).mockResolvedValue({} as ApiPost);
 
       await POST(createRequest(requestBody));
 
@@ -155,7 +185,7 @@ describe("/api/posts", () => {
     });
 
     it("should return 401 when not authenticated", async () => {
-      mockGetServerSession.mockResolvedValue(null);
+      vi.mocked(getServerSession).mockResolvedValue(null);
 
       const response = await POST(createRequest({}));
       const responseData = await response.json();
@@ -174,8 +204,8 @@ describe("/api/posts", () => {
         replyToId: null,
       };
 
-      mockGetServerSession.mockResolvedValue(mockSession);
-      (mockPostService.createPost as any).mockRejectedValue(new InvalidInputError("投稿内容を入力してください"));
+      vi.mocked(getServerSession).mockResolvedValue(mockSession);
+      vi.mocked(mockPostService.createPost).mockRejectedValue(new InvalidInputError("投稿内容を入力してください"));
 
       const response = await POST(createRequest(requestBody));
       const responseData = await response.json();
@@ -193,8 +223,8 @@ describe("/api/posts", () => {
         replyToId: null,
       };
 
-      mockGetServerSession.mockResolvedValue(mockSession);
-      (mockPostService.createPost as any).mockRejectedValue(new Error("データベースエラー"));
+      vi.mocked(getServerSession).mockResolvedValue(mockSession);
+      vi.mocked(mockPostService.createPost).mockRejectedValue(new Error("データベースエラー"));
 
       const response = await POST(createRequest(requestBody));
       const responseData = await response.json();

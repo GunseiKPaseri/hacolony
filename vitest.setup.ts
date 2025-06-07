@@ -18,7 +18,7 @@ vi.mock("next/navigation", () => ({
 
 // Mock NextAuth
 vi.mock("next-auth", async (importOriginal) => {
-  const actual = (await importOriginal()) as any;
+  const actual = (await importOriginal()) as Record<string, unknown>;
   return {
     ...actual,
     default: vi.fn().mockReturnValue({
