@@ -48,9 +48,7 @@ export default function RegisterPage() {
     <div className="flex min-h-screen flex-col items-center justify-center p-24">
       <div className="w-full max-w-md space-y-8">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-bold tracking-tight">
-            新規登録
-          </h2>
+          <h2 className="mt-6 text-center text-3xl font-bold tracking-tight">新規登録</h2>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
@@ -110,14 +108,11 @@ export default function RegisterPage() {
         </form>
 
         <div className="text-center">
-          <Link
-            href="/login"
-            className="text-sm text-indigo-600 hover:text-indigo-500"
-          >
+          <Link href="/login" className="text-sm text-indigo-600 hover:text-indigo-500">
             すでにアカウントをお持ちの方はこちら
           </Link>
         </div>
       </div>
     </div>
   );
-} 
+}

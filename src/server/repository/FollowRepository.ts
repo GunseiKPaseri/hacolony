@@ -7,13 +7,13 @@ import { DI } from "../di.type";
 export class FollowRepositoryImpl implements FollowRepository {
   constructor(@inject(DI.PrismaClient) private prisma: DBClient) {}
 
-  async followAvatar(following: {followerId: string, followingId: string}[]) {
+  async followAvatar(following: { followerId: string; followingId: string }[]) {
     await this.prisma.follow.createMany({
       data: following,
     });
   }
 
-  async unfollowAvatar(following: {followerId: string, followingId: string}[]) {
+  async unfollowAvatar(following: { followerId: string; followingId: string }[]) {
     await this.prisma.follow.deleteMany({
       where: {
         OR: following.map((f) => ({
@@ -39,7 +39,7 @@ export class FollowRepositoryImpl implements FollowRepository {
         },
       },
     });
-    return followers.map(f => f.follower);
+    return followers.map((f) => f.follower);
   }
   async getFollowing(avatarId: string) {
     const following = await this.prisma.follow.findMany({
@@ -56,8 +56,7 @@ export class FollowRepositoryImpl implements FollowRepository {
         },
       },
     });
-    return following.map(f => f.following);
-
+    return following.map((f) => f.following);
   }
   async isFollowing(followerId: string, followingId: string) {
     const follow = await this.prisma.follow.findFirst({

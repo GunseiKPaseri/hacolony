@@ -7,11 +7,8 @@ import { DI } from "../di.type";
 @injectable()
 export class BotTaskQueueRepositoryImpl implements BotTaskQueueRepository {
   constructor(@inject(DI.PrismaClient) private prisma: DBClient) {}
-  
-  async enqueueTask(params: { 
-    avatarId: string; 
-    task: PrismaJson.TaskContext
-  }): Promise<BotTaskQueue> {
+
+  async enqueueTask(params: { avatarId: string; task: PrismaJson.TaskContext }): Promise<BotTaskQueue> {
     return await this.prisma.botTaskQueue.create({
       data: {
         avatarId: params.avatarId,
@@ -25,10 +22,7 @@ export class BotTaskQueueRepositoryImpl implements BotTaskQueueRepository {
       where: {
         status: "PENDING",
       },
-      orderBy: [
-        { priority: "desc" },
-        { createdAt: "asc" },
-      ],
+      orderBy: [{ priority: "desc" }, { createdAt: "asc" }],
       take: limit,
       include: {
         avatar: {
@@ -43,7 +37,7 @@ export class BotTaskQueueRepositoryImpl implements BotTaskQueueRepository {
   async updateTaskStatus(id: string, status: QueueState): Promise<void> {
     await this.prisma.botTaskQueue.update({
       where: { id },
-      data: { 
+      data: {
         status: status,
         updatedAt: new Date(),
       },
@@ -53,7 +47,7 @@ export class BotTaskQueueRepositoryImpl implements BotTaskQueueRepository {
   async updateTaskContext(id: string, taskContext: PrismaJson.TaskContext): Promise<void> {
     await this.prisma.botTaskQueue.update({
       where: { id },
-      data: { 
+      data: {
         task: taskContext,
         updatedAt: new Date(),
       },

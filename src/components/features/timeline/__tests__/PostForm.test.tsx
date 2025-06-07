@@ -1,120 +1,120 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { PostForm } from '../PostForm'
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, screen, fireEvent, waitFor, cleanup } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { PostForm } from "../PostForm";
 
-describe('PostForm', () => {
-  const mockOnSubmit = vi.fn()
+describe("PostForm", () => {
+  const mockOnSubmit = vi.fn();
 
   beforeEach(() => {
-    mockOnSubmit.mockClear()
-  })
+    mockOnSubmit.mockClear();
+  });
 
   afterEach(() => {
-    cleanup()
-  })
+    cleanup();
+  });
 
-  it('should render form elements correctly', () => {
-    render(<PostForm onSubmit={mockOnSubmit} error={null} />)
+  it("should render form elements correctly", () => {
+    render(<PostForm onSubmit={mockOnSubmit} error={null} />);
 
-    expect(screen.getByPlaceholderText('何を考えていますか？')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: '投稿' })).toBeInTheDocument()
-  })
+    expect(screen.getByPlaceholderText("何を考えていますか？")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "投稿" })).toBeInTheDocument();
+  });
 
-  it('should display error message when error prop is provided', () => {
-    const errorMessage = 'テストエラーメッセージ'
-    render(<PostForm onSubmit={mockOnSubmit} error={errorMessage} />)
+  it("should display error message when error prop is provided", () => {
+    const errorMessage = "テストエラーメッセージ";
+    render(<PostForm onSubmit={mockOnSubmit} error={errorMessage} />);
 
-    expect(screen.getByText(errorMessage)).toBeInTheDocument()
-    expect(screen.getByText(errorMessage)).toHaveClass('text-red-700')
-  })
+    expect(screen.getByText(errorMessage)).toBeInTheDocument();
+    expect(screen.getByText(errorMessage)).toHaveClass("text-red-700");
+  });
 
-  it('should not display error message when error prop is null', () => {
-    render(<PostForm onSubmit={mockOnSubmit} error={null} />)
+  it("should not display error message when error prop is null", () => {
+    render(<PostForm onSubmit={mockOnSubmit} error={null} />);
 
-    expect(screen.queryByText(/error/i)).not.toBeInTheDocument()
-  })
+    expect(screen.queryByText(/error/i)).not.toBeInTheDocument();
+  });
 
-  it('should update textarea value when typing', async () => {
-    const user = userEvent.setup()
-    const { container } = render(<PostForm onSubmit={mockOnSubmit} error={null} />)
+  it("should update textarea value when typing", async () => {
+    const user = userEvent.setup();
+    const { container } = render(<PostForm onSubmit={mockOnSubmit} error={null} />);
 
-    const textarea = container.querySelector('textarea[placeholder="何を考えていますか？"]') as HTMLTextAreaElement
-    
-    await user.type(textarea, 'テスト投稿内容')
+    const textarea = container.querySelector('textarea[placeholder="何を考えていますか？"]') as HTMLTextAreaElement;
 
-    expect(textarea).toHaveValue('テスト投稿内容')
-  })
+    await user.type(textarea, "テスト投稿内容");
 
-  it('should call onSubmit with correct parameters when form is submitted', async () => {
-    const user = userEvent.setup()
-    render(<PostForm onSubmit={mockOnSubmit} error={null} />)
+    expect(textarea).toHaveValue("テスト投稿内容");
+  });
 
-    const textarea = screen.getByPlaceholderText('何を考えていますか？')
-    const submitButton = screen.getByRole('button', { name: '投稿' })
+  it("should call onSubmit with correct parameters when form is submitted", async () => {
+    const user = userEvent.setup();
+    render(<PostForm onSubmit={mockOnSubmit} error={null} />);
 
-    await user.type(textarea, 'テスト投稿内容')
-    await user.click(submitButton)
+    const textarea = screen.getByPlaceholderText("何を考えていますか？");
+    const submitButton = screen.getByRole("button", { name: "投稿" });
 
-    expect(mockOnSubmit).toHaveBeenCalledTimes(1)
-    expect(mockOnSubmit).toHaveBeenCalledWith(null, 'テスト投稿内容')
-  })
+    await user.type(textarea, "テスト投稿内容");
+    await user.click(submitButton);
 
-  it('should clear textarea after successful submission', async () => {
-    const user = userEvent.setup()
-    render(<PostForm onSubmit={mockOnSubmit} error={null} />)
+    expect(mockOnSubmit).toHaveBeenCalledTimes(1);
+    expect(mockOnSubmit).toHaveBeenCalledWith(null, "テスト投稿内容");
+  });
 
-    const textarea = screen.getByPlaceholderText('何を考えていますか？')
-    const submitButton = screen.getByRole('button', { name: '投稿' })
+  it("should clear textarea after successful submission", async () => {
+    const user = userEvent.setup();
+    render(<PostForm onSubmit={mockOnSubmit} error={null} />);
 
-    await user.type(textarea, 'テスト投稿内容')
-    await user.click(submitButton)
+    const textarea = screen.getByPlaceholderText("何を考えていますか？");
+    const submitButton = screen.getByRole("button", { name: "投稿" });
 
-    expect(textarea).toHaveValue('')
-  })
+    await user.type(textarea, "テスト投稿内容");
+    await user.click(submitButton);
 
-  it('should not submit when content is empty', async () => {
-    const user = userEvent.setup()
-    render(<PostForm onSubmit={mockOnSubmit} error={null} />)
+    expect(textarea).toHaveValue("");
+  });
 
-    const submitButton = screen.getByRole('button', { name: '投稿' })
+  it("should not submit when content is empty", async () => {
+    const user = userEvent.setup();
+    render(<PostForm onSubmit={mockOnSubmit} error={null} />);
 
-    await user.click(submitButton)
+    const submitButton = screen.getByRole("button", { name: "投稿" });
 
-    expect(mockOnSubmit).not.toHaveBeenCalled()
-  })
+    await user.click(submitButton);
 
-  it('should not submit when content is only whitespace', async () => {
-    const user = userEvent.setup()
-    render(<PostForm onSubmit={mockOnSubmit} error={null} />)
+    expect(mockOnSubmit).not.toHaveBeenCalled();
+  });
 
-    const textarea = screen.getByPlaceholderText('何を考えていますか？')
-    const submitButton = screen.getByRole('button', { name: '投稿' })
+  it("should not submit when content is only whitespace", async () => {
+    const user = userEvent.setup();
+    render(<PostForm onSubmit={mockOnSubmit} error={null} />);
 
-    await user.type(textarea, '   ')
-    await user.click(submitButton)
+    const textarea = screen.getByPlaceholderText("何を考えていますか？");
+    const submitButton = screen.getByRole("button", { name: "投稿" });
 
-    expect(mockOnSubmit).not.toHaveBeenCalled()
-  })
+    await user.type(textarea, "   ");
+    await user.click(submitButton);
 
-  it('should submit form when Enter key is pressed in textarea', async () => {
-    render(<PostForm onSubmit={mockOnSubmit} error={null} />)
+    expect(mockOnSubmit).not.toHaveBeenCalled();
+  });
 
-    const textarea = screen.getByPlaceholderText('何を考えていますか？')
+  it("should submit form when Enter key is pressed in textarea", async () => {
+    render(<PostForm onSubmit={mockOnSubmit} error={null} />);
 
-    fireEvent.change(textarea, { target: { value: 'テスト投稿内容' } })
-    fireEvent.submit(textarea.closest('form')!)
+    const textarea = screen.getByPlaceholderText("何を考えていますか？");
 
-    expect(mockOnSubmit).toHaveBeenCalledWith(null, 'テスト投稿内容')
-  })
+    fireEvent.change(textarea, { target: { value: "テスト投稿内容" } });
+    fireEvent.submit(textarea.closest("form")!);
 
-  it('should have correct accessibility attributes', () => {
-    render(<PostForm onSubmit={mockOnSubmit} error={null} />)
+    expect(mockOnSubmit).toHaveBeenCalledWith(null, "テスト投稿内容");
+  });
 
-    const textarea = screen.getByPlaceholderText('何を考えていますか？')
-    const submitButton = screen.getByRole('button', { name: '投稿' })
+  it("should have correct accessibility attributes", () => {
+    render(<PostForm onSubmit={mockOnSubmit} error={null} />);
 
-    expect(textarea).toHaveAttribute('rows', '3')
-    expect(submitButton).toHaveAttribute('type', 'submit')
-  })
-})
+    const textarea = screen.getByPlaceholderText("何を考えていますか？");
+    const submitButton = screen.getByRole("button", { name: "投稿" });
+
+    expect(textarea).toHaveAttribute("rows", "3");
+    expect(submitButton).toHaveAttribute("type", "submit");
+  });
+});

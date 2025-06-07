@@ -40,9 +40,8 @@ export class PostRepositoryImpl implements PostRepository {
     return posts;
   }
 
-  private async createPost(props: {content: string, postedByAvatarId: string, replyToId: string | null}) {
-
-    if(!props.content) {
+  private async createPost(props: { content: string; postedByAvatarId: string; replyToId: string | null }) {
+    if (!props.content) {
       throw new InvalidInputError("投稿内容を入力してください");
     }
 
@@ -53,7 +52,7 @@ export class PostRepositoryImpl implements PostRepository {
       const parentPost = await this.prisma.post.findUnique({
         where: { id: props.replyToId },
       });
-      
+
       if (!parentPost) {
         throw new NotFoundError("リプライ先の投稿が存在しません");
       }
@@ -68,7 +67,7 @@ export class PostRepositoryImpl implements PostRepository {
     });
   }
 
-  async createPostByAvatarId(props: {content: string, postedByAvatarId: string, replyToId: string | null}) {
+  async createPostByAvatarId(props: { content: string; postedByAvatarId: string; replyToId: string | null }) {
     const avatar = await this.prisma.avatar.findUnique({
       select: {
         id: true,
@@ -87,7 +86,7 @@ export class PostRepositoryImpl implements PostRepository {
     });
   }
 
-  async createPostByUserId(props: {content: string, postedByUserId: string, replyToId: string | null}) {
+  async createPostByUserId(props: { content: string; postedByUserId: string; replyToId: string | null }) {
     const user = await this.prisma.user.findUnique({
       where: {
         id: props.postedByUserId,

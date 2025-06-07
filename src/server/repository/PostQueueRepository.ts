@@ -7,9 +7,9 @@ import { DI } from "../di.type";
 @injectable()
 export class PostQueueRepositoryImpl implements PostQueueRepository {
   constructor(@inject(DI.PrismaClient) private prisma: DBClient) {}
-  async schedulePost(params: { 
-    avatarId: string; 
-    content: string; 
+  async schedulePost(params: {
+    avatarId: string;
+    content: string;
     scheduledAt: Date;
     replyToId?: string;
     botTaskQueueId?: string;
@@ -47,7 +47,7 @@ export class PostQueueRepositoryImpl implements PostQueueRepository {
   async markPostAsProcessed(id: string): Promise<void> {
     await this.prisma.postQueue.update({
       where: { id },
-      data: { 
+      data: {
         status: "COMPLETED",
         updatedAt: new Date(),
       },

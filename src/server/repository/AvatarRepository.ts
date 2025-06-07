@@ -7,17 +7,20 @@ import { DI } from "../di.type";
 export class AvatarRepositoryImpl implements AvatarRepository {
   constructor(@inject(DI.PrismaClient) private prisma: DBClient) {}
 
-  async createAvatar(props: { name: string; userId: string; description?: string; imageUrl?: string; hidden?: boolean }) {
+  async createAvatar(props: {
+    name: string;
+    userId: string;
+    description?: string;
+    imageUrl?: string;
+    hidden?: boolean;
+  }) {
     const { name, userId, description, imageUrl, hidden } = props;
 
     if (!name) {
       throw new InvalidInputError("アバター名を入力してください");
     }
 
-    const existingAvatar = await this.isExistAvatarByName(
-      name,
-      userId
-    );
+    const existingAvatar = await this.isExistAvatarByName(name, userId);
 
     if (existingAvatar) {
       throw new InvalidInputError("この名前のアバターは既に存在します");
@@ -58,36 +61,38 @@ export class AvatarRepositoryImpl implements AvatarRepository {
     return avatars;
   }
 
-  async getBotFollowers(avatarId: string): Promise<{
-    botConfig: {
+  async getBotFollowers(avatarId: string): Promise<
+    {
+      botConfig: {
         id: string;
         avatarId: string;
         prompt: string;
-    };
-    name: string;
-    id: string;
-    description: string | null;
-    imageUrl: string | null;
-    hidden: boolean;
-    ownerId: string;
-    createdAt: Date;
-    updatedAt: Date;
-}[]> {
+      };
+      name: string;
+      id: string;
+      description: string | null;
+      imageUrl: string | null;
+      hidden: boolean;
+      ownerId: string;
+      createdAt: Date;
+      updatedAt: Date;
+    }[]
+  > {
     const followers = await this.prisma.avatar.findMany({
       where: {
         followers: {
           some: {
             followingId: avatarId,
-          }
+          },
         },
         botConfig: {
           isNot: null,
         },
       },
       include: {
-        botConfig: true
-      }
-    })
+        botConfig: true,
+      },
+    });
     return followers as {
       botConfig: {
         id: string;
@@ -104,5 +109,4 @@ export class AvatarRepositoryImpl implements AvatarRepository {
       updatedAt: Date;
     }[];
   }
-
 }

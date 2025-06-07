@@ -13,4 +13,4 @@ export default function LogoutPage() {
       <div className="text-center">ログアウトしています...</div>
     </div>
   );
-} 
+}

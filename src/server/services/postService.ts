@@ -58,7 +58,7 @@ export class PostService {
   private triggerBotRepliesInBackground(postId: string, authorUserId: string): void {
     // 非同期でボットリプライをトリガー
     console.log("Triggering bot replies in background for post:", postId, "by user:", authorUserId);
-    this.botReplyService.triggerBotReplies(postId, authorUserId).catch(error => {
+    this.botReplyService.triggerBotReplies(postId, authorUserId).catch((error) => {
       console.error("Background bot reply trigger failed:", error);
     });
   }

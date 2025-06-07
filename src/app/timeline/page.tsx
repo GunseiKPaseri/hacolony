@@ -19,9 +19,8 @@ export default function TimelinePage() {
   }, [refetch]);
 
   const handleSubmit = async (replyToId: string | null, content: string) => {
-
     if (!content.trim()) return;
-    
+
     try {
       const response = await fetch("/api/posts", {
         method: "POST",
@@ -30,11 +29,11 @@ export default function TimelinePage() {
         },
         body: JSON.stringify({ content, replyToId }),
       });
-      
+
       if (!response.ok) {
         throw new Error("投稿の作成に失敗しました");
       }
-      
+
       refetch();
     } catch (error) {
       console.error("Error creating post:", error);

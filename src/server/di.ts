@@ -37,6 +37,6 @@ container.registerSingleton(DI.LlmTaskWorker, LlmTaskWorker);
 container.registerSingleton(DI.PostQueueWorker, PostQueueWorker);
 container.registerSingleton(DI.Scheduler, Scheduler);
 
-container.resolve<Scheduler>(DI.Scheduler).start()
+container.resolve<Scheduler>(DI.Scheduler).start();
 
 export { container };

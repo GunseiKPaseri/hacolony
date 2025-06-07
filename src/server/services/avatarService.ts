@@ -1,10 +1,5 @@
 import { inject, injectable } from "tsyringe";
-import type { 
-  AvatarRepository, 
-  BotConfigRepository, 
-  FollowRepository, 
-  UserRepository 
-} from "../repository/interface";
+import type { AvatarRepository, BotConfigRepository, FollowRepository, UserRepository } from "../repository/interface";
 import { DI } from "../di.type";
 import { DBTransaction, InvalidInputError, NotFoundError } from "../repository/util";
 
@@ -98,7 +93,7 @@ export class AvatarService {
       });
 
       // 自己アバターを登録
-      await UserRepository.addSelfAvatar(userId,avatar.id);
+      await UserRepository.addSelfAvatar(userId, avatar.id);
 
       return avatar;
     });
@@ -120,41 +115,43 @@ export class AvatarService {
       throw new InvalidInputError("ユーザーIDが必要です");
     }
 
-    return await this.transaction.runWithRepository(async ({ AvatarRepository, BotConfigRepository, FollowRepository, UserRepository }) => {
-      // アバター名の重複チェック
-      const existingAvatar = await AvatarRepository.isExistAvatarByName(name, userId);
-      if (existingAvatar) {
-        throw new InvalidInputError("この名前のアバターは既に存在します");
-      }
+    return await this.transaction.runWithRepository(
+      async ({ AvatarRepository, BotConfigRepository, FollowRepository, UserRepository }) => {
+        // アバター名の重複チェック
+        const existingAvatar = await AvatarRepository.isExistAvatarByName(name, userId);
+        if (existingAvatar) {
+          throw new InvalidInputError("この名前のアバターは既に存在します");
+        }
 
-      // ユーザーの自己アバターを取得
-      const selfAvatar = await UserRepository.getSelfAvatar(userId);
-      if (!selfAvatar) {
-        throw new NotFoundError("自己アバターが見つかりません");
-      }
+        // ユーザーの自己アバターを取得
+        const selfAvatar = await UserRepository.getSelfAvatar(userId);
+        if (!selfAvatar) {
+          throw new NotFoundError("自己アバターが見つかりません");
+        }
 
-      // AIアバターを作成
-      const avatar = await AvatarRepository.createAvatar({
-        name: name.trim(),
-        description: description?.trim() || undefined,
-        imageUrl: imageUrl?.trim() || undefined,
-        userId,
-        hidden: true,
-      });
+        // AIアバターを作成
+        const avatar = await AvatarRepository.createAvatar({
+          name: name.trim(),
+          description: description?.trim() || undefined,
+          imageUrl: imageUrl?.trim() || undefined,
+          userId,
+          hidden: true,
+        });
 
-      // BotConfigを作成
-      await BotConfigRepository.createBotConfig({
-        prompt: prompt.trim(),
-        avatarId: avatar.id,
-      });
+        // BotConfigを作成
+        await BotConfigRepository.createBotConfig({
+          prompt: prompt.trim(),
+          avatarId: avatar.id,
+        });
 
-      // フォロー関係を作成
-      await FollowRepository.followAvatar([
-        { followerId: avatar.id, followingId: selfAvatar.id },
-        { followerId: selfAvatar.id, followingId: avatar.id },
-      ]);
+        // フォロー関係を作成
+        await FollowRepository.followAvatar([
+          { followerId: avatar.id, followingId: selfAvatar.id },
+          { followerId: selfAvatar.id, followingId: avatar.id },
+        ]);
 
-      return avatar;
-    })
+        return avatar;
+      },
+    );
   }
 }

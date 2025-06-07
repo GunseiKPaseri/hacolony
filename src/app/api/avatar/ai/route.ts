@@ -11,10 +11,7 @@ export async function POST(request: Request) {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.id) {
-      return NextResponse.json(
-        { message: "認証が必要です" },
-        { status: 401 }
-      );
+      return NextResponse.json({ message: "認証が必要です" }, { status: 401 });
     }
 
     const { name, description, imageUrl, prompt } = await request.json();
@@ -27,25 +24,16 @@ export async function POST(request: Request) {
       prompt,
       userId: session.user.id,
     });
-    
+
     return NextResponse.json(avatar, { status: 201 });
   } catch (error) {
     if (error instanceof NotFoundError) {
-      return NextResponse.json(
-        { message: error.message },
-        { status: 404 }
-      );
+      return NextResponse.json({ message: error.message }, { status: 404 });
     }
     if (error instanceof InvalidInputError) {
-      return NextResponse.json(
-        { message: error.message },
-        { status: 400 }
-      );
+      return NextResponse.json({ message: error.message }, { status: 400 });
     }
     console.error("Error creating AI avatar:", error);
-    return NextResponse.json(
-      { message: "AIアバターの作成中にエラーが発生しました" },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: "AIアバターの作成中にエラーが発生しました" }, { status: 500 });
   }
 }

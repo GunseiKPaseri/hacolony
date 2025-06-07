@@ -13,7 +13,7 @@ export class BotReplyService {
     try {
       const botFollowers = await this.avatarRepo.getBotFollowers(authorAvatarId);
       console.log(`Found ${botFollowers.length} followers for avatar ${authorAvatarId}`);
-      
+
       for (const followerAvatar of botFollowers) {
         try {
           // Try to create a bot task - if avatar doesn't have botConfig, it will be skipped in botTaskWorker
@@ -22,7 +22,7 @@ export class BotReplyService {
             task: {
               type: "reply_post",
               replyToPostId: postId,
-            }
+            },
           });
         } catch (error) {
           console.log(`Could not queue bot task for avatar ${followerAvatar.id}:`, error);

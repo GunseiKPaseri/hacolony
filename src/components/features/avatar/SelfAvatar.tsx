@@ -5,8 +5,7 @@ import IDText from "@/components/ui/IDText";
 import AvatarIcon from "./AvatarIcon";
 
 const SelfAvatarLoader = () => {
-
-  const [{data: selfAvatar}] = useAtom(selfAvatarAtom);
+  const [{ data: selfAvatar }] = useAtom(selfAvatarAtom);
 
   if (!selfAvatar || "message" in selfAvatar) {
     return <div className="h-8 w-8 rounded-full bg-gray-200 animate-pulse"></div>;
@@ -17,11 +16,13 @@ const SelfAvatarLoader = () => {
       <AvatarIcon avatar={selfAvatar} />
       <div>
         <div className="h-4 w-24">{selfAvatar.name}</div>
-        <div className="h-4 w-32"><IDText id={selfAvatar.id} /></div>
+        <div className="h-4 w-32">
+          <IDText id={selfAvatar.id} />
+        </div>
       </div>
     </div>
   );
-}
+};
 
 const SelfAvatarLoading = () => {
   return (
@@ -33,8 +34,7 @@ const SelfAvatarLoading = () => {
       </div>
     </div>
   );
-}
-
+};
 
 export default function SelfAvatar() {
   return (

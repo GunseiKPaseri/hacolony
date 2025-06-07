@@ -9,19 +9,19 @@ export class LlmTaskWorker {
     @inject(DI.LlmTaskQueueRepository) private readonly llmTaskQueueRepo: LlmTaskQueueRepository,
     @inject(DI.PostQueueRepository) private readonly postQueueRepo: PostQueueRepository,
     @inject(DI.BotTaskQueueRepository) private readonly botTaskQueueRepo: BotTaskQueueRepository,
-    @inject(DI.OllamaClient) private readonly ollamaClient: OllamaClient
+    @inject(DI.OllamaClient) private readonly ollamaClient: OllamaClient,
   ) {}
 
   async processTasks(): Promise<void> {
     try {
       // Get pending LLM tasks
       const tasks = await this.llmTaskQueueRepo.getPendingTasks(10);
-      
+
       for (const task of tasks) {
         try {
           // Mark LLM task as processing
           await this.llmTaskQueueRepo.updateTaskStatus(task.id, "PROCESSING");
-          
+
           // Update BotTaskQueue status to LLM_PROCESSING
           if (task.botTaskQueueId) {
             const botTask = await this.botTaskQueueRepo.getTaskById(task.botTaskQueueId);
@@ -33,10 +33,10 @@ export class LlmTaskWorker {
               await this.botTaskQueueRepo.updateTaskContext(task.botTaskQueueId, updatedTaskContext);
             }
           }
-          
+
           // Generate post content using Ollama
           const response = await this.ollamaClient.generatePost(task.prompt);
-          
+
           // Get replyToId from BotTaskQueue if this is a reply task
           let replyToId: string | undefined;
           if (task.botTaskQueueId) {
@@ -45,7 +45,7 @@ export class LlmTaskWorker {
               replyToId = botTask.task.replyToPostId;
             }
           }
-          
+
           // Schedule post in PostQueue
           const postQueue = await this.postQueueRepo.schedulePost({
             avatarId: task.avatarId,
@@ -54,7 +54,7 @@ export class LlmTaskWorker {
             replyToId: replyToId,
             botTaskQueueId: task.botTaskQueueId || undefined,
           });
-          
+
           // Update BotTaskQueue TaskContext with PostQueue ID and LLM_COMPLETED status
           if (task.botTaskQueueId) {
             const botTask = await this.botTaskQueueRepo.getTaskById(task.botTaskQueueId);
@@ -67,15 +67,15 @@ export class LlmTaskWorker {
               await this.botTaskQueueRepo.updateTaskContext(task.botTaskQueueId, updatedTaskContext);
             }
           }
-          
+
           // Mark task as completed
           await this.llmTaskQueueRepo.updateTaskStatus(task.id, "COMPLETED");
-          
+
           console.log(`LLM task ${task.id} completed successfully`);
         } catch (error) {
           console.error(`Failed to process LLM task ${task.id}:`, error);
           await this.llmTaskQueueRepo.updateTaskStatus(task.id, "FAILED");
-          
+
           // Update BotTaskQueue with failed status
           if (task.botTaskQueueId) {
             const botTask = await this.botTaskQueueRepo.getTaskById(task.botTaskQueueId);

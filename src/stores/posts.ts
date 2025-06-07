@@ -1,6 +1,6 @@
-import { atomWithSuspenseQuery } from 'jotai-tanstack-query'
-import { Post } from '@/eintities/post';
-import { atom, useAtomValue, useSetAtom } from 'jotai';
+import { atomWithSuspenseQuery } from "jotai-tanstack-query";
+import { Post } from "@/eintities/post";
+import { atom, useAtomValue, useSetAtom } from "jotai";
 
 interface PostResponse {
   id: string;
@@ -14,34 +14,34 @@ interface PostResponse {
 }
 
 const fetchPosts = async (cursor: string | null) => {
-  const url = new URL('/api/posts', window.location.origin);
-  if(cursor) url.searchParams.append('cursor', cursor);
+  const url = new URL("/api/posts", window.location.origin);
+  if (cursor) url.searchParams.append("cursor", cursor);
   const response = await fetch(url.toString());
   if (!response.ok) {
-    throw new Error('Failed to fetch posts');
+    throw new Error("Failed to fetch posts");
   }
   const data: PostResponse[] = await response.json();
-  return {data, cursor: data[0]?.id || null};
-}
+  return { data, cursor: data[0]?.id || null };
+};
 
 type PostsAtomState = {
   originlist: Map<string, Post>;
   timeline: Post[];
-}
+};
 
 const mergePosts = (prevPosts: PostsAtomState, newPosts: PostResponse[]): PostsAtomState => {
   for (const newPost of newPosts.reverse()) {
     if (prevPosts.originlist.has(newPost.id)) {
       continue; // Skip if the post already exists
     }
-    const newPostObject = {...newPost, replies: [] }
-    prevPosts.originlist.set(newPost.id, newPostObject)
-    if(newPost.replyToId) {
+    const newPostObject = { ...newPost, replies: [] };
+    prevPosts.originlist.set(newPost.id, newPostObject);
+    if (newPost.replyToId) {
       const parentPost = prevPosts.originlist.get(newPost.replyToId);
       if (parentPost) {
         parentPost.replies.push(newPostObject);
-        if(parentPost.replyToId === null) {
-          prevPosts.timeline = [parentPost, ...prevPosts.timeline.filter(post => post.id !== parentPost.id)];
+        if (parentPost.replyToId === null) {
+          prevPosts.timeline = [parentPost, ...prevPosts.timeline.filter((post) => post.id !== parentPost.id)];
         }
       }
     } else {
@@ -49,22 +49,22 @@ const mergePosts = (prevPosts: PostsAtomState, newPosts: PostResponse[]): PostsA
     }
   }
 
-  return {...prevPosts};
-}
+  return { ...prevPosts };
+};
 
 const lastCursorAtom = atom<string | null>(null);
 
-const realtimeDataAtom = atomWithSuspenseQuery<{data: PostResponse[], cursor: string | null}>((get) => {
+const realtimeDataAtom = atomWithSuspenseQuery<{ data: PostResponse[]; cursor: string | null }>((get) => {
   const cursor = get(lastCursorAtom);
   return {
-    queryKey: ['incrementPosts', cursor],
+    queryKey: ["incrementPosts", cursor],
     queryFn: async () => fetchPosts(cursor),
     refetchInterval: 10000, // Refetch every 10 seconds
     staleTime: 5000, // Cache for 10 seconds
-  }
+  };
 });
 
-const postsAtom = atom<PostsAtomState>({originlist: new Map(), timeline: []})
+const postsAtom = atom<PostsAtomState>({ originlist: new Map(), timeline: [] });
 
 const updatePostsAtom = atom(null, async (get, set) => {
   const x = await get(realtimeDataAtom);

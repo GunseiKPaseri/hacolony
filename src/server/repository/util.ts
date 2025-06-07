@@ -29,13 +29,17 @@ export class DBTransaction {
       const repositories = {
         AvatarRepository: childConainer.resolve<Repositories["AvatarRepository"]>(DI.AvatarRepository),
         BotConfigRepository: childConainer.resolve<Repositories["BotConfigRepository"]>(DI.BotConfigRepository),
-        BotTaskQueueRepository: childConainer.resolve<Repositories["BotTaskQueueRepository"]>(DI.BotTaskQueueRepository),
+        BotTaskQueueRepository: childConainer.resolve<Repositories["BotTaskQueueRepository"]>(
+          DI.BotTaskQueueRepository,
+        ),
         FollowRepository: childConainer.resolve<Repositories["FollowRepository"]>(DI.FollowRepository),
-        LlmTaskQueueRepository: childConainer.resolve<Repositories["LlmTaskQueueRepository"]>(DI.LlmTaskQueueRepository),
+        LlmTaskQueueRepository: childConainer.resolve<Repositories["LlmTaskQueueRepository"]>(
+          DI.LlmTaskQueueRepository,
+        ),
         PostQueueRepository: childConainer.resolve<Repositories["PostQueueRepository"]>(DI.PostQueueRepository),
         PostRepository: childConainer.resolve<Repositories["PostRepository"]>(DI.PostRepository),
         UserRepository: childConainer.resolve<Repositories["UserRepository"]>(DI.UserRepository),
-      }
+      };
       return callback(repositories);
     });
   }

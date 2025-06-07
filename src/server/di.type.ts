@@ -13,7 +13,7 @@ export const DI = {
   PostQueueRepository: Symbol.for("PostQueueRepository"),
   PostRepository: Symbol.for("PostRepository"),
   UserRepository: Symbol.for("UserRepository"),
-  
+
   // Services
   BotReplyService: Symbol.for("BotReplyService"),
   UserService: Symbol.for("UserService"),
@@ -24,4 +24,4 @@ export const DI = {
   LlmTaskWorker: Symbol.for("LlmTaskWorker"),
   PostQueueWorker: Symbol.for("PostQueueWorker"),
   Scheduler: Symbol.for("Scheduler"),
-}
+};

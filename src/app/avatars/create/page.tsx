@@ -43,32 +43,17 @@ export default function CreateAvatarPage() {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-sm font-medium mb-1">名前</label>
-          <input
-            type="text"
-            name="name"
-            required
-            className="w-full p-2 border rounded"
-          />
+          <input type="text" name="name" required className="w-full p-2 border rounded" />
         </div>
         <div>
           <label className="block text-sm font-medium mb-1">説明</label>
-          <textarea
-            name="description"
-            className="w-full p-2 border rounded"
-          ></textarea>
+          <textarea name="description" className="w-full p-2 border rounded"></textarea>
         </div>
         <div>
           <label className="block text-sm font-medium mb-1">画像URL</label>
-          <input
-            type="text"
-            name="imageUrl"
-            className="w-full p-2 border rounded"
-          />
+          <input type="text" name="imageUrl" className="w-full p-2 border rounded" />
         </div>
-        <button
-          type="submit"
-          className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-        >
+        <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
           作成
         </button>
       </form>

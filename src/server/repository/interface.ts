@@ -1,43 +1,51 @@
 import { Post, Avatar, User, BotTaskQueue, PostQueue, LlmTaskQueue } from "@/generated/client";
 
 export interface AvatarRepository {
-  createAvatar(props: {name: string, userId: string; description?: string; imageUrl?: string; hidden?: boolean}): Promise<Avatar>;
+  createAvatar(props: {
+    name: string;
+    userId: string;
+    description?: string;
+    imageUrl?: string;
+    hidden?: boolean;
+  }): Promise<Avatar>;
   isExistAvatarByName(name: string, userId: string): Promise<boolean>;
   getAvatarsByUserId(userId: string): Promise<Avatar[]>;
-  getBotFollowers(avatarId: string): Promise<{
-    botConfig: {
+  getBotFollowers(avatarId: string): Promise<
+    {
+      botConfig: {
         id: string;
         avatarId: string;
         prompt: string;
-    } | null;
-    name: string;
-    id: string;
-    description: string | null;
-    imageUrl: string | null;
-    hidden: boolean;
-    ownerId: string;
-    createdAt: Date;
-    updatedAt: Date;
-}[]>;
+      } | null;
+      name: string;
+      id: string;
+      description: string | null;
+      imageUrl: string | null;
+      hidden: boolean;
+      ownerId: string;
+      createdAt: Date;
+      updatedAt: Date;
+    }[]
+  >;
 }
 
 export interface BotConfigRepository {
-  createBotConfig(props: {avatarId: string, prompt: string}): Promise<{id: string, prompt: string}>;
-  getBotConfigByAvatarId(avatarId: string): Promise<{id: string, prompt: string} | null>;
+  createBotConfig(props: { avatarId: string; prompt: string }): Promise<{ id: string; prompt: string }>;
+  getBotConfigByAvatarId(avatarId: string): Promise<{ id: string; prompt: string } | null>;
 }
 
 export interface FollowRepository {
-  followAvatar(following: {followerId: string, followingId: string}[]): Promise<void>;
-  unfollowAvatar(following: {followerId: string, followingId: string}[]): Promise<void>;
-  getFollowers(avatarId: string): Promise<{id: string, name: string, imageUrl: string | null}[]>;
-  getFollowing(avatarId: string): Promise<{id: string, name: string, imageUrl: string | null}[]>;
+  followAvatar(following: { followerId: string; followingId: string }[]): Promise<void>;
+  unfollowAvatar(following: { followerId: string; followingId: string }[]): Promise<void>;
+  getFollowers(avatarId: string): Promise<{ id: string; name: string; imageUrl: string | null }[]>;
+  getFollowing(avatarId: string): Promise<{ id: string; name: string; imageUrl: string | null }[]>;
   isFollowing(followerId: string, followingId: string): Promise<boolean>;
 }
 
 export interface PostRepository {
   getPostsByUserId(userId: string): Promise<Post[]>;
-  createPostByAvatarId(props: {content: string, postedByAvatarId: string, replyToId: string | null}): Promise<Post>;
-  createPostByUserId(props: {content: string, postedByUserId: string, replyToId: string | null}): Promise<Post>;
+  createPostByAvatarId(props: { content: string; postedByAvatarId: string; replyToId: string | null }): Promise<Post>;
+  createPostByUserId(props: { content: string; postedByUserId: string; replyToId: string | null }): Promise<Post>;
   getPostById(postId: string): Promise<Post | null>;
 }
 
@@ -50,23 +58,30 @@ export interface BotTaskQueueRepository {
 }
 
 export interface LlmTaskQueueRepository {
-  enqueueTask(params: { avatarId: string; prompt: string; context?: PrismaJson.LLMContext; botTaskQueueId?: string }): Promise<LlmTaskQueue>;
+  enqueueTask(params: {
+    avatarId: string;
+    prompt: string;
+    context?: PrismaJson.LLMContext;
+    botTaskQueueId?: string;
+  }): Promise<LlmTaskQueue>;
   getPendingTasks(limit?: number): Promise<LlmTaskQueue[]>;
   updateTaskStatus(id: string, status: string): Promise<void>;
 }
 
 export interface PostQueueRepository {
-  schedulePost(params: { avatarId: string; content: string; scheduledAt: Date; replyToId?: string; botTaskQueueId?: string }): Promise<PostQueue>;
+  schedulePost(params: {
+    avatarId: string;
+    content: string;
+    scheduledAt: Date;
+    replyToId?: string;
+    botTaskQueueId?: string;
+  }): Promise<PostQueue>;
   getDuePosts(limit?: number): Promise<PostQueue[]>;
   markPostAsProcessed(id: string): Promise<void>;
 }
 
 export interface UserRepository {
-  createUser(props: {
-    name: string;
-    email: string;
-    password: string;
-  }): Promise<User>;
+  createUser(props: { name: string; email: string; password: string }): Promise<User>;
   getUserByEmail(email: string): Promise<User>;
   getUserById(userId: string): Promise<User | null>;
   getUserByIdWithAvatar(userId: string): Promise<User & { selfAvatar: Avatar | null }>;

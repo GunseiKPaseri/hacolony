@@ -1,5 +1,10 @@
 import { inject, injectable } from "tsyringe";
-import type { BotTaskQueueRepository, LlmTaskQueueRepository, BotConfigRepository, PostRepository } from "../repository/interface";
+import type {
+  BotTaskQueueRepository,
+  LlmTaskQueueRepository,
+  BotConfigRepository,
+  PostRepository,
+} from "../repository/interface";
 import { DI } from "../di.type";
 
 @injectable()
@@ -8,26 +13,26 @@ export class BotTaskWorker {
     @inject(DI.BotConfigRepository) private readonly botConfigRepo: BotConfigRepository,
     @inject(DI.BotTaskQueueRepository) private readonly botTaskQueueRepo: BotTaskQueueRepository,
     @inject(DI.LlmTaskQueueRepository) private readonly llmTaskQueueRepo: LlmTaskQueueRepository,
-    @inject(DI.PostRepository) private readonly postRepo: PostRepository
+    @inject(DI.PostRepository) private readonly postRepo: PostRepository,
   ) {}
 
   async processTasks(): Promise<void> {
     try {
       // Get pending bot tasks
       const tasks = await this.botTaskQueueRepo.getPendingTasks(10);
-      
+
       for (const task of tasks) {
         try {
           // Mark task as processing (overall queue status)
           await this.botTaskQueueRepo.updateTaskStatus(task.id, "PROCESSING");
-          
+
           // Update TaskContext to CREATED status
           const initialTaskContext: PrismaJson.TaskContext = {
             ...task.task,
             status: "CREATED",
           };
           await this.botTaskQueueRepo.updateTaskContext(task.id, initialTaskContext);
-          
+
           // Get bot's prompt from BotConfig
           const botConfig = await this.botConfigRepo.getBotConfigByAvatarId(task.avatarId);
           if (!botConfig) {
@@ -44,7 +49,7 @@ export class BotTaskWorker {
 
           // Create a combined prompt from bot's base prompt and task context
           const combinedPrompt = await this.createCombinedPrompt(botConfig.prompt, task.task, botConfig.prompt);
-          
+
           // Send to LLM task queue with bot task reference
           const llmTask = await this.llmTaskQueueRepo.enqueueTask({
             avatarId: task.avatarId,
@@ -54,7 +59,7 @@ export class BotTaskWorker {
               systemPrompt: combinedPrompt,
             },
           });
-          
+
           // Update TaskContext with LLM task ID and LLM_QUEUED status
           const llmQueuedTaskContext: PrismaJson.TaskContext = {
             ...task.task,
@@ -62,10 +67,10 @@ export class BotTaskWorker {
             llmTaskId: llmTask.id,
           };
           await this.botTaskQueueRepo.updateTaskContext(task.id, llmQueuedTaskContext);
-          
+
           // Keep overall status as PROCESSING (will be updated when completely done)
           console.log(`Bot task ${task.id} queued to LLM with status LLM_QUEUED`);
-          
+
           console.log(`Bot task ${task.id} processed and sent to LLM queue`);
         } catch (error) {
           console.error(`Failed to process bot task ${task.id}:`, error);
@@ -83,7 +88,11 @@ export class BotTaskWorker {
     }
   }
 
-  private async createCombinedPrompt(basePrompt: string, taskContext: PrismaJson.TaskContext, botPrompt: string): Promise<string> {
+  private async createCombinedPrompt(
+    basePrompt: string,
+    taskContext: PrismaJson.TaskContext,
+    botPrompt: string,
+  ): Promise<string> {
     // Create a combined prompt from the bot's base prompt and the task context
     let combinedPrompt = basePrompt;
 

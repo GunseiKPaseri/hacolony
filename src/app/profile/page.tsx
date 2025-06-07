@@ -77,9 +77,7 @@ export default function ProfilePage() {
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-bold">プロフィール</h1>
-          <p className="text-gray-500">
-            アバターの作成と管理を行います。
-          </p>
+          <p className="text-gray-500">アバターの作成と管理を行います。</p>
         </div>
 
         <div className="rounded-lg border bg-card p-4">
@@ -136,26 +134,15 @@ export default function ProfilePage() {
           <h2 className="text-xl font-bold">アバター一覧</h2>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {avatars.map((avatar) => (
-              <div
-                key={avatar.id}
-                className="rounded-lg border bg-card p-4"
-              >
+              <div key={avatar.id} className="rounded-lg border bg-card p-4">
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2">
                     {avatar.imageUrl && (
-                      <Image
-                        src={avatar.imageUrl}
-                        alt={avatar.name}
-                        className="h-10 w-10 rounded-full"
-                      />
+                      <Image src={avatar.imageUrl} alt={avatar.name} className="h-10 w-10 rounded-full" />
                     )}
                     <div>
                       <div className="font-medium">{avatar.name}</div>
-                      {avatar.description && (
-                        <div className="text-sm text-gray-500">
-                          {avatar.description}
-                        </div>
-                      )}
+                      {avatar.description && <div className="text-sm text-gray-500">{avatar.description}</div>}
                     </div>
                   </div>
                   <div className="flex space-x-2 text-sm text-gray-500">
@@ -169,4 +156,4 @@ export default function ProfilePage() {
       </div>
     </div>
   );
-} 
+}

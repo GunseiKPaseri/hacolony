@@ -25,10 +25,7 @@ export const authOptions: NextAuthOptions = {
 
         const user = await userService.getUserByEmail(credentials.email);
 
-        const isPasswordValid = await bcrypt.compare(
-          credentials.password,
-          user.password
-        );
+        const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
 
         if (!isPasswordValid) {
           throw new Error("パスワードが正しくありません");
@@ -57,7 +54,7 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token }) {
       if (token) {
-        session.user.id = token.id as string 
+        session.user.id = token.id as string;
       }
       return session;
     },
@@ -65,4 +62,4 @@ export const authOptions: NextAuthOptions = {
 };
 
 const handler = NextAuth(authOptions);
-export { handler as GET, handler as POST }; 
+export { handler as GET, handler as POST };

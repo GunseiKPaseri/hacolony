@@ -1,4 +1,4 @@
-import { atomWithQuery } from 'jotai-tanstack-query'
+import { atomWithQuery } from "jotai-tanstack-query";
 
 export type Avatar = {
   name: string;
@@ -9,17 +9,17 @@ export type Avatar = {
   createdAt: Date;
   updatedAt: Date;
   ownerId: string;
-}
+};
 
-export type AvatarResponse = Avatar | {message: string};
+export type AvatarResponse = Avatar | { message: string };
 
 // Atom for storing all posts
 export const selfAvatarAtom = atomWithQuery<AvatarResponse>((_get) => ({
-  queryKey: ['selfavatar'],
+  queryKey: ["selfavatar"],
   queryFn: async () => {
-    const response = await fetch('/api/avatar/self');
+    const response = await fetch("/api/avatar/self");
     if (!response.ok) {
-      throw new Error('Failed to fetch posts');
+      throw new Error("Failed to fetch posts");
     }
     const data = await response.json();
     return data;

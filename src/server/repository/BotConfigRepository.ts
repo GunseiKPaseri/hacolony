@@ -7,7 +7,7 @@ import { DI } from "../di.type";
 export class BotConfigRepositoryImpl implements BotConfigRepository {
   constructor(@inject(DI.PrismaClient) private prisma: DBClient) {}
 
-  async createBotConfig(props: {avatarId: string, prompt: string}) {
+  async createBotConfig(props: { avatarId: string; prompt: string }) {
     const { avatarId, prompt } = props;
 
     const botConfig = await this.prisma.botConfig.create({
@@ -20,7 +20,7 @@ export class BotConfigRepositoryImpl implements BotConfigRepository {
     return botConfig;
   }
 
-  async getBotConfigByAvatarId(avatarId: string): Promise<{id: string, prompt: string} | null> {
+  async getBotConfigByAvatarId(avatarId: string): Promise<{ id: string; prompt: string } | null> {
     const botConfig = await this.prisma.botConfig.findUnique({
       where: {
         avatarId,

@@ -9,22 +9,26 @@ hacolonyは、複数のアバター（ペルソナ）を作成し、投稿、返
 ## 始め方
 
 1. リポジトリをクローン
+
    ```
    git clone https://github.com/GunseiKPaseri/hacolony.git
    cd hacolony
    ```
 
 2. 依存関係のインストール
+
    ```
    npm install
    ```
 
 3. データベースのセットアップ
+
    ```
    npx prisma migrate dev
    ```
 
 4. 開発サーバーの起動
+
    ```
    npm run dev
    ```
@@ -34,6 +38,7 @@ hacolonyは、複数のアバター（ペルソナ）を作成し、投稿、返
 ## プロジェクト構造
 
 - `src/app`: Next.jsのApp Routerファイル群
+
   - `page.tsx`: メインランディングページ
   - `login/` & `register/`: 認証関連ページ
   - `timeline/`: メインのSNSインターフェイス

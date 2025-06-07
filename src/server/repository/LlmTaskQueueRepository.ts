@@ -7,9 +7,9 @@ import { DI } from "../di.type";
 @injectable()
 export class LlmTaskQueueRepositoryImpl implements LlmTaskQueueRepository {
   constructor(@inject(DI.PrismaClient) private prisma: DBClient) {}
-  async enqueueTask(params: { 
-    avatarId: string; 
-    prompt: string; 
+  async enqueueTask(params: {
+    avatarId: string;
+    prompt: string;
     context?: PrismaJson.LLMContext;
     botTaskQueueId?: string;
   }): Promise<LlmTaskQueue> {
@@ -28,10 +28,7 @@ export class LlmTaskQueueRepositoryImpl implements LlmTaskQueueRepository {
       where: {
         status: "PENDING",
       },
-      orderBy: [
-        { priority: "desc" },
-        { createdAt: "asc" },
-      ],
+      orderBy: [{ priority: "desc" }, { createdAt: "asc" }],
       take: limit,
       include: {
         avatar: {
@@ -46,7 +43,7 @@ export class LlmTaskQueueRepositoryImpl implements LlmTaskQueueRepository {
   async updateTaskStatus(id: string, status: QueueState): Promise<void> {
     await this.prisma.llmTaskQueue.update({
       where: { id },
-      data: { 
+      data: {
         status: status,
         updatedAt: new Date(),
       },

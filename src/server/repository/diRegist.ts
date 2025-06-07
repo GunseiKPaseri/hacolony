@@ -1,14 +1,14 @@
 import { DependencyContainer } from "tsyringe";
 import { DI } from "../di.type";
-import type { 
-  LlmTaskQueueRepository, 
-  BotTaskQueueRepository, 
+import type {
+  LlmTaskQueueRepository,
+  BotTaskQueueRepository,
   BotConfigRepository,
   FollowRepository,
   PostQueueRepository,
   PostRepository,
   AvatarRepository,
-  UserRepository
+  UserRepository,
 } from "./interface";
 
 import { AvatarRepositoryImpl } from "./AvatarRepository";

@@ -9,26 +9,32 @@ hacolony is a personal digital garden where you can create multiple avatars (per
 ## Getting Started
 
 1. Clone the repository
+
    ```
    git clone https://github.com/GunseiKPaseri/hacolony.git
    cd hacolony
    ```
 
 2. Install dependencies
+
    ```
    npm install
    ```
 
 3. Set up the database
+
    ```
    make migrate
    ```
+
    or
+
    ```
    make syncdb
    ```
 
 4. Start the development server
+
    ```
    make dev
    ```
@@ -38,6 +44,7 @@ hacolony is a personal digital garden where you can create multiple avatars (per
 ## Project Structure
 
 - `src/app`: Next.js App Router files
+
   - `page.tsx`: Main landing page
   - `login/` & `register/`: Authentication pages
   - `timeline/`: Main SNS interface

@@ -12,16 +12,16 @@ export default function LoginPage() {
 
   const checkAvatar = async () => {
     try {
-      const response = await fetch('/api/avatar/self');
+      const response = await fetch("/api/avatar/self");
       const avatars = await response.json();
       if (avatars.length === 0) {
-        router.push('/avatars/create');
+        router.push("/avatars/create");
       } else {
-        router.push('/timeline');
+        router.push("/timeline");
       }
     } catch (err) {
-      console.error('Avatar check failed:', err);
-      router.push('/timeline');
+      console.error("Avatar check failed:", err);
+      router.push("/timeline");
     }
   };
 
@@ -52,9 +52,7 @@ export default function LoginPage() {
     <div className="flex min-h-screen flex-col items-center justify-center p-24">
       <div className="w-full max-w-md space-y-8">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-bold tracking-tight">
-            ログイン
-          </h2>
+          <h2 className="mt-6 text-center text-3xl font-bold tracking-tight">ログイン</h2>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
@@ -101,14 +99,11 @@ export default function LoginPage() {
         </form>
 
         <div className="text-center">
-          <Link
-            href="/register"
-            className="text-sm text-indigo-600 hover:text-indigo-500"
-          >
+          <Link href="/register" className="text-sm text-indigo-600 hover:text-indigo-500">
             アカウントをお持ちでない方はこちら
           </Link>
         </div>
       </div>
     </div>
   );
-} 
+}

@@ -1,50 +1,50 @@
-import '@testing-library/jest-dom'
-import 'reflect-metadata'
-import { vi } from 'vitest'
-import React from 'react'
+import "@testing-library/jest-dom";
+import "reflect-metadata";
+import { vi } from "vitest";
+import React from "react";
 
 // Reactをグローバルに設定
-global.React = React
+global.React = React;
 
 // Mock Next.js router
-vi.mock('next/navigation', () => ({
+vi.mock("next/navigation", () => ({
   useRouter: () => ({
     push: vi.fn(),
     replace: vi.fn(),
     refresh: vi.fn(),
   }),
-  usePathname: () => '/test-path',
-}))
+  usePathname: () => "/test-path",
+}));
 
 // Mock NextAuth
-vi.mock('next-auth', async (importOriginal) => {
-  const actual = await importOriginal() as any
+vi.mock("next-auth", async (importOriginal) => {
+  const actual = (await importOriginal()) as any;
   return {
     ...actual,
     default: vi.fn().mockReturnValue({
       handlers: {
         GET: vi.fn(),
         POST: vi.fn(),
-      }
+      },
     }),
-  }
-})
+  };
+});
 
-vi.mock('next-auth/react', () => ({
+vi.mock("next-auth/react", () => ({
   useSession: () => ({
     data: null,
-    status: 'unauthenticated',
+    status: "unauthenticated",
   }),
   signIn: vi.fn(),
   signOut: vi.fn(),
-}))
+}));
 
 // Mock getServerSession for API routes
-vi.mock('next-auth/next', () => ({
+vi.mock("next-auth/next", () => ({
   getServerSession: vi.fn(),
-}))
+}));
 
 // Mock authOptions
-vi.mock('@/app/api/auth/[...nextauth]/route', () => ({
+vi.mock("@/app/api/auth/[...nextauth]/route", () => ({
   authOptions: {},
-}))
+}));
