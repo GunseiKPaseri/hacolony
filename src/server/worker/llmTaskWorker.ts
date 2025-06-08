@@ -1,4 +1,5 @@
 import { inject, injectable } from "tsyringe";
+import type { Logger } from "pino";
 import type { LlmTaskQueueRepository, PostQueueRepository, BotTaskQueueRepository } from "../repository/interface";
 import { OllamaClient } from "../client/OllamaClient";
 import { DI } from "../di.type";
@@ -6,6 +7,7 @@ import { DI } from "../di.type";
 @injectable()
 export class LlmTaskWorker {
   constructor(
+    @inject(DI.Logger) private readonly logger: Logger,
     @inject(DI.LlmTaskQueueRepository) private readonly llmTaskQueueRepo: LlmTaskQueueRepository,
     @inject(DI.PostQueueRepository) private readonly postQueueRepo: PostQueueRepository,
     @inject(DI.BotTaskQueueRepository) private readonly botTaskQueueRepo: BotTaskQueueRepository,
@@ -71,9 +73,14 @@ export class LlmTaskWorker {
           // Mark task as completed
           await this.llmTaskQueueRepo.updateTaskStatus(task.id, "COMPLETED");
 
-          console.log(`LLM task ${task.id} completed successfully`);
+          this.logger.info({ taskId: task.id, avatarId: task.avatarId, postQueueId: postQueue.id }, "LLM task completed successfully");
         } catch (error) {
-          console.error(`Failed to process LLM task ${task.id}:`, error);
+          this.logger.error({ 
+            taskId: task.id, 
+            avatarId: task.avatarId, 
+            botTaskQueueId: task.botTaskQueueId,
+            error: error instanceof Error ? error.message : "Unknown error" 
+          }, "Failed to process LLM task");
           await this.llmTaskQueueRepo.updateTaskStatus(task.id, "FAILED");
 
           // Update BotTaskQueue with failed status
@@ -92,7 +99,7 @@ export class LlmTaskWorker {
         }
       }
     } catch (error) {
-      console.error("Error processing LLM tasks:", error);
+      this.logger.error({ error: error instanceof Error ? error.message : "Unknown error" }, "Error processing LLM tasks");
     }
   }
 }

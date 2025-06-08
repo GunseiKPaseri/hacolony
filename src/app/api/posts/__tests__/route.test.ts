@@ -32,6 +32,12 @@ interface MockPostService {
 
 describe("/api/posts", () => {
   let mockPostService: MockPostService;
+  let mockLogger: {
+    info: (message: string, ...args: unknown[]) => void;
+    error: (error: Error, message: string) => void;
+    debug: (message: string, ...args: unknown[]) => void;
+    warn: (message: string, ...args: unknown[]) => void;
+  };
 
   beforeEach(() => {
     mockPostService = {
@@ -39,7 +45,22 @@ describe("/api/posts", () => {
       createPost: vi.fn(),
     };
 
-    vi.mocked(container.resolve).mockReturnValue(mockPostService as unknown as PostService);
+    mockLogger = {
+      info: vi.fn(),
+      error: vi.fn(),
+      debug: vi.fn(),
+      warn: vi.fn(),
+    };
+
+    vi.mocked(container.resolve).mockImplementation((symbol) => {
+      if (symbol === DI.PostService) {
+        return mockPostService as unknown as PostService;
+      }
+      if (symbol === DI.Logger) {
+        return mockLogger;
+      }
+      throw new Error(`Unexpected symbol: ${symbol.toString()}`);
+    });
     vi.spyOn(console, "error").mockImplementation(() => {});
   });
 
@@ -120,7 +141,7 @@ describe("/api/posts", () => {
 
       expect(response.status).toBe(500);
       expect(responseData.message).toBe("投稿の取得中にエラーが発生しました");
-      expect(console.error).toHaveBeenCalledWith("Error fetching posts:", expect.any(Error));
+      expect(mockLogger.error).toHaveBeenCalledWith({ error: expect.any(Error) }, "Error fetching posts");
     });
   });
 
@@ -231,7 +252,7 @@ describe("/api/posts", () => {
 
       expect(response.status).toBe(500);
       expect(responseData.message).toBe("投稿の作成中にエラーが発生しました");
-      expect(console.error).toHaveBeenCalledWith("Error creating post:", expect.any(Error));
+      expect(mockLogger.error).toHaveBeenCalledWith({ error: expect.any(Error) }, "Error creating post");
     });
   });
 });

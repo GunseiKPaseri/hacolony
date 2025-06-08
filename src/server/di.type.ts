@@ -2,6 +2,7 @@ export const DI = {
   Prisma: Symbol.for("Prisma"),
   PrismaClient: Symbol.for("PrismaClient"),
   OllamaClient: Symbol.for("OllamaClient"),
+  Logger: Symbol.for("Logger"),
 
   Transaction: Symbol.for("Transaction"),
 

@@ -1,10 +1,12 @@
 import { inject, injectable } from "tsyringe";
+import type { Logger } from "pino";
 import type { BotTaskQueueRepository, AvatarRepository } from "../repository/interface";
 import { DI } from "../di.type";
 
 @injectable()
 export class BotReplyService {
   constructor(
+    @inject(DI.Logger) private readonly logger: Logger,
     @inject(DI.AvatarRepository) private readonly avatarRepo: AvatarRepository,
     @inject(DI.BotTaskQueueRepository) private readonly botTaskQueueRepo: BotTaskQueueRepository,
   ) {}
@@ -12,7 +14,11 @@ export class BotReplyService {
   async triggerBotReplies(postId: string, authorAvatarId: string): Promise<void> {
     try {
       const botFollowers = await this.avatarRepo.getBotFollowers(authorAvatarId);
-      console.log(`Found ${botFollowers.length} followers for avatar ${authorAvatarId}`);
+      this.logger.info({ 
+        postId, 
+        authorAvatarId, 
+        botFollowersCount: botFollowers.length 
+      }, "Found bot followers for avatar");
 
       for (const followerAvatar of botFollowers) {
         try {
@@ -25,11 +31,19 @@ export class BotReplyService {
             },
           });
         } catch (error) {
-          console.log(`Could not queue bot task for avatar ${followerAvatar.id}:`, error);
+          this.logger.warn({ 
+            avatarId: followerAvatar.id, 
+            postId, 
+            error: error instanceof Error ? error.message : "Unknown error" 
+          }, "Could not queue bot task for avatar");
         }
       }
     } catch (error) {
-      console.error("Error triggering bot replies:", error);
+      this.logger.error({ 
+        postId, 
+        authorAvatarId, 
+        error: error instanceof Error ? error.message : "Unknown error" 
+      }, "Error triggering bot replies");
     }
   }
 
@@ -37,9 +51,11 @@ export class BotReplyService {
     try {
       // This method can be called periodically to generate random posts from bots
       // For now, we'll implement a simple version
-      console.log("Triggering random bot posts...");
+      this.logger.info({}, "Triggering random bot posts");
     } catch (error) {
-      console.error("Error triggering random bot posts:", error);
+      this.logger.error({ 
+        error: error instanceof Error ? error.message : "Unknown error" 
+      }, "Error triggering random bot posts");
     }
   }
 }

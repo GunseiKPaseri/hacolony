@@ -5,6 +5,7 @@ import { authOptions } from "../auth/[...nextauth]/route";
 import { InvalidInputError, NotFoundError } from "@/server/repository/util";
 import { PostService } from "@/server/services/postService";
 import { DI } from "@/server/di.type";
+import type { Logger } from "pino";
 
 export async function GET() {
   try {
@@ -22,7 +23,8 @@ export async function GET() {
       return NextResponse.json({ message: error.message }, { status: 404 });
     }
 
-    console.error("Error fetching posts:", error);
+    const logger = container.resolve<Logger>(DI.Logger);
+    logger.error({ error }, "Error fetching posts");
     return NextResponse.json({ message: "投稿の取得中にエラーが発生しました" }, { status: 500 });
   }
 }
@@ -52,7 +54,8 @@ export async function POST(request: Request) {
     if (error instanceof NotFoundError) {
       return NextResponse.json({ message: error.message }, { status: 404 });
     }
-    console.error("Error creating post:", error);
+    const logger = container.resolve<Logger>(DI.Logger);
+    logger.error({ error }, "Error creating post");
     return NextResponse.json({ message: "投稿の作成中にエラーが発生しました" }, { status: 500 });
   }
 }

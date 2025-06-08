@@ -1,10 +1,12 @@
 import { inject, injectable } from "tsyringe";
+import type { Logger } from "pino";
 import type { PostQueueRepository, PostRepository, BotTaskQueueRepository } from "../repository/interface";
 import { DI } from "../di.type";
 
 @injectable()
 export class PostQueueWorker {
   constructor(
+    @inject(DI.Logger) private readonly logger: Logger,
     @inject(DI.PostQueueRepository) private readonly postQueueRepo: PostQueueRepository,
     @inject(DI.PostRepository) private readonly postRepo: PostRepository,
     @inject(DI.BotTaskQueueRepository) private readonly botTaskQueueRepo: BotTaskQueueRepository,
@@ -54,9 +56,19 @@ export class PostQueueWorker {
           // Mark post as processed
           await this.postQueueRepo.markPostAsProcessed(post.id);
 
-          console.log(`Post ${post.id} successfully created as post ${createdPost.id}`);
+          this.logger.info({ 
+            postQueueId: post.id, 
+            createdPostId: createdPost.id, 
+            avatarId: post.avatarId,
+            botTaskQueueId: post.botTaskQueueId
+          }, "Post successfully created from queue");
         } catch (error) {
-          console.error(`Failed to post scheduled post ${post.id}:`, error);
+          this.logger.error({ 
+            postQueueId: post.id, 
+            avatarId: post.avatarId,
+            botTaskQueueId: post.botTaskQueueId,
+            error: error instanceof Error ? error.message : "Unknown error" 
+          }, "Failed to post scheduled post");
 
           // Update BotTaskQueue with failed status
           if (post.botTaskQueueId) {
@@ -74,7 +86,7 @@ export class PostQueueWorker {
         }
       }
     } catch (error) {
-      console.error("Error processing scheduled posts:", error);
+      this.logger.error({ error: error instanceof Error ? error.message : "Unknown error" }, "Error processing scheduled posts");
     }
   }
 }

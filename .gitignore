@@ -42,3 +42,4 @@ next-env.d.ts
 
 src/server/prisma/db
 src/generated
+logs

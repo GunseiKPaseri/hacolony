@@ -1,4 +1,5 @@
 import { inject, injectable } from "tsyringe";
+import type { Logger } from "pino";
 import type {
   BotTaskQueueRepository,
   LlmTaskQueueRepository,
@@ -10,6 +11,7 @@ import { DI } from "../di.type";
 @injectable()
 export class BotTaskWorker {
   constructor(
+    @inject(DI.Logger) private readonly logger: Logger,
     @inject(DI.BotConfigRepository) private readonly botConfigRepo: BotConfigRepository,
     @inject(DI.BotTaskQueueRepository) private readonly botTaskQueueRepo: BotTaskQueueRepository,
     @inject(DI.LlmTaskQueueRepository) private readonly llmTaskQueueRepo: LlmTaskQueueRepository,
@@ -36,7 +38,7 @@ export class BotTaskWorker {
           // Get bot's prompt from BotConfig
           const botConfig = await this.botConfigRepo.getBotConfigByAvatarId(task.avatarId);
           if (!botConfig) {
-            console.log(`No bot config found for avatar ${task.avatarId}, skipping task ${task.id}`);
+            this.logger.info({ taskId: task.id, avatarId: task.avatarId }, "No bot config found for avatar, skipping task");
             const failedTaskContext: PrismaJson.TaskContext = {
               ...task.task,
               status: "FAILED",
@@ -69,11 +71,11 @@ export class BotTaskWorker {
           await this.botTaskQueueRepo.updateTaskContext(task.id, llmQueuedTaskContext);
 
           // Keep overall status as PROCESSING (will be updated when completely done)
-          console.log(`Bot task ${task.id} queued to LLM with status LLM_QUEUED`);
+          this.logger.info({ taskId: task.id, llmTaskId: llmTask.id, avatarId: task.avatarId }, "Bot task queued to LLM with status LLM_QUEUED");
 
-          console.log(`Bot task ${task.id} processed and sent to LLM queue`);
+          this.logger.info({ taskId: task.id, avatarId: task.avatarId }, "Bot task processed and sent to LLM queue");
         } catch (error) {
-          console.error(`Failed to process bot task ${task.id}:`, error);
+          this.logger.error({ taskId: task.id, avatarId: task.avatarId, error: error instanceof Error ? error.message : "Unknown error" }, "Failed to process bot task");
           const failedTaskContext: PrismaJson.TaskContext = {
             ...task.task,
             status: "FAILED",
@@ -84,7 +86,7 @@ export class BotTaskWorker {
         }
       }
     } catch (error) {
-      console.error("Error processing bot tasks:", error);
+      this.logger.error({ error: error instanceof Error ? error.message : "Unknown error" }, "Error processing bot tasks");
     }
   }
 

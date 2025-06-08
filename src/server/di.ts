@@ -11,6 +11,7 @@ import { LlmTaskWorker } from "./worker/llmTaskWorker";
 import { PostQueueWorker } from "./worker/postQueueWorker";
 import { OllamaClient } from "./client/OllamaClient";
 import { Scheduler } from "./worker/scheduler";
+import { logger } from "../utils/logger";
 
 import { prisma } from "./prisma/prisma";
 import { DI } from "./di.type";
@@ -21,6 +22,7 @@ import { DBTransaction } from "./repository/util";
 container.registerInstance(DI.Prisma, prisma);
 container.registerInstance(DI.PrismaClient, prisma);
 container.registerInstance(DI.OllamaClient, new OllamaClient());
+container.registerInstance(DI.Logger, logger);
 
 container.registerSingleton(DI.Transaction, DBTransaction);
 

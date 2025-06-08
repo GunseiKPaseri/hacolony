@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import type { Logger } from "pino";
 import { PostService, type CreatePostInput } from "../postService";
 import { InvalidInputError } from "../../repository/util";
 import type { PostRepository } from "../../repository/interface";
@@ -9,6 +10,7 @@ describe("PostService", () => {
   let postService: PostService;
   let mockPostRepository: PostRepository;
   let mockBotReplyService: BotReplyService;
+  let mockLogger: Logger;
 
   beforeEach(() => {
     mockPostRepository = {
@@ -23,7 +25,14 @@ describe("PostService", () => {
       triggerRandomBotPosts: vi.fn(),
     } as unknown as BotReplyService;
 
-    postService = new PostService(mockPostRepository, mockBotReplyService);
+    mockLogger = {
+      info: vi.fn(),
+      error: vi.fn(),
+      debug: vi.fn(),
+      warn: vi.fn(),
+    } as unknown as Logger;
+
+    postService = new PostService(mockPostRepository, mockBotReplyService, mockLogger);
 
     // console.logをモック
     vi.spyOn(console, "log").mockImplementation(() => {});
@@ -171,7 +180,14 @@ describe("PostService", () => {
       const result = await postService.createPost(validInput);
 
       expect(result).toBe(mockCreatedPost);
-      expect(console.error).toHaveBeenCalledWith("Background bot reply trigger failed:", expect.any(Error));
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        expect.objectContaining({
+          error: expect.any(Error),
+          postId: "post1",
+          authorUserId: "user1"
+        }),
+        "Background bot reply trigger failed"
+      );
     });
   });
 });

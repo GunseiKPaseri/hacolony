@@ -3,6 +3,7 @@ import type { PostRepository } from "../repository/interface";
 import { DI } from "../di.type";
 import { InvalidInputError } from "../repository/util";
 import { BotReplyService } from "./botReplyService";
+import type { Logger } from "pino";
 
 export interface CreatePostInput {
   content: string;
@@ -15,6 +16,7 @@ export class PostService {
   constructor(
     @inject(DI.PostRepository) private readonly postRepository: PostRepository,
     @inject(DI.BotReplyService) private readonly botReplyService: BotReplyService,
+    @inject(DI.Logger) private readonly logger: Logger,
   ) {}
 
   async getPostsByUserId(userId: string) {
@@ -47,7 +49,7 @@ export class PostService {
       replyToId: replyToId || null,
     });
 
-    console.log("Post created:", post);
+    this.logger.info({ postId: post.id, content: post.content }, "Post created");
 
     // バックグラウンドでボットのリプライをトリガー（レスポンスを遅延させないため）
     this.triggerBotRepliesInBackground(post.id, post.postedById);
@@ -57,9 +59,9 @@ export class PostService {
 
   private triggerBotRepliesInBackground(postId: string, authorUserId: string): void {
     // 非同期でボットリプライをトリガー
-    console.log("Triggering bot replies in background for post:", postId, "by user:", authorUserId);
+    this.logger.debug({ postId, authorUserId }, "Triggering bot replies in background");
     this.botReplyService.triggerBotReplies(postId, authorUserId).catch((error) => {
-      console.error("Background bot reply trigger failed:", error);
+      this.logger.error({ error, postId, authorUserId }, "Background bot reply trigger failed");
     });
   }
 }
