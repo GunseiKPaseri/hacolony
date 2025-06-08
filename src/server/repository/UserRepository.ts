@@ -8,8 +8,8 @@ import { DI } from "../di.type";
 export class UserRepositoryImpl implements UserRepository {
   constructor(@inject(DI.PrismaClient) private prisma: DBClient) {}
 
-  async createUser(props: { name: string; email: string; password: string }) {
-    const { name, email, password } = props;
+  async createUser(props: { name: string; email: string; password: string; selfAvatarId?: string }) {
+    const { name, email, password, selfAvatarId } = props;
 
     const existingUser = await this.isExistUserByEmail(email);
 
@@ -25,6 +25,7 @@ export class UserRepositoryImpl implements UserRepository {
         name,
         email,
         password: hashedPassword,
+        selfAvatarId,
       },
     });
 
@@ -93,6 +94,7 @@ export class UserRepositoryImpl implements UserRepository {
       throw new NotFoundError("ユーザーが見つかりません");
     }
 
+    // selfAvatarIdが存在する場合にtrueを返す
     return !!user.selfAvatarId;
   }
 

@@ -81,7 +81,7 @@ export interface PostQueueRepository {
 }
 
 export interface UserRepository {
-  createUser(props: { name: string; email: string; password: string }): Promise<User>;
+  createUser(props: { name: string; email: string; password: string; selfAvatarId?: string }): Promise<User>;
   getUserByEmail(email: string): Promise<User>;
   getUserById(userId: string): Promise<User | null>;
   getUserByIdWithAvatar(userId: string): Promise<User & { selfAvatar: Avatar | null }>;

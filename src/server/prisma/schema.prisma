@@ -36,9 +36,9 @@ model Avatar {
   imageUrl    String?
   hidden      Boolean
 
-  owner    User   @relation("UserOwnsAvatars", fields: [ownerId], references: [id])
+  owner    User  @relation("UserOwnsAvatars", fields: [ownerId], references: [id])
   ownerId  String
-  selfUser User?  @relation("UserSelfAvatar")
+  selfUser User? @relation("UserSelfAvatar")
 
   followers Follow[] @relation("AvatarFollowers")
   following Follow[] @relation("AvatarFollowing")

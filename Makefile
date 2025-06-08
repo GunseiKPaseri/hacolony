@@ -6,7 +6,7 @@ studio:
 	npx prisma studio --schema ./src/server/prisma/schema.prisma
 generate:
 	npx prisma generate --schema ./src/server/prisma/schema.prisma
-migrate generate:
+migrate: generate
 	npx prisma migrate dev --schema ./src/server/prisma/schema.prisma
 syncdb: generate
 	npx prisma db push --schema ./src/server/prisma/schema.prisma

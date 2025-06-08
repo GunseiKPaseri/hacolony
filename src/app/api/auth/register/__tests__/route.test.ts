@@ -14,13 +14,29 @@ vi.mock("@/server/di", () => ({
 
 describe("/api/auth/register", () => {
   let mockUserService: UserService;
+  let mockLogger: {
+    info: (message: Record<string, unknown>, text: string) => void;
+    error: (error: Record<string, unknown>, text: string) => void;
+    warn: (error: Record<string, unknown>, text: string) => void;
+  };
 
   beforeEach(() => {
     mockUserService = {
       createUser: vi.fn(),
     } as unknown as UserService;
 
-    vi.mocked(container.resolve).mockReturnValue(mockUserService);
+    mockLogger = {
+      info: vi.fn(),
+      error: vi.fn(),
+      warn: vi.fn(),
+    };
+
+    vi.mocked(container.resolve).mockImplementation((symbol) => {
+      if (symbol === DI.UserService) return mockUserService;
+      if (symbol === DI.Logger) return mockLogger;
+      return undefined;
+    });
+    
     vi.spyOn(console, "error").mockImplementation(() => {});
   });
 
@@ -34,6 +50,34 @@ describe("/api/auth/register", () => {
       name: "テストユーザー",
       email: "test@example.com",
       password: "password123",
+      avatar: {
+        name: "テストアバター",
+        description: "テスト用アバター",
+        imageUrl: "https://example.com/avatar.jpg",
+      },
+    };
+
+    vi.mocked(mockUserService.createUser).mockResolvedValue();
+
+    const response = await POST(createRequest(requestBody));
+    const responseData = await response.json();
+
+    expect(container.resolve).toHaveBeenCalledWith(DI.UserService);
+    expect(mockUserService.createUser).toHaveBeenCalledWith(requestBody);
+    expect(response.status).toBe(201);
+    expect(responseData.message).toBe("ユーザー登録が完了しました");
+  });
+
+  it("should register user with avatar info successfully", async () => {
+    const requestBody = {
+      name: "テストユーザー",
+      email: "test@example.com",
+      password: "password123",
+      avatar: {
+        name: "カスタムアバター",
+        description: "カスタム説明",
+        imageUrl: "https://example.com/avatar.jpg",
+      },
     };
 
     vi.mocked(mockUserService.createUser).mockResolvedValue();
@@ -52,6 +96,11 @@ describe("/api/auth/register", () => {
       name: "",
       email: "test@example.com",
       password: "password123",
+      avatar: {
+        name: "テストアバター",
+        description: "テスト用アバター",
+        imageUrl: "https://example.com/avatar.jpg",
+      },
     };
 
     vi.mocked(mockUserService.createUser).mockRejectedValue(new InvalidInputError("名前を入力してください"));
@@ -68,6 +117,11 @@ describe("/api/auth/register", () => {
       name: "テストユーザー",
       email: "test@example.com",
       password: "password123",
+      avatar: {
+        name: "テストアバター",
+        description: "テスト用アバター",
+        imageUrl: "https://example.com/avatar.jpg",
+      },
     };
 
     vi.mocked(mockUserService.createUser).mockRejectedValue(new Error("データベースエラー"));
@@ -77,7 +131,7 @@ describe("/api/auth/register", () => {
 
     expect(response.status).toBe(500);
     expect(responseData.message).toBe("ユーザー登録中にエラーが発生しました");
-    expect(console.error).toHaveBeenCalledWith("Registration error:", expect.any(Error));
+    expect(mockLogger.error).toHaveBeenCalledWith({ error: expect.any(Error) }, "User registration failed with unexpected error");
   });
 
   it("should handle malformed JSON", async () => {
@@ -90,5 +144,6 @@ describe("/api/auth/register", () => {
 
     expect(response.status).toBe(500);
     expect(responseData.message).toBe("ユーザー登録中にエラーが発生しました");
+    expect(mockLogger.error).toHaveBeenCalledWith({ error: expect.any(Error) }, "User registration failed with unexpected error");
   });
 });

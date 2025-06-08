@@ -49,7 +49,7 @@ describe("UserRepositoryImpl", () => {
         password: "hashedPassword123",
         createdAt: new Date(),
         updatedAt: new Date(),
-        selfAvatarId: null,
+        selfAvatarId: "temp-12345",
       };
 
       // メール重複チェックで既存ユーザーなし
@@ -65,6 +65,7 @@ describe("UserRepositoryImpl", () => {
           name: "テストユーザー",
           email: "test@example.com",
           password: "hashedPassword123",
+          selfAvatarId: undefined,
         },
       });
       expect(result).toBe(mockUser);
@@ -78,7 +79,7 @@ describe("UserRepositoryImpl", () => {
         password: "hashedPass",
         createdAt: new Date(),
         updatedAt: new Date(),
-        selfAvatarId: null,
+        selfAvatarId: "temp-12345",
       };
       vi.mocked(mockPrismaClient.user.findUnique).mockResolvedValue(existingUser);
 
@@ -96,7 +97,7 @@ describe("UserRepositoryImpl", () => {
         password: "hashedPass",
         createdAt: new Date(),
         updatedAt: new Date(),
-        selfAvatarId: null,
+        selfAvatarId: "temp-12345",
       };
       vi.mocked(mockPrismaClient.user.findUnique).mockResolvedValue(mockUser);
 
@@ -124,7 +125,7 @@ describe("UserRepositoryImpl", () => {
         password: "hashedPass",
         createdAt: new Date(),
         updatedAt: new Date(),
-        selfAvatarId: null,
+        selfAvatarId: "temp-12345",
       };
       vi.mocked(mockPrismaClient.user.findUnique).mockResolvedValue(mockUser);
 
@@ -191,7 +192,7 @@ describe("UserRepositoryImpl", () => {
         password: "hashedPass",
         createdAt: new Date(),
         updatedAt: new Date(),
-        selfAvatarId: null,
+        selfAvatarId: "temp-12345",
       };
       vi.mocked(mockPrismaClient.user.findUnique).mockResolvedValue(mockUser);
 
