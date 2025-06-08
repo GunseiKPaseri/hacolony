@@ -15,6 +15,7 @@ describe("PostService", () => {
   beforeEach(() => {
     mockPostRepository = {
       getPostsByUserId: vi.fn(),
+      getTimelinePostsByUserId: vi.fn(),
       createPostByUserId: vi.fn(),
       createPostByAvatarId: vi.fn(),
       getPostById: vi.fn(),

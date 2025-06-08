@@ -27,6 +27,14 @@ export class PostService {
     return await this.postRepository.getPostsByUserId(userId);
   }
 
+  async getTimelinePostsByUserId(userId: string) {
+    if (!userId || userId.trim().length === 0) {
+      throw new InvalidInputError("ユーザーIDが必要です");
+    }
+
+    return await this.postRepository.getTimelinePostsByUserId(userId);
+  }
+
   async createPost(input: CreatePostInput) {
     const { content, postedByUserId, replyToId } = input;
 

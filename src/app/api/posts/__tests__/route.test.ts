@@ -27,6 +27,7 @@ vi.mock("next-auth", () => ({
 // モック用のPostService型
 interface MockPostService {
   getPostsByUserId: (userId: string) => Promise<ApiPost[]>;
+  getTimelinePostsByUserId: (userId: string) => Promise<ApiPost[]>;
   createPost: (input: CreatePostInput) => Promise<ApiPost>;
 }
 
@@ -42,6 +43,7 @@ describe("/api/posts", () => {
   beforeEach(() => {
     mockPostService = {
       getPostsByUserId: vi.fn(),
+      getTimelinePostsByUserId: vi.fn(),
       createPost: vi.fn(),
     };
 
@@ -91,13 +93,13 @@ describe("/api/posts", () => {
       ];
 
       vi.mocked(getServerSession).mockResolvedValue(mockSession);
-      vi.mocked(mockPostService.getPostsByUserId).mockResolvedValue(mockPosts);
+      vi.mocked(mockPostService.getTimelinePostsByUserId).mockResolvedValue(mockPosts);
 
       const response = await GET();
       const responseData = await response.json();
 
       expect(container.resolve).toHaveBeenCalledWith(DI.PostService);
-      expect(mockPostService.getPostsByUserId).toHaveBeenCalledWith("user1");
+      expect(mockPostService.getTimelinePostsByUserId).toHaveBeenCalledWith("user1");
       expect(response.status).toBe(200);
       expect(responseData).toEqual(mockPosts);
     });
@@ -110,7 +112,7 @@ describe("/api/posts", () => {
 
       expect(response.status).toBe(401);
       expect(responseData.message).toBe("認証が必要です");
-      expect(mockPostService.getPostsByUserId).not.toHaveBeenCalled();
+      expect(mockPostService.getTimelinePostsByUserId).not.toHaveBeenCalled();
     });
 
     it("should return 404 when user not found", async () => {
@@ -119,7 +121,7 @@ describe("/api/posts", () => {
       };
 
       vi.mocked(getServerSession).mockResolvedValue(mockSession);
-      vi.mocked(mockPostService.getPostsByUserId).mockRejectedValue(new NotFoundError("ユーザーが見つかりません"));
+      vi.mocked(mockPostService.getTimelinePostsByUserId).mockRejectedValue(new NotFoundError("ユーザーが見つかりません"));
 
       const response = await GET();
       const responseData = await response.json();
@@ -134,7 +136,7 @@ describe("/api/posts", () => {
       };
 
       vi.mocked(getServerSession).mockResolvedValue(mockSession);
-      vi.mocked(mockPostService.getPostsByUserId).mockRejectedValue(new Error("データベースエラー"));
+      vi.mocked(mockPostService.getTimelinePostsByUserId).mockRejectedValue(new Error("データベースエラー"));
 
       const response = await GET();
       const responseData = await response.json();

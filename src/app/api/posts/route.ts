@@ -16,7 +16,7 @@ export async function GET() {
     }
 
     const postService = container.resolve<PostService>(DI.PostService);
-    const posts = await postService.getPostsByUserId(session.user.id);
+    const posts = await postService.getTimelinePostsByUserId(session.user.id);
     return NextResponse.json(posts);
   } catch (error) {
     if (error instanceof NotFoundError) {

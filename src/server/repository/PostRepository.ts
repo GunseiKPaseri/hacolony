@@ -107,6 +107,56 @@ export class PostRepositoryImpl implements PostRepository {
     });
   }
 
+  async getTimelinePostsByUserId(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      include: {
+        selfAvatar: true,
+      },
+    });
+
+    if (!user?.selfAvatar || user?.selfAvatarId === null) {
+      throw new NotFoundError("アバターが見つかりません");
+    }
+
+    // 自分がフォローしているアバターのIDを取得
+    const followees = await this.prisma.follow.findMany({
+      where: {
+        followerId: user.selfAvatarId,
+      },
+      select: {
+        followeeId: true,
+      },
+    });
+
+    const followeeIds = followees.map(f => f.followeeId);
+    // 自分のアバターも含める
+    const avatarIds = [user.selfAvatarId, ...followeeIds];
+
+    const posts = await this.prisma.post.findMany({
+      where: {
+        postedById: {
+          in: avatarIds,
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        postedBy: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    return posts;
+  }
+
   async getPostById(postId: string) {
     const post = await this.prisma.post.findUnique({
       where: {
