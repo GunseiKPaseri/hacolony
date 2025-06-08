@@ -100,6 +100,26 @@ async function main() {
         ownerId: users[1].id, // 佐藤花子が所有
       },
     }),
+    // AIボットアバター
+    prisma.avatar.create({
+      data: {
+        name: "肯定君",
+        description: "あなたの意見を肯定するAIです。ポジティブなフィードバックを提供します。",
+        imageUrl: null,
+        hidden: false,
+        ownerId: users[0].id, // 田中太郎が所有
+      },
+    }),
+    // AIボットアバター
+    prisma.avatar.create({
+      data: {
+        name: "hiro",
+        description: "あなたの意見を否定するAIです。無意味な否定を提供します。",
+        imageUrl: null,
+        hidden: false,
+        ownerId: users[0].id, // 田中太郎が所有
+      },
+    }),
   ]);
 
   console.log(`${avatars.length}個のアバターを作成しました`);
@@ -123,79 +143,67 @@ async function main() {
   console.log("セルフアバターを関連付けました");
 
   // ボット設定を作成
-  await Promise.all([
-    prisma.botConfig.create({
-      data: {
+  await prisma.botConfig.createMany({
+    data: [
+      {
         prompt: "あなたは親切で知識豊富なAIアシスタントです。ユーザーの質問に丁寧に答え、建設的な会話を心がけてください。",
         avatarId: avatars[3].id, // AIアシスタント
       },
-    }),
-    prisma.botConfig.create({
-      data: {
+      {
         prompt: "あなたはニュースボットです。最新のテクノロジー、ビジネス、社会的なトピックについて簡潔で有益な情報を提供してください。",
         avatarId: avatars[4].id, // ニュースボット
       },
-    }),
-  ]);
+      {
+        prompt: "あなたは肯定君です。ユーザーの意見を肯定し、ポジティブなフィードバックを提供してください。",
+        avatarId: avatars[5].id, // 肯定君
+      },
+      {
+        prompt: "あなたはhiroyukiです。ユーザーの意見を否定し、小馬鹿にする態度で建設的でない否定をしてください。",
+        avatarId: avatars[6].id, // hiroyuki
+      },
+    ]
+  });
 
   console.log("ボット設定を作成しました");
 
   // フォロー関係を作成
-  await Promise.all([
-    // 太郎 -> 花子
-    prisma.follow.create({
-      data: {
-        followerId: avatars[0].id,
-        followeeId: avatars[1].id,
-      },
-    }),
-    // 太郎 -> AIアシスタント
-    prisma.follow.create({
-      data: {
-        followerId: avatars[0].id,
-        followeeId: avatars[3].id,
-      },
-    }),
-    // 花子 -> 太郎
-    prisma.follow.create({
-      data: {
-        followerId: avatars[1].id,
-        followeeId: avatars[0].id,
-      },
-    }),
-    // 花子 -> 次郎
-    prisma.follow.create({
-      data: {
-        followerId: avatars[1].id,
-        followeeId: avatars[2].id,
-      },
-    }),
-    // 花子 -> ニュースボット
-    prisma.follow.create({
-      data: {
-        followerId: avatars[1].id,
-        followeeId: avatars[4].id,
-      },
-    }),
-    // 次郎 -> 花子
-    prisma.follow.create({
-      data: {
-        followerId: avatars[2].id,
-        followeeId: avatars[1].id,
-      },
-    }),
-    // 次郎 -> AIアシスタント
-    prisma.follow.create({
-      data: {
-        followerId: avatars[2].id,
-        followeeId: avatars[3].id,
-      },
-    }),
-  ]);
+  await prisma.follow.createMany({
+    data: [
+      // 太郎 -> 花子
+      { followerId: avatars[0].id, followeeId: avatars[1].id },
+      // 太郎 -> AIアシスタント
+      { followerId: avatars[0].id, followeeId: avatars[3].id },
+      // 花子 -> 太郎
+      { followerId: avatars[1].id, followeeId: avatars[0].id },
+      // 花子 -> 次郎
+      { followerId: avatars[1].id, followeeId: avatars[2].id },
+      // 花子 -> ニュースボット
+      { followerId: avatars[1].id, followeeId: avatars[4].id },
+      // 次郎 -> 花子
+      { followerId: avatars[2].id, followeeId: avatars[1].id },
+      // AIアシスタント -> 次郎
+      { followerId: avatars[3].id, followeeId: avatars[2].id },
+      // bot <-> 人
+      ...[0, 1, 2].map((i) => ([{
+        followerId: avatars[5].id, // 肯定君
+        followeeId: avatars[i].id, // 太郎、花子、次郎
+      }, {
+        followerId: avatars[i].id, // 太郎、花子、次郎
+        followeeId: avatars[5].id, // 肯定君
+      }, {
+        followerId: avatars[6].id, // hiro
+        followeeId: avatars[i].id, // 太郎、花子、次郎
+      }, {
+        followerId: avatars[i].id, // 太郎、花子、次郎
+        followeeId: avatars[6].id, // hiro
+      }])).flat(),
+    ]
+  });
 
   console.log("フォロー関係を作成しました");
 
   // 投稿を作成
+
   const posts = await Promise.all([
     prisma.post.create({
       data: {
@@ -232,19 +240,12 @@ async function main() {
   console.log(`${posts.length}件の投稿を作成しました`);
 
   // リプライ投稿を作成
-  await Promise.all([
+  const reply = await Promise.all([
     prisma.post.create({
       data: {
         content: "素晴らしい取り組みですね！デザインシステムがあると開発もスムーズになります。",
         postedById: avatars[0].id, // 太郎
         replyToId: posts[1].id, // 花子の投稿への返信
-      },
-    }),
-    prisma.post.create({
-      data: {
-        content: "ありがとうございます！統一感のあるUIを作るのは難しいですが、やりがいがあります。",
-        postedById: avatars[1].id, // 花子
-        replyToId: posts[1].id, // 自分の投稿への返信
       },
     }),
     prisma.post.create({
@@ -255,6 +256,13 @@ async function main() {
       },
     }),
   ]);
+  await prisma.post.create({
+    data: {
+      content: "ありがとうございます！統一感のあるUIを作るのは難しいですが、やりがいがあります。",
+      postedById: avatars[1].id, // 花子
+      replyToId: reply[0].id, // 太郎への返信
+    },
+  });
 
   console.log("リプライ投稿を作成しました");
 
