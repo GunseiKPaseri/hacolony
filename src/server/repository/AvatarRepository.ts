@@ -70,7 +70,7 @@ export class AvatarRepositoryImpl implements AvatarRepository {
         },
         followers: {
           select: {
-            following: {
+            followee: {
               select: {
                 id: true,
                 name: true,
@@ -79,7 +79,7 @@ export class AvatarRepositoryImpl implements AvatarRepository {
             }
           }
         },
-        following: {
+        followees: {
           select: {
             follower: {
               select: {
@@ -103,8 +103,8 @@ export class AvatarRepositoryImpl implements AvatarRepository {
 
     return {
       ...avatar,
-      followers: avatar.followers.map(f => f.following),
-      following: avatar.following.map(f => f.follower)
+      followers: avatar.followees.map(f => f.follower),
+      followees: avatar.followers.map(f => f.followee)
     };
   }
 
@@ -141,7 +141,7 @@ export class AvatarRepositoryImpl implements AvatarRepository {
       where: {
         followers: {
           some: {
-            followingId: avatarId,
+            followeeId: avatarId,
           },
         },
         botConfig: {

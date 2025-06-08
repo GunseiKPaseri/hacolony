@@ -41,7 +41,7 @@ model Avatar {
   selfUser User? @relation("UserSelfAvatar")
 
   followers Follow[] @relation("AvatarFollowers")
-  following Follow[] @relation("AvatarFollowing")
+  followees Follow[] @relation("AvatarFollowees")
 
   posts Post[] @relation("AvatarPosts")
 
@@ -137,12 +137,12 @@ model Post {
 model Follow {
   id String @id @default(cuid())
 
-  follower    Avatar @relation("AvatarFollowers", fields: [followerId], references: [id])
+  follower    Avatar @relation("AvatarFollowees", fields: [followerId], references: [id])
   followerId  String
-  following   Avatar @relation("AvatarFollowing", fields: [followingId], references: [id])
-  followingId String
+  followee    Avatar @relation("AvatarFollowers", fields: [followeeId], references: [id])
+  followeeId  String
 
   createdAt DateTime @default(now())
 
-  @@unique([followerId, followingId])
+  @@unique([followerId, followeeId])
 }

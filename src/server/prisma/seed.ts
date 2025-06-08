@@ -146,49 +146,49 @@ async function main() {
     prisma.follow.create({
       data: {
         followerId: avatars[0].id,
-        followingId: avatars[1].id,
+        followeeId: avatars[1].id,
       },
     }),
     // 太郎 -> AIアシスタント
     prisma.follow.create({
       data: {
         followerId: avatars[0].id,
-        followingId: avatars[3].id,
+        followeeId: avatars[3].id,
       },
     }),
     // 花子 -> 太郎
     prisma.follow.create({
       data: {
         followerId: avatars[1].id,
-        followingId: avatars[0].id,
+        followeeId: avatars[0].id,
       },
     }),
     // 花子 -> 次郎
     prisma.follow.create({
       data: {
         followerId: avatars[1].id,
-        followingId: avatars[2].id,
+        followeeId: avatars[2].id,
       },
     }),
     // 花子 -> ニュースボット
     prisma.follow.create({
       data: {
         followerId: avatars[1].id,
-        followingId: avatars[4].id,
+        followeeId: avatars[4].id,
       },
     }),
     // 次郎 -> 花子
     prisma.follow.create({
       data: {
         followerId: avatars[2].id,
-        followingId: avatars[1].id,
+        followeeId: avatars[1].id,
       },
     }),
     // 次郎 -> AIアシスタント
     prisma.follow.create({
       data: {
         followerId: avatars[2].id,
-        followingId: avatars[3].id,
+        followeeId: avatars[3].id,
       },
     }),
   ]);

@@ -12,7 +12,7 @@ syncdb: generate
 	npx prisma db push --schema ./src/server/prisma/schema.prisma
 syncdb-force:
 	npx prisma db push --force-reset --schema ./src/server/prisma/schema.prisma
-seed: generate
+dev-seed: generate syncdb-force
 	npm run db:seed
 lint:
 	npm run lint

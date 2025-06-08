@@ -7,18 +7,18 @@ import { DI } from "../di.type";
 export class FollowRepositoryImpl implements FollowRepository {
   constructor(@inject(DI.PrismaClient) private prisma: DBClient) {}
 
-  async followAvatar(following: { followerId: string; followingId: string }[]) {
+  async followAvatar(following: { followerId: string; followeeId: string }[]) {
     await this.prisma.follow.createMany({
       data: following,
     });
   }
 
-  async unfollowAvatar(following: { followerId: string; followingId: string }[]) {
+  async unfollowAvatar(following: { followerId: string; followeeId: string }[]) {
     await this.prisma.follow.deleteMany({
       where: {
         OR: following.map((f) => ({
           followerId: f.followerId,
-          followingId: f.followingId,
+          followeeId: f.followeeId,
         })),
       },
     });
@@ -27,7 +27,7 @@ export class FollowRepositoryImpl implements FollowRepository {
   async getFollowers(avatarId: string) {
     const followers = await this.prisma.follow.findMany({
       where: {
-        followingId: avatarId,
+        followeeId: avatarId,
       },
       include: {
         follower: {
@@ -41,13 +41,13 @@ export class FollowRepositoryImpl implements FollowRepository {
     });
     return followers.map((f) => f.follower);
   }
-  async getFollowing(avatarId: string) {
-    const following = await this.prisma.follow.findMany({
+  async getFollowee(avatarId: string) {
+    const followee = await this.prisma.follow.findMany({
       where: {
         followerId: avatarId,
       },
       include: {
-        following: {
+        followee: {
           select: {
             id: true,
             name: true,
@@ -56,16 +56,16 @@ export class FollowRepositoryImpl implements FollowRepository {
         },
       },
     });
-    return following.map((f) => f.following);
+    return followee.map((f) => f.followee);
   }
-  async isFollowing(followerId: string, followingId: string) {
+  async isFollowing(followerId: string, followeeId: string) {
     const follow = await this.prisma.follow.findFirst({
       select: {
         id: true,
       },
       where: {
         followerId,
-        followingId,
+        followeeId,
       },
     });
     return !!follow;

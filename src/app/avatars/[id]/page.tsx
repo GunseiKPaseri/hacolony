@@ -25,7 +25,7 @@ interface Avatar {
     name: string;
     imageUrl: string | null;
   }>;
-  following: Array<{
+  followees: Array<{
     id: string;
     name: string;
     imageUrl: string | null;
@@ -281,7 +281,7 @@ export default function AvatarDetailPage({ params }: { params: Promise<{ id: str
                     <div className="text-sm text-gray-500">フォロワー</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold">{avatar.following.length}</div>
+                    <div className="text-2xl font-bold">{avatar.followees.length}</div>
                     <div className="text-sm text-gray-500">フォロー中</div>
                   </div>
                 </div>
@@ -375,20 +375,20 @@ export default function AvatarDetailPage({ params }: { params: Promise<{ id: str
 
           <div className="rounded-lg border bg-card p-6">
             <h2 className="text-xl font-semibold mb-4">フォロー中</h2>
-            {avatar.following.length > 0 ? (
+            {avatar.followees.length > 0 ? (
               <div className="space-y-2">
-                {avatar.following.map((following) => (
-                  <div key={following.id} className="flex items-center space-x-2">
-                    {following.imageUrl && (
+                {avatar.followees.map((followee) => (
+                  <div key={followee.id} className="flex items-center space-x-2">
+                    {followee.imageUrl && (
                       <Image
-                        src={following.imageUrl}
-                        alt={following.name}
+                        src={followee.imageUrl}
+                        alt={followee.name}
                         width={32}
                         height={32}
                         className="rounded-full object-cover"
                       />
                     )}
-                    <span>{following.name}</span>
+                    <span>{followee.name}</span>
                   </div>
                 ))}
               </div>

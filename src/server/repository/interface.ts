@@ -13,7 +13,7 @@ export interface AvatarRepository {
   getAvatarById(avatarId: string): Promise<Avatar & { 
     posts: Post[];
     followers: Array<{ id: string; name: string; imageUrl: string | null }>;
-    following: Array<{ id: string; name: string; imageUrl: string | null }>;
+    followees: Array<{ id: string; name: string; imageUrl: string | null }>;
     botConfig: { id: string; prompt: string } | null;
   } | null>;
   updateAvatar(avatarId: string, props: {
@@ -47,11 +47,11 @@ export interface BotConfigRepository {
 }
 
 export interface FollowRepository {
-  followAvatar(following: { followerId: string; followingId: string }[]): Promise<void>;
-  unfollowAvatar(following: { followerId: string; followingId: string }[]): Promise<void>;
+  followAvatar(following: { followerId: string; followeeId: string }[]): Promise<void>;
+  unfollowAvatar(following: { followerId: string; followeeId: string }[]): Promise<void>;
   getFollowers(avatarId: string): Promise<{ id: string; name: string; imageUrl: string | null }[]>;
-  getFollowing(avatarId: string): Promise<{ id: string; name: string; imageUrl: string | null }[]>;
-  isFollowing(followerId: string, followingId: string): Promise<boolean>;
+  getFollowee(avatarId: string): Promise<{ id: string; name: string; imageUrl: string | null }[]>;
+  isFollowing(followerId: string, followeeId: string): Promise<boolean>;
 }
 
 export interface PostRepository {

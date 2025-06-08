@@ -146,8 +146,8 @@ export class AvatarService {
 
         // フォロー関係を作成
         await FollowRepository.followAvatar([
-          { followerId: avatar.id, followingId: selfAvatar.id },
-          { followerId: selfAvatar.id, followingId: avatar.id },
+          { followerId: avatar.id, followeeId: selfAvatar.id },
+          { followerId: selfAvatar.id, followeeId: avatar.id },
         ]);
 
         return avatar;
