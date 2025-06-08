@@ -71,9 +71,11 @@ export function PostItem({ post, onReply, isReply = false, depth = 0 }: PostItem
           {/* 返信がある場合、再帰的に表示 */}
           {post.replies && post.replies.length > 0 && (
             <div className="ml-6 border-l space-y-2">
-              {post.replies.map((reply) => (
-                <PostItem key={reply.id} post={reply} onReply={onReply} isReply={true} depth={depth + 1} />
-              ))}
+              {post.replies
+                .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+                .map((reply) => (
+                  <PostItem key={reply.id} post={reply} onReply={onReply} isReply={true} depth={depth + 1} />
+                ))}
             </div>
           )}
         </div>
