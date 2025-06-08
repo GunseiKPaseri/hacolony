@@ -10,6 +10,18 @@ export interface AvatarRepository {
   }): Promise<Avatar>;
   isExistAvatarByName(name: string, userId: string): Promise<boolean>;
   getAvatarsByUserId(userId: string): Promise<Avatar[]>;
+  getAvatarById(avatarId: string): Promise<Avatar & { 
+    posts: Post[];
+    followers: Array<{ id: string; name: string; imageUrl: string | null }>;
+    following: Array<{ id: string; name: string; imageUrl: string | null }>;
+    botConfig: { id: string; prompt: string } | null;
+  } | null>;
+  updateAvatar(avatarId: string, props: {
+    name?: string;
+    description?: string;
+    imageUrl?: string;
+    hidden?: boolean;
+  }): Promise<Avatar>;
   getBotFollowers(avatarId: string): Promise<
     {
       botConfig: {

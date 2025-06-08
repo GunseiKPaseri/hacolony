@@ -61,6 +61,65 @@ export class AvatarRepositoryImpl implements AvatarRepository {
     return avatars;
   }
 
+  async getAvatarById(avatarId: string) {
+    const avatar = await this.prisma.avatar.findUnique({
+      where: { id: avatarId },
+      include: {
+        posts: {
+          orderBy: { createdAt: 'desc' }
+        },
+        followers: {
+          select: {
+            following: {
+              select: {
+                id: true,
+                name: true,
+                imageUrl: true
+              }
+            }
+          }
+        },
+        following: {
+          select: {
+            follower: {
+              select: {
+                id: true,
+                name: true,
+                imageUrl: true
+              }
+            }
+          }
+        },
+        botConfig: {
+          select: {
+            id: true,
+            prompt: true
+          }
+        }
+      }
+    });
+
+    if (!avatar) return null;
+
+    return {
+      ...avatar,
+      followers: avatar.followers.map(f => f.following),
+      following: avatar.following.map(f => f.follower)
+    };
+  }
+
+  async updateAvatar(avatarId: string, props: {
+    name?: string;
+    description?: string;
+    imageUrl?: string;
+    hidden?: boolean;
+  }) {
+    return await this.prisma.avatar.update({
+      where: { id: avatarId },
+      data: props
+    });
+  }
+
   async getBotFollowers(avatarId: string): Promise<
     {
       botConfig: {

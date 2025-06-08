@@ -154,4 +154,41 @@ export class AvatarService {
       },
     );
   }
+
+  async getAvatarById(avatarId: string) {
+    if (!avatarId || avatarId.trim().length === 0) {
+      throw new InvalidInputError("アバターIDが必要です");
+    }
+
+    const avatar = await this.avatarRepository.getAvatarById(avatarId);
+    return avatar; // nullの場合はnullを返す（呼び出し側で判定）
+  }
+
+  async updateAvatar(avatarId: string, props: {
+    name?: string;
+    description?: string;
+    imageUrl?: string;
+    hidden?: boolean;
+  }) {
+    if (!avatarId || avatarId.trim().length === 0) {
+      throw new InvalidInputError("アバターIDが必要です");
+    }
+
+    // 名前の重複チェック（名前が変更される場合）
+    if (props.name) {
+      const existingAvatar = await this.avatarRepository.getAvatarById(avatarId);
+      if (!existingAvatar) {
+        return null; // アバターが見つからない場合はnullを返す
+      }
+      
+      if (props.name !== existingAvatar.name) {
+        const isDuplicate = await this.avatarRepository.isExistAvatarByName(props.name, existingAvatar.ownerId);
+        if (isDuplicate) {
+          throw new InvalidInputError("この名前のアバターは既に存在します");
+        }
+      }
+    }
+
+    return await this.avatarRepository.updateAvatar(avatarId, props);
+  }
 }
