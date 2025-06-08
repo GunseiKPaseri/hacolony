@@ -16,7 +16,7 @@ datasource db {
 }
 
 model User {
-  id       String @id @default(cuid())
+  id       String @id @default(cuid(2))
   name     String
   email    String @unique
   password String
@@ -30,15 +30,15 @@ model User {
 }
 
 model Avatar {
-  id          String  @id @default(cuid())
+  id          String  @id @default(cuid(2))
   name        String
   description String?
   imageUrl    String?
   hidden      Boolean
 
-  owner    User  @relation("UserOwnsAvatars", fields: [ownerId], references: [id])
+  owner    User   @relation("UserOwnsAvatars", fields: [ownerId], references: [id])
   ownerId  String
-  selfUser User? @relation("UserSelfAvatar")
+  selfUser User?  @relation("UserSelfAvatar")
 
   followers Follow[] @relation("AvatarFollowers")
   followees Follow[] @relation("AvatarFollowees")
@@ -55,7 +55,7 @@ model Avatar {
 }
 
 model BotConfig {
-  id     String @id @default(cuid())
+  id     String @id @default(cuid(2))
   prompt String
 
   avatar   Avatar @relation(fields: [avatarId], references: [id])
@@ -70,7 +70,7 @@ enum QueueState {
 }
 
 model BotTaskQueue {
-  id           String         @id @default(cuid())
+  id           String         @id @default(cuid(2))
   /// [TaskContext]
   task         Json
   avatar       Avatar         @relation(fields: [avatarId], references: [id])
@@ -84,7 +84,7 @@ model BotTaskQueue {
 }
 
 model LlmTaskQueue {
-  id             String        @id @default(cuid())
+  id             String        @id @default(cuid(2))
   prompt         String
   /// [LLMContext]
   context        Json?
@@ -99,7 +99,7 @@ model LlmTaskQueue {
 }
 
 model PostQueue {
-  id             String        @id @default(cuid())
+  id             String        @id @default(cuid(2))
   content        String
   avatar         Avatar        @relation(fields: [avatarId], references: [id])
   avatarId       String
@@ -114,7 +114,7 @@ model PostQueue {
 }
 
 model Post {
-  id      String @id @default(cuid())
+  id      String @id @default(cuid(2))
   content String
 
   postedBy   Avatar @relation("AvatarPosts", fields: [postedById], references: [id])
@@ -135,12 +135,12 @@ model Post {
 }
 
 model Follow {
-  id String @id @default(cuid())
+  id String @id @default(cuid(2))
 
-  follower    Avatar @relation("AvatarFollowees", fields: [followerId], references: [id])
-  followerId  String
-  followee    Avatar @relation("AvatarFollowers", fields: [followeeId], references: [id])
-  followeeId  String
+  follower   Avatar @relation("AvatarFollowees", fields: [followerId], references: [id])
+  followerId String
+  followee   Avatar @relation("AvatarFollowers", fields: [followeeId], references: [id])
+  followeeId String
 
   createdAt DateTime @default(now())
 

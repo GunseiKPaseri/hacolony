@@ -17,10 +17,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Database Operations
 
-- `make migrate` - Run Prisma migrations with custom schema path
-- `make generate` - Generate Prisma client
-- `make syncdb` - Push schema changes to database
-- `make studio` - Open Prisma Studio for database management
+- `make db/migrate` - Run Prisma migrations with custom schema path
+- `make db/generate` - Generate Prisma client
+- `make db/sync-force` - Push schema changes to database
+- `make db/studio` - Open Prisma Studio for database management
 - Schema location: `./src/server/prisma/schema.prisma`
 
 ### Makefile Commands

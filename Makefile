@@ -2,17 +2,19 @@
 	./tools/create-env.sh
 dev:
 	npm run dev
-studio:
+db/studio:
 	npx prisma studio --schema ./src/server/prisma/schema.prisma
-generate:
+db/generate:
 	npx prisma generate --schema ./src/server/prisma/schema.prisma
-migrate: generate
+db/migrate: generate
 	npx prisma migrate dev --schema ./src/server/prisma/schema.prisma
-syncdb: generate
+db/sync: generate
 	npx prisma db push --schema ./src/server/prisma/schema.prisma
-syncdb-force:
+db/sync-force:
 	npx prisma db push --force-reset --schema ./src/server/prisma/schema.prisma
-dev-seed: generate syncdb-force
+db/fmt:
+	npm run fmt:prisma
+db/seed: db/fmt db/generate db/sync-force
 	npm run db:seed
 lint:
 	npm run lint
