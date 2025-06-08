@@ -28,7 +28,7 @@ export interface AvatarRepository {
         id: string;
         avatarId: string;
         prompt: string;
-      } | null;
+      };
       name: string;
       id: string;
       description: string | null;
@@ -79,6 +79,7 @@ export interface LlmTaskQueueRepository {
   }): Promise<LlmTaskQueue>;
   getPendingTasks(limit?: number): Promise<LlmTaskQueue[]>;
   updateTaskStatus(id: string, status: string): Promise<void>;
+  updateTaskContext(id: string, context: PrismaJson.LLMContext): Promise<void>;
 }
 
 export interface PostQueueRepository {

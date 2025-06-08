@@ -137,22 +137,22 @@ export class AvatarRepositoryImpl implements AvatarRepository {
       updatedAt: Date;
     }[]
   > {
-    const followers = await this.prisma.avatar.findMany({
+    const botFollowers = await this.prisma.avatar.findMany({
       where: {
-        followers: {
+        followees: {
           some: {
             followeeId: avatarId,
           },
         },
         botConfig: {
           isNot: null,
-        },
+        }
       },
       include: {
         botConfig: true,
       },
     });
-    return followers as {
+    return botFollowers.filter((f)  => f.botConfig !== null) as {
       botConfig: {
         id: string;
         avatarId: string;

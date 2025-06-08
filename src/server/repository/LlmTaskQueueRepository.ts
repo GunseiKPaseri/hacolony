@@ -49,4 +49,14 @@ export class LlmTaskQueueRepositoryImpl implements LlmTaskQueueRepository {
       },
     });
   }
+
+  async updateTaskContext(id: string, context: PrismaJson.LLMContext): Promise<void> {
+    await this.prisma.llmTaskQueue.update({
+      where: { id },
+      data: {
+        context: context,
+        updatedAt: new Date(),
+      },
+    });
+  }
 }

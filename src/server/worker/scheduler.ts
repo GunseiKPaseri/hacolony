@@ -32,7 +32,7 @@ export class Scheduler {
       2 * 60 * 1000,
     );
 
-    // Process due posts every minute
+    // Process due posts every 5 seconds
     setInterval(async () => {
       this.logger.debug("post queue working");
       await this.postQueueWorker.processDuePosts();

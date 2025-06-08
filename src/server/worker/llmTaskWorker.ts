@@ -39,6 +39,15 @@ export class LlmTaskWorker {
           // Generate post content using Ollama
           const response = await this.ollamaClient.generatePost(task.prompt);
 
+          // Update LlmTaskQueue context with the generated response
+          const updatedContext: PrismaJson.LLMContext = {
+            status: "RESPONSED",
+            prompt: task.prompt,
+            response: response,
+            completedAt: new Date().toISOString(),
+          };
+          await this.llmTaskQueueRepo.updateTaskContext(task.id, updatedContext);
+
           // Get replyToId from BotTaskQueue if this is a reply task
           let replyToId: string | undefined;
           if (task.botTaskQueueId) {
@@ -81,6 +90,16 @@ export class LlmTaskWorker {
             botTaskQueueId: task.botTaskQueueId,
             error: error instanceof Error ? error.message : "Unknown error" 
           }, "Failed to process LLM task");
+
+          // Update LlmTaskQueue context with error information
+          const errorContext: PrismaJson.LLMContext = {
+            status: "FAILED",
+            prompt: task.prompt,
+            error: error instanceof Error ? error.message : "Unknown error",
+            failedAt: new Date().toISOString(),
+          };
+          await this.llmTaskQueueRepo.updateTaskContext(task.id, errorContext);
+
           await this.llmTaskQueueRepo.updateTaskStatus(task.id, "FAILED");
 
           // Update BotTaskQueue with failed status

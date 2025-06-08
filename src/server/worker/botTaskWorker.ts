@@ -58,7 +58,8 @@ export class BotTaskWorker {
             prompt: combinedPrompt,
             botTaskQueueId: task.id,
             context: {
-              systemPrompt: combinedPrompt,
+              status: "WAITING",
+              prompt: combinedPrompt,
             },
           });
 

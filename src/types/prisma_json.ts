@@ -34,8 +34,20 @@ declare global {
         };
 
     type LLMContext = {
-      systemPrompt: string; // The prompt to be sent to the LLM
-    };
+      prompt: string; // The prompt to be sent to the LLM
+    } & (
+      {
+        status: "WAITING";
+      } | {
+        status: "RESPONSED";
+        response: string; // The response from the LLM
+        completedAt: string; // ISO string when completed
+      } | {
+        status: "FAILED";
+        error?: string; // Error message if processing failed
+        failedAt?: string; // ISO string when failed
+      }
+    )
   }
 }
 
