@@ -3,6 +3,7 @@ import { UserService, type CreateUserInput, type UserWithAvatar } from "../userS
 import { InvalidInputError } from "../../repository/util";
 import type { UserRepository, AvatarRepository } from "../../repository/interface";
 import type { DBTransaction } from "../../repository/util";
+import type { Repositories } from "../../repository/diRegist";
 import type { Logger } from "pino";
 
 describe("UserService", () => {
@@ -76,7 +77,7 @@ describe("UserService", () => {
           PostQueueRepository: {},
           PostRepository: {},
         };
-        return await callback(mockRepos as any);
+        return await callback(mockRepos as unknown as Repositories);
       });
 
       await userService.createUser(validInput);
@@ -116,7 +117,7 @@ describe("UserService", () => {
           PostQueueRepository: {},
           PostRepository: {},
         };
-        return await callback(mockRepos as any);
+        return await callback(mockRepos as unknown as Repositories);
       });
 
       await userService.createUser(input);
@@ -156,7 +157,7 @@ describe("UserService", () => {
           PostQueueRepository: {},
           PostRepository: {},
         };
-        return await callback(mockRepos as any);
+        return await callback(mockRepos as unknown as Repositories);
       });
 
       await userService.createUser(inputWithDifferentAvatar);

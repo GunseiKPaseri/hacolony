@@ -3,6 +3,7 @@ import { LlmTaskWorker } from "../llmTaskWorker";
 import type { Logger } from "pino";
 import type { LlmTaskQueueRepository, PostQueueRepository, BotTaskQueueRepository } from "../../repository/interface";
 import type { OllamaClient } from "../../client/OllamaClient";
+import type { LlmTaskQueue, PostQueue, BotTaskQueue } from "@/generated/client";
 
 // Mock QueueStatusManager
 vi.mock("../queueStatusManager", () => ({
@@ -26,7 +27,12 @@ describe("LlmTaskWorker", () => {
       error: vi.fn(),
       warn: vi.fn(),
       debug: vi.fn(),
-    } as any;
+      trace: vi.fn(),
+      fatal: vi.fn(),
+      silent: vi.fn(),
+      level: "info" as const,
+      child: vi.fn(() => mockLogger),
+    } as unknown as Logger;
 
     mockLlmTaskQueueRepo = {
       getPendingTasks: vi.fn().mockResolvedValue([]),
@@ -56,7 +62,7 @@ describe("LlmTaskWorker", () => {
 
     mockOllamaClient = {
       generatePost: vi.fn().mockResolvedValue("Generated content"),
-    } as any;
+    } as unknown as OllamaClient;
 
     llmTaskWorker = new LlmTaskWorker(
       mockLogger,
@@ -74,7 +80,7 @@ describe("LlmTaskWorker", () => {
         prompt: "Generate a post",
         avatarId: "avatar-123",
         botTaskQueueId: "bot-task-123",
-      };
+      } as unknown as LlmTaskQueue;
 
       const mockBotTask = {
         id: "bot-task-123",
@@ -83,18 +89,18 @@ describe("LlmTaskWorker", () => {
           status: "LLM_QUEUED",
           llmTaskId: "llm-task-123",
         } as PrismaJson.TaskContext,
-      };
+      } as unknown as BotTaskQueue;
 
       const mockPostQueue = {
         id: "post-queue-123",
-      };
+      } as unknown as PostQueue;
 
       const mockResponse = "Generated post content";
 
-      (mockLlmTaskQueueRepo.getPendingTasks as any).mockResolvedValue([mockLlmTask]);
-      (mockBotTaskQueueRepo.getTaskById as any).mockResolvedValue(mockBotTask);
-      (mockOllamaClient.generatePost as any).mockResolvedValue(mockResponse);
-      (mockPostQueueRepo.schedulePost as any).mockResolvedValue(mockPostQueue);
+      vi.mocked(mockLlmTaskQueueRepo.getPendingTasks).mockResolvedValue([mockLlmTask]);
+      vi.mocked(mockBotTaskQueueRepo.getTaskById).mockResolvedValue(mockBotTask);
+      vi.mocked(mockOllamaClient.generatePost).mockResolvedValue(mockResponse);
+      vi.mocked(mockPostQueueRepo.schedulePost).mockResolvedValue(mockPostQueue);
 
       await llmTaskWorker.processTasks();
 
@@ -151,7 +157,7 @@ describe("LlmTaskWorker", () => {
         prompt: "Reply to post",
         avatarId: "avatar-123",
         botTaskQueueId: "bot-task-123",
-      };
+      } as unknown as LlmTaskQueue;
 
       const mockBotTask = {
         id: "bot-task-123",
@@ -161,18 +167,18 @@ describe("LlmTaskWorker", () => {
           status: "LLM_QUEUED",
           llmTaskId: "llm-task-123",
         } as PrismaJson.TaskContext,
-      };
+      } as unknown as BotTaskQueue;
 
       const mockPostQueue = {
         id: "post-queue-123",
-      };
+      } as unknown as PostQueue;
 
       const mockResponse = "Reply content";
 
-      (mockLlmTaskQueueRepo.getPendingTasks as any).mockResolvedValue([mockLlmTask]);
-      (mockBotTaskQueueRepo.getTaskById as any).mockResolvedValue(mockBotTask);
-      (mockOllamaClient.generatePost as any).mockResolvedValue(mockResponse);
-      (mockPostQueueRepo.schedulePost as any).mockResolvedValue(mockPostQueue);
+      vi.mocked(mockLlmTaskQueueRepo.getPendingTasks).mockResolvedValue([mockLlmTask]);
+      vi.mocked(mockBotTaskQueueRepo.getTaskById).mockResolvedValue(mockBotTask);
+      vi.mocked(mockOllamaClient.generatePost).mockResolvedValue(mockResponse);
+      vi.mocked(mockPostQueueRepo.schedulePost).mockResolvedValue(mockPostQueue);
 
       await llmTaskWorker.processTasks();
 
@@ -205,7 +211,7 @@ describe("LlmTaskWorker", () => {
         prompt: "Generate a post",
         avatarId: "avatar-123",
         botTaskQueueId: "bot-task-123",
-      };
+      } as unknown as LlmTaskQueue;
 
       const mockBotTask = {
         id: "bot-task-123",
@@ -214,13 +220,13 @@ describe("LlmTaskWorker", () => {
           status: "LLM_QUEUED",
           llmTaskId: "llm-task-123",
         } as PrismaJson.TaskContext,
-      };
+      } as unknown as BotTaskQueue;
 
       const error = new Error("LLM generation failed");
 
-      (mockLlmTaskQueueRepo.getPendingTasks as any).mockResolvedValue([mockLlmTask]);
-      (mockBotTaskQueueRepo.getTaskById as any).mockResolvedValue(mockBotTask);
-      (mockOllamaClient.generatePost as any).mockRejectedValue(error);
+      vi.mocked(mockLlmTaskQueueRepo.getPendingTasks).mockResolvedValue([mockLlmTask]);
+      vi.mocked(mockBotTaskQueueRepo.getTaskById).mockResolvedValue(mockBotTask);
+      vi.mocked(mockOllamaClient.generatePost).mockRejectedValue(error);
 
       await llmTaskWorker.processTasks();
 

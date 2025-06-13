@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { PostQueueWorker } from "../postQueueWorker";
 import type { Logger } from "pino";
 import type { PostQueueRepository, PostRepository, BotTaskQueueRepository } from "../../repository/interface";
+import type { PostQueue, Post, BotTaskQueue } from "@/generated/client";
 
 // Mock QueueStatusManager
 vi.mock("../queueStatusManager", () => ({
@@ -24,7 +25,12 @@ describe("PostQueueWorker", () => {
       error: vi.fn(),
       warn: vi.fn(),
       debug: vi.fn(),
-    } as any;
+      trace: vi.fn(),
+      fatal: vi.fn(),
+      silent: vi.fn(),
+      level: "info" as const,
+      child: vi.fn(() => mockLogger),
+    } as unknown as Logger;
 
     mockPostQueueRepo = {
       getDuePosts: vi.fn().mockResolvedValue([]),
@@ -64,7 +70,7 @@ describe("PostQueueWorker", () => {
         scheduledAt: new Date(),
         replyToId: null,
         botTaskQueueId: "bot-task-123",
-      };
+      } as unknown as PostQueue;
 
       const mockBotTask = {
         id: "bot-task-123",
@@ -74,16 +80,16 @@ describe("PostQueueWorker", () => {
           llmTaskId: "llm-task-123",
           postQueueId: "post-queue-123",
         } as PrismaJson.TaskContext,
-      };
+      } as unknown as BotTaskQueue;
 
       const mockCreatedPost = {
         id: "post-123",
         content: "Post content",
-      };
+      } as unknown as Post;
 
-      (mockPostQueueRepo.getDuePosts as any).mockResolvedValue([mockDuePost]);
-      (mockBotTaskQueueRepo.getTaskById as any).mockResolvedValue(mockBotTask);
-      (mockPostRepo.createPostByAvatarId as any).mockResolvedValue(mockCreatedPost);
+      vi.mocked(mockPostQueueRepo.getDuePosts).mockResolvedValue([mockDuePost]);
+      vi.mocked(mockBotTaskQueueRepo.getTaskById).mockResolvedValue(mockBotTask);
+      vi.mocked(mockPostRepo.createPostByAvatarId).mockResolvedValue(mockCreatedPost);
 
       await postQueueWorker.processDuePosts();
 
@@ -136,7 +142,7 @@ describe("PostQueueWorker", () => {
         scheduledAt: new Date(),
         replyToId: "original-post-123",
         botTaskQueueId: "bot-task-123",
-      };
+      } as unknown as PostQueue;
 
       const mockBotTask = {
         id: "bot-task-123",
@@ -147,16 +153,16 @@ describe("PostQueueWorker", () => {
           llmTaskId: "llm-task-123",
           postQueueId: "post-queue-123",
         } as PrismaJson.TaskContext,
-      };
+      } as unknown as BotTaskQueue;
 
       const mockCreatedPost = {
         id: "post-123",
         content: "Reply content",
-      };
+      } as unknown as Post;
 
-      (mockPostQueueRepo.getDuePosts as any).mockResolvedValue([mockDuePost]);
-      (mockBotTaskQueueRepo.getTaskById as any).mockResolvedValue(mockBotTask);
-      (mockPostRepo.createPostByAvatarId as any).mockResolvedValue(mockCreatedPost);
+      vi.mocked(mockPostQueueRepo.getDuePosts).mockResolvedValue([mockDuePost]);
+      vi.mocked(mockBotTaskQueueRepo.getTaskById).mockResolvedValue(mockBotTask);
+      vi.mocked(mockPostRepo.createPostByAvatarId).mockResolvedValue(mockCreatedPost);
 
       await postQueueWorker.processDuePosts();
 
@@ -185,7 +191,7 @@ describe("PostQueueWorker", () => {
         scheduledAt: new Date(),
         replyToId: null,
         botTaskQueueId: "bot-task-123",
-      };
+      } as unknown as PostQueue;
 
       const mockBotTask = {
         id: "bot-task-123",
@@ -195,13 +201,13 @@ describe("PostQueueWorker", () => {
           llmTaskId: "llm-task-123",
           postQueueId: "post-queue-123",
         } as PrismaJson.TaskContext,
-      };
+      } as unknown as BotTaskQueue;
 
       const error = new Error("Post creation failed");
 
-      (mockPostQueueRepo.getDuePosts as any).mockResolvedValue([mockDuePost]);
-      (mockBotTaskQueueRepo.getTaskById as any).mockResolvedValue(mockBotTask);
-      (mockPostRepo.createPostByAvatarId as any).mockRejectedValue(error);
+      vi.mocked(mockPostQueueRepo.getDuePosts).mockResolvedValue([mockDuePost]);
+      vi.mocked(mockBotTaskQueueRepo.getTaskById).mockResolvedValue(mockBotTask);
+      vi.mocked(mockPostRepo.createPostByAvatarId).mockRejectedValue(error);
 
       await postQueueWorker.processDuePosts();
 
@@ -229,15 +235,15 @@ describe("PostQueueWorker", () => {
         scheduledAt: new Date(),
         replyToId: null,
         botTaskQueueId: null,
-      };
+      } as unknown as PostQueue;
 
       const mockCreatedPost = {
         id: "post-123",
         content: "Manual post content",
-      };
+      } as unknown as Post;
 
-      (mockPostQueueRepo.getDuePosts as any).mockResolvedValue([mockDuePost]);
-      (mockPostRepo.createPostByAvatarId as any).mockResolvedValue(mockCreatedPost);
+      vi.mocked(mockPostQueueRepo.getDuePosts).mockResolvedValue([mockDuePost]);
+      vi.mocked(mockPostRepo.createPostByAvatarId).mockResolvedValue(mockCreatedPost);
 
       await postQueueWorker.processDuePosts();
 

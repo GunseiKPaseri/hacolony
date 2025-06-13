@@ -7,6 +7,7 @@ import type {
   BotConfigRepository,
   PostRepository,
 } from "../../repository/interface";
+import type { BotTaskQueue, LlmTaskQueue, Post } from "@/generated/client";
 
 // Mock QueueStatusManager
 vi.mock("../queueStatusManager", () => ({
@@ -29,7 +30,12 @@ describe("BotTaskWorker", () => {
       error: vi.fn(),
       warn: vi.fn(),
       debug: vi.fn(),
-    } as any;
+      trace: vi.fn(),
+      fatal: vi.fn(),
+      silent: vi.fn(),
+      level: "info" as const,
+      child: vi.fn(() => mockLogger),
+    } as unknown as Logger;
 
     mockBotConfigRepo = {
       getBotConfigByAvatarId: vi.fn().mockResolvedValue(null),
@@ -78,7 +84,7 @@ describe("BotTaskWorker", () => {
         task: {
           type: "random_post",
         } as PrismaJson.TaskContext,
-      };
+      } as unknown as BotTaskQueue;
 
       const mockBotConfig = {
         id: "config-123",
@@ -87,11 +93,11 @@ describe("BotTaskWorker", () => {
 
       const mockLlmTask = {
         id: "llm-task-123",
-      };
+      } as unknown as LlmTaskQueue;
 
-      (mockBotTaskQueueRepo.getPendingTasks as any).mockResolvedValue([mockTask]);
-      (mockBotConfigRepo.getBotConfigByAvatarId as any).mockResolvedValue(mockBotConfig);
-      (mockLlmTaskQueueRepo.enqueueTask as any).mockResolvedValue(mockLlmTask);
+      vi.mocked(mockBotTaskQueueRepo.getPendingTasks).mockResolvedValue([mockTask]);
+      vi.mocked(mockBotConfigRepo.getBotConfigByAvatarId).mockResolvedValue(mockBotConfig);
+      vi.mocked(mockLlmTaskQueueRepo.enqueueTask).mockResolvedValue(mockLlmTask);
 
       await botTaskWorker.processTasks();
 
@@ -124,7 +130,7 @@ describe("BotTaskWorker", () => {
           type: "reply_post",
           replyToPostId: "post-123",
         } as PrismaJson.TaskContext,
-      };
+      } as unknown as BotTaskQueue;
 
       const mockBotConfig = {
         id: "config-123",
@@ -134,16 +140,16 @@ describe("BotTaskWorker", () => {
       const mockOriginalPost = {
         id: "post-123",
         content: "Original post content",
-      };
+      } as unknown as Post;
 
       const mockLlmTask = {
         id: "llm-task-123",
-      };
+      } as unknown as LlmTaskQueue;
 
-      (mockBotTaskQueueRepo.getPendingTasks as any).mockResolvedValue([mockTask]);
-      (mockBotConfigRepo.getBotConfigByAvatarId as any).mockResolvedValue(mockBotConfig);
-      (mockPostRepo.getPostById as any).mockResolvedValue(mockOriginalPost);
-      (mockLlmTaskQueueRepo.enqueueTask as any).mockResolvedValue(mockLlmTask);
+      vi.mocked(mockBotTaskQueueRepo.getPendingTasks).mockResolvedValue([mockTask]);
+      vi.mocked(mockBotConfigRepo.getBotConfigByAvatarId).mockResolvedValue(mockBotConfig);
+      vi.mocked(mockPostRepo.getPostById).mockResolvedValue(mockOriginalPost);
+      vi.mocked(mockLlmTaskQueueRepo.enqueueTask).mockResolvedValue(mockLlmTask);
 
       await botTaskWorker.processTasks();
 
@@ -168,10 +174,10 @@ describe("BotTaskWorker", () => {
         task: {
           type: "random_post",
         } as PrismaJson.TaskContext,
-      };
+      } as unknown as BotTaskQueue;
 
-      (mockBotTaskQueueRepo.getPendingTasks as any).mockResolvedValue([mockTask]);
-      (mockBotConfigRepo.getBotConfigByAvatarId as any).mockResolvedValue(null);
+      vi.mocked(mockBotTaskQueueRepo.getPendingTasks).mockResolvedValue([mockTask]);
+      vi.mocked(mockBotConfigRepo.getBotConfigByAvatarId).mockResolvedValue(null);
 
       await botTaskWorker.processTasks();
 
@@ -192,9 +198,9 @@ describe("BotTaskWorker", () => {
           status: "LLM_PROCESSING",
           llmTaskId: "llm-123",
         } as PrismaJson.TaskContext,
-      };
+      } as unknown as BotTaskQueue;
 
-      (mockBotTaskQueueRepo.getPendingTasks as any).mockResolvedValue([mockTask]);
+      vi.mocked(mockBotTaskQueueRepo.getPendingTasks).mockResolvedValue([mockTask]);
 
       await botTaskWorker.processTasks();
 
