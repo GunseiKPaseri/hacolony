@@ -1,9 +1,10 @@
 import { inject, injectable } from "tsyringe";
-import type { UserRepository, AvatarRepository } from "../repository/interface";
+import type { UserRepository } from "../repository/interface";
 import { DI } from "../di.type";
 import { InvalidInputError } from "../repository/util";
 import { DBTransaction } from "../repository/util";
 import type { Logger } from "pino";
+import bcrypt from "bcryptjs";
 
 export interface CreateUserInput {
   name: string;
@@ -39,7 +40,6 @@ export interface UserWithAvatar {
 @injectable()
 export class UserService {
   constructor(
-    @inject(DI.AvatarRepository) private readonly avatarRepository: AvatarRepository,
     @inject(DI.UserRepository) private readonly userRepository: UserRepository,
     @inject(DI.Transaction) private readonly transaction: DBTransaction,
     @inject(DI.Logger) private readonly logger: Logger,
@@ -184,5 +184,67 @@ export class UserService {
 
       this.logger.info({ userId: user.id, avatarId: avatar.id }, "Self avatar linked to existing user");
     });
+  }
+
+  async updateUserProfile(userId: string, updates: { name?: string }) {
+    if (!userId || userId.trim().length === 0) {
+      throw new InvalidInputError("ユーザーIDが必要です");
+    }
+
+    if (updates.name && updates.name.trim().length > 50) {
+      throw new InvalidInputError("ユーザー名は50文字以内で入力してください");
+    }
+
+    const user = await this.userRepository.getUserByIdWithAvatar(userId);
+    if (!user) {
+      throw new InvalidInputError("ユーザーが見つかりません");
+    }
+
+    const updateData: Record<string, string> = {};
+    if (updates.name && updates.name.trim() !== user.name) {
+      updateData.name = updates.name.trim();
+    }
+
+    if (Object.keys(updateData).length === 0) {
+      return user; // 変更がない場合はそのまま返す
+    }
+
+    this.logger.info({ userId, updates: updateData }, "Updating user profile");
+    return await this.userRepository.updateUser(userId, updateData);
+  }
+
+  async updateUserPassword(userId: string, currentPassword: string, newPassword: string) {
+    if (!userId || userId.trim().length === 0) {
+      throw new InvalidInputError("ユーザーIDが必要です");
+    }
+
+    if (!currentPassword) {
+      throw new InvalidInputError("現在のパスワードを入力してください");
+    }
+
+    if (!newPassword) {
+      throw new InvalidInputError("新しいパスワードを入力してください");
+    }
+
+    if (newPassword.length < 6) {
+      throw new InvalidInputError("新しいパスワードは6文字以上である必要があります");
+    }
+
+    const user = await this.userRepository.getUserByIdWithAvatar(userId);
+    if (!user) {
+      throw new InvalidInputError("ユーザーが見つかりません");
+    }
+
+    // 現在のパスワードを検証
+    const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.password);
+    if (!isCurrentPasswordValid) {
+      throw new InvalidInputError("現在のパスワードが正しくありません");
+    }
+
+    // 新しいパスワードをハッシュ化
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+    this.logger.info({ userId }, "Updating user password");
+    await this.userRepository.updateUser(userId, { password: hashedNewPassword });
   }
 }

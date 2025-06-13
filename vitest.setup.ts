@@ -48,3 +48,9 @@ vi.mock("next-auth/next", () => ({
 vi.mock("@/app/api/auth/[...nextauth]/route", () => ({
   authOptions: {},
 }));
+
+// Mock window.scrollTo for JSDOM
+Object.defineProperty(window, "scrollTo", {
+  value: vi.fn(),
+  writable: true,
+});

@@ -36,7 +36,7 @@ export function PostItem({ post, onReply, isReply = false, depth = 0 }: PostItem
       className={cn(
         "group relative",
         depth === 0 && "border-b border-border/40 hover:bg-muted/20 transition-colors",
-        depth > 0 && "ml-6 border-l border-border/40 pl-4"
+        depth > 0 && "ml-6 border-l border-border/40 pl-4",
       )}
     >
       <div className="flex gap-3 p-4">
@@ -50,9 +50,7 @@ export function PostItem({ post, onReply, isReply = false, depth = 0 }: PostItem
           {/* Header */}
           <div className="flex items-center gap-2 mb-2">
             <div className="flex items-center gap-1">
-              <h4 className="font-semibold text-foreground hover:underline cursor-pointer">
-                {post.postedBy.name}
-              </h4>
+              <h4 className="font-semibold text-foreground hover:underline cursor-pointer">{post.postedBy.name}</h4>
               {post.postedBy.isBot && (
                 <div className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400">
                   <Bot className="w-3 h-3 mr-1" />
@@ -75,9 +73,7 @@ export function PostItem({ post, onReply, isReply = false, depth = 0 }: PostItem
           </div>
 
           {/* Post Content */}
-          <div className="text-foreground mb-3 whitespace-pre-wrap break-words">
-            {post.content}
-          </div>
+          <div className="text-foreground mb-3 whitespace-pre-wrap break-words">{post.content}</div>
 
           {/* Actions */}
           <div className="flex items-center justify-between max-w-md">
@@ -86,7 +82,7 @@ export function PostItem({ post, onReply, isReply = false, depth = 0 }: PostItem
               size="sm"
               className={cn(
                 "h-8 px-2 text-muted-foreground hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/20",
-                showReplyForm && "text-blue-600 bg-blue-50 dark:bg-blue-950/20"
+                showReplyForm && "text-blue-600 bg-blue-50 dark:bg-blue-950/20",
               )}
               onClick={() => setShowReplyForm(!showReplyForm)}
             >
@@ -99,7 +95,7 @@ export function PostItem({ post, onReply, isReply = false, depth = 0 }: PostItem
               size="sm"
               className={cn(
                 "h-8 px-2 text-muted-foreground hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-950/20",
-                isReposted && "text-green-600 bg-green-50 dark:bg-green-950/20"
+                isReposted && "text-green-600 bg-green-50 dark:bg-green-950/20",
               )}
               onClick={() => setIsReposted(!isReposted)}
             >
@@ -112,7 +108,7 @@ export function PostItem({ post, onReply, isReply = false, depth = 0 }: PostItem
               size="sm"
               className={cn(
                 "h-8 px-2 text-muted-foreground hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20",
-                isLiked && "text-red-600 bg-red-50 dark:bg-red-950/20"
+                isLiked && "text-red-600 bg-red-50 dark:bg-red-950/20",
               )}
               onClick={() => setIsLiked(!isLiked)}
             >
@@ -163,9 +159,7 @@ export function PostItem({ post, onReply, isReply = false, depth = 0 }: PostItem
                       }}
                     />
                     <div className="flex justify-between items-center mt-2">
-                      <div className="text-sm text-muted-foreground">
-                        {replyContent.length}/280
-                      </div>
+                      <div className="text-sm text-muted-foreground">{replyContent.length}/280</div>
                       <div className="flex gap-2">
                         <Button
                           variant="outline"

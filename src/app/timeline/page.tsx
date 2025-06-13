@@ -59,12 +59,7 @@ export default function TimelinePage() {
       {/* Mobile Header */}
       <div className="sticky top-0 z-50 md:hidden bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border/40">
         <div className="flex items-center justify-between px-4 h-14">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="h-8 w-8 p-0"
-          >
+          <Button variant="ghost" size="sm" onClick={() => setSidebarOpen(!sidebarOpen)} className="h-8 w-8 p-0">
             <Menu className="h-5 w-5" />
           </Button>
           <Link href="/timeline" className="font-bold text-xl">
@@ -79,7 +74,7 @@ export default function TimelinePage() {
         <aside
           className={cn(
             "fixed inset-y-0 left-0 z-40 w-64 bg-background border-r border-border/40 transform transition-transform duration-200 ease-in-out md:sticky md:top-0 md:h-screen md:translate-x-0",
-            sidebarOpen ? "translate-x-0" : "-translate-x-full"
+            sidebarOpen ? "translate-x-0" : "-translate-x-full",
           )}
         >
           <div className="flex flex-col h-full">
@@ -99,7 +94,7 @@ export default function TimelinePage() {
                   asChild
                   className={cn(
                     "w-full justify-start h-12 text-lg",
-                    item.active && "bg-primary text-primary-foreground"
+                    item.active && "bg-primary text-primary-foreground",
                   )}
                 >
                   <Link href={item.href}>
@@ -129,10 +124,7 @@ export default function TimelinePage() {
 
         {/* Overlay for mobile */}
         {sidebarOpen && (
-          <div
-            className="fixed inset-0 z-30 bg-black/50 md:hidden"
-            onClick={() => setSidebarOpen(false)}
-          />
+          <div className="fixed inset-0 z-30 bg-black/50 md:hidden" onClick={() => setSidebarOpen(false)} />
         )}
 
         {/* Main Content */}
@@ -140,7 +132,7 @@ export default function TimelinePage() {
           <div className="max-w-4xl mx-auto border-x border-border/40 min-h-screen">
             {/* Post Form */}
             <PostForm onSubmit={handleSubmit} error={error} />
-            
+
             {/* Timeline */}
             <PostList onReply={handleSubmit} />
           </div>

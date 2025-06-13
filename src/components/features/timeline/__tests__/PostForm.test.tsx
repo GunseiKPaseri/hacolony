@@ -17,8 +17,9 @@ describe("PostForm", () => {
   it("should render form elements correctly", () => {
     render(<PostForm onSubmit={mockOnSubmit} error={null} />);
 
-    expect(screen.getByPlaceholderText("何を考えていますか？")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "投稿" })).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("いまどうしてる？")).toBeInTheDocument();
+    // 投稿ボタンは展開時のみ表示されるため、初期状態では非表示
+    expect(screen.queryByRole("button", { name: "投稿" })).not.toBeInTheDocument();
   });
 
   it("should display error message when error prop is provided", () => {
@@ -39,7 +40,7 @@ describe("PostForm", () => {
     const user = userEvent.setup();
     const { container } = render(<PostForm onSubmit={mockOnSubmit} error={null} />);
 
-    const textarea = container.querySelector('textarea[placeholder="何を考えていますか？"]') as HTMLTextAreaElement;
+    const textarea = container.querySelector('textarea[placeholder="いまどうしてる？"]') as HTMLTextAreaElement;
 
     await user.type(textarea, "テスト投稿内容");
 
@@ -50,10 +51,13 @@ describe("PostForm", () => {
     const user = userEvent.setup();
     render(<PostForm onSubmit={mockOnSubmit} error={null} />);
 
-    const textarea = screen.getByPlaceholderText("何を考えていますか？");
-    const submitButton = screen.getByRole("button", { name: "投稿" });
+    const textarea = screen.getByPlaceholderText("いまどうしてる？");
 
+    // textareaをクリックして展開
+    await user.click(textarea);
     await user.type(textarea, "テスト投稿内容");
+
+    const submitButton = screen.getByRole("button", { name: "投稿" });
     await user.click(submitButton);
 
     expect(mockOnSubmit).toHaveBeenCalledTimes(1);
@@ -64,10 +68,13 @@ describe("PostForm", () => {
     const user = userEvent.setup();
     render(<PostForm onSubmit={mockOnSubmit} error={null} />);
 
-    const textarea = screen.getByPlaceholderText("何を考えていますか？");
-    const submitButton = screen.getByRole("button", { name: "投稿" });
+    const textarea = screen.getByPlaceholderText("いまどうしてる？");
 
+    // textareaをクリックして展開
+    await user.click(textarea);
     await user.type(textarea, "テスト投稿内容");
+
+    const submitButton = screen.getByRole("button", { name: "投稿" });
     await user.click(submitButton);
 
     expect(textarea).toHaveValue("");
@@ -77,8 +84,12 @@ describe("PostForm", () => {
     const user = userEvent.setup();
     render(<PostForm onSubmit={mockOnSubmit} error={null} />);
 
-    const submitButton = screen.getByRole("button", { name: "投稿" });
+    const textarea = screen.getByPlaceholderText("いまどうしてる？");
 
+    // textareaをクリックして展開
+    await user.click(textarea);
+
+    const submitButton = screen.getByRole("button", { name: "投稿" });
     await user.click(submitButton);
 
     expect(mockOnSubmit).not.toHaveBeenCalled();
@@ -88,22 +99,30 @@ describe("PostForm", () => {
     const user = userEvent.setup();
     render(<PostForm onSubmit={mockOnSubmit} error={null} />);
 
-    const textarea = screen.getByPlaceholderText("何を考えていますか？");
-    const submitButton = screen.getByRole("button", { name: "投稿" });
+    const textarea = screen.getByPlaceholderText("いまどうしてる？");
 
+    // textareaをクリックして展開
+    await user.click(textarea);
     await user.type(textarea, "   ");
+
+    const submitButton = screen.getByRole("button", { name: "投稿" });
     await user.click(submitButton);
 
     expect(mockOnSubmit).not.toHaveBeenCalled();
   });
 
   it("should submit form when Enter key is pressed in textarea", async () => {
+    const user = userEvent.setup();
     render(<PostForm onSubmit={mockOnSubmit} error={null} />);
 
-    const textarea = screen.getByPlaceholderText("何を考えていますか？");
+    const textarea = screen.getByPlaceholderText("いまどうしてる？");
 
-    fireEvent.change(textarea, { target: { value: "テスト投稿内容" } });
-    fireEvent.submit(textarea.closest("form")!);
+    // textareaをクリックして展開してから入力
+    await user.click(textarea);
+    await user.type(textarea, "テスト投稿内容");
+
+    // Ctrl+Enterで送信
+    fireEvent.keyDown(textarea, { key: "Enter", ctrlKey: true });
 
     expect(mockOnSubmit).toHaveBeenCalledWith(null, "テスト投稿内容");
   });
@@ -111,10 +130,9 @@ describe("PostForm", () => {
   it("should have correct accessibility attributes", () => {
     render(<PostForm onSubmit={mockOnSubmit} error={null} />);
 
-    const textarea = screen.getByPlaceholderText("何を考えていますか？");
-    const submitButton = screen.getByRole("button", { name: "投稿" });
+    const textarea = screen.getByPlaceholderText("いまどうしてる？");
 
-    expect(textarea).toHaveAttribute("rows", "3");
-    expect(submitButton).toHaveAttribute("type", "submit");
+    // 初期状態では1行
+    expect(textarea).toHaveAttribute("rows", "1");
   });
 });

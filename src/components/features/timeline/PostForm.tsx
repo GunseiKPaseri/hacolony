@@ -19,7 +19,7 @@ export function PostForm({ onSubmit, error }: PostFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!content.trim() || isSubmitting) return;
-    
+
     setIsSubmitting(true);
     try {
       await onSubmit(null, content);
@@ -80,7 +80,7 @@ export function PostForm({ onSubmit, error }: PostFormProps) {
               <textarea
                 className={cn(
                   "w-full resize-none border-none bg-transparent placeholder:text-muted-foreground focus:outline-none text-lg",
-                  !isExpanded && "cursor-pointer"
+                  !isExpanded && "cursor-pointer",
                 )}
                 placeholder="いまどうしてる？"
                 rows={isExpanded ? 4 : 1}
@@ -152,7 +152,7 @@ export function PostForm({ onSubmit, error }: PostFormProps) {
                               className={cn(
                                 "text-sm",
                                 remainingChars < 20 && remainingChars >= 0 && "text-yellow-600",
-                                isOverLimit && "text-red-600"
+                                isOverLimit && "text-red-600",
                               )}
                             >
                               {remainingChars}
@@ -180,7 +180,7 @@ export function PostForm({ onSubmit, error }: PostFormProps) {
                                     "transition-colors",
                                     remainingChars >= 20 && "text-blue-500",
                                     remainingChars < 20 && remainingChars >= 0 && "text-yellow-500",
-                                    isOverLimit && "text-red-500"
+                                    isOverLimit && "text-red-500",
                                   )}
                                 />
                               </svg>
@@ -190,12 +190,7 @@ export function PostForm({ onSubmit, error }: PostFormProps) {
 
                         {/* Action buttons */}
                         <div className="flex gap-2">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={handleCancel}
-                          >
+                          <Button type="button" variant="outline" size="sm" onClick={handleCancel}>
                             キャンセル
                           </Button>
                           <Button

@@ -13,6 +13,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm run check` - Run type checks
 - `npm run fmt` - Format code using Prettier
 - `npm run lint` - Run ESLint, validate Prisma schema
+- `npm run test` - Run unit tests with Vitest
 - `make check` - Run type checks and linting
 
 ### Database Operations
@@ -112,4 +113,5 @@ The application is built around avatars as the primary interaction entities, not
 ## Code style
 
 - Follow TypeScript best practices
+  - Don't use `any` type as much as possible
 - Use ESLint and Prettier for formatting

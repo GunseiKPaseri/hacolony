@@ -125,4 +125,29 @@ export class UserRepositoryImpl implements UserRepository {
 
     return user.selfAvatar;
   }
+
+  async updateUser(userId: string, updates: Record<string, string>) {
+    if (!userId || userId.trim().length === 0) {
+      throw new InvalidInputError("ユーザーIDが必要です");
+    }
+
+    const existingUser = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!existingUser) {
+      throw new NotFoundError("ユーザーが見つかりません");
+    }
+
+    if (Object.keys(updates).length === 0) {
+      return existingUser;
+    }
+
+    const updatedUser = await this.prisma.user.update({
+      where: { id: userId },
+      data: updates,
+    });
+
+    return updatedUser;
+  }
 }

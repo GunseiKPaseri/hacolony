@@ -11,6 +11,12 @@ import type { Post } from "@/generated/client";
 type ApiPost = Omit<Post, "createdAt" | "updatedAt"> & {
   createdAt: string;
   updatedAt: string;
+  postedBy: {
+    id: string;
+    name: string;
+    botConfig?: { id: string; prompt: string } | null;
+    isBot?: boolean;
+  };
 };
 
 // 依存関係をモック
@@ -80,6 +86,11 @@ describe("/api/posts", () => {
           postedById: "user1",
           replyToId: null,
           quotedPostId: null,
+          postedBy: {
+            id: "user1",
+            name: "テストユーザー",
+            botConfig: null,
+          },
         },
         {
           id: "post2",
@@ -89,6 +100,11 @@ describe("/api/posts", () => {
           postedById: "user1",
           replyToId: null,
           quotedPostId: null,
+          postedBy: {
+            id: "user1",
+            name: "テストユーザー",
+            botConfig: null,
+          },
         },
       ];
 
@@ -101,7 +117,17 @@ describe("/api/posts", () => {
       expect(container.resolve).toHaveBeenCalledWith(DI.PostService);
       expect(mockPostService.getTimelinePostsByUserId).toHaveBeenCalledWith("user1");
       expect(response.status).toBe(200);
-      expect(responseData).toEqual(mockPosts);
+
+      // isBotフラグが追加され、botConfigが除去されることを確認
+      const expectedPosts = mockPosts.map((post) => ({
+        ...post,
+        postedBy: {
+          ...post.postedBy,
+          isBot: !!post.postedBy.botConfig,
+          botConfig: undefined,
+        },
+      }));
+      expect(responseData).toEqual(expectedPosts);
     });
 
     it("should return 401 when not authenticated", async () => {
@@ -171,6 +197,11 @@ describe("/api/posts", () => {
         quotedPostId: null,
         createdAt: "2024-01-01T10:00:00.000Z",
         updatedAt: "2024-01-01T10:00:00.000Z",
+        postedBy: {
+          id: "user1",
+          name: "テストユーザー",
+          botConfig: null,
+        },
       };
 
       vi.mocked(getServerSession).mockResolvedValue(mockSession);

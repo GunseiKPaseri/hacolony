@@ -115,4 +115,5 @@ export interface UserRepository {
   hasAvatar(userId: string): Promise<boolean>;
   addSelfAvatar(userId: string, avatarId: string): Promise<void>;
   getSelfAvatar(userId: string): Promise<Avatar | null>;
+  updateUser(userId: string, updates: Record<string, string>): Promise<User>;
 }

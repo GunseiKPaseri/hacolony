@@ -69,14 +69,8 @@ const PostListCore: React.FC<PostListProps> = ({ onReply }) => {
           <div className="flex items-center gap-2">
             <h2 className="text-xl font-bold">タイムライン</h2>
             <div className="flex items-center gap-1 text-sm text-muted-foreground">
-              {isOnline ? (
-                <Wifi className="w-4 h-4 text-green-500" />
-              ) : (
-                <WifiOff className="w-4 h-4 text-red-500" />
-              )}
-              <span className="text-xs">
-                最終更新: {lastRefresh.toLocaleTimeString()}
-              </span>
+              {isOnline ? <Wifi className="w-4 h-4 text-green-500" /> : <WifiOff className="w-4 h-4 text-red-500" />}
+              <span className="text-xs">最終更新: {lastRefresh.toLocaleTimeString()}</span>
             </div>
           </div>
           <Button
@@ -84,10 +78,7 @@ const PostListCore: React.FC<PostListProps> = ({ onReply }) => {
             size="sm"
             onClick={handleManualRefresh}
             disabled={isRefreshing}
-            className={cn(
-              "h-8 w-8 p-0",
-              isRefreshing && "animate-spin"
-            )}
+            className={cn("h-8 w-8 p-0", isRefreshing && "animate-spin")}
           >
             <RefreshCw className="w-4 h-4" />
           </Button>
@@ -105,16 +96,12 @@ const PostListCore: React.FC<PostListProps> = ({ onReply }) => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                transition={{ 
+                transition={{
                   duration: 0.3,
-                  delay: index * 0.05
+                  delay: index * 0.05,
                 }}
               >
-                <PostItem
-                  post={post}
-                  onReply={onReply}
-                  depth={0}
-                />
+                <PostItem post={post} onReply={onReply} depth={0} />
               </motion.div>
             ))
           ) : (
@@ -127,9 +114,7 @@ const PostListCore: React.FC<PostListProps> = ({ onReply }) => {
                 <RefreshCw className="w-8 h-8 text-muted-foreground" />
               </div>
               <h3 className="text-lg font-semibold mb-2">投稿がありません</h3>
-              <p className="text-muted-foreground mb-4">
-                最初の投稿をしてみましょう！
-              </p>
+              <p className="text-muted-foreground mb-4">最初の投稿をしてみましょう！</p>
               <Button onClick={handleManualRefresh} disabled={isRefreshing}>
                 {isRefreshing ? "読み込み中..." : "更新"}
               </Button>
@@ -143,7 +128,7 @@ const PostListCore: React.FC<PostListProps> = ({ onReply }) => {
 
 export function PostList({ onReply }: PostListProps) {
   return (
-    <Suspense 
+    <Suspense
       fallback={
         <div className="space-y-4">
           {/* Loading skeleton */}
