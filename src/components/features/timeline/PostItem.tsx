@@ -2,7 +2,7 @@
 import type { Post } from "@/eintities/post";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageCircle, Repeat2, Heart, Share, MoreHorizontal } from "lucide-react";
+import { MessageCircle, Repeat2, Heart, Share, MoreHorizontal, Bot } from "lucide-react";
 import AvatarIcon from "../avatar/AvatarIcon";
 import IDText from "@/components/ui/IDText";
 import { cn, formatRelativeTime } from "@/lib/utils";
@@ -49,9 +49,17 @@ export function PostItem({ post, onReply, isReply = false, depth = 0 }: PostItem
         <div className="flex-1 min-w-0">
           {/* Header */}
           <div className="flex items-center gap-2 mb-2">
-            <h4 className="font-semibold text-foreground hover:underline cursor-pointer">
-              {post.postedBy.name}
-            </h4>
+            <div className="flex items-center gap-1">
+              <h4 className="font-semibold text-foreground hover:underline cursor-pointer">
+                {post.postedBy.name}
+              </h4>
+              {post.postedBy.isBot && (
+                <div className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400">
+                  <Bot className="w-3 h-3 mr-1" />
+                  Bot
+                </div>
+              )}
+            </div>
             <div className="text-sm text-muted-foreground">
               <IDText id={post.postedBy.id} />
             </div>
@@ -60,7 +68,7 @@ export function PostItem({ post, onReply, isReply = false, depth = 0 }: PostItem
               {formatRelativeTime(post.createdAt)}
             </time>
             {isReply && (
-              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400">
+              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
                 返信
               </span>
             )}

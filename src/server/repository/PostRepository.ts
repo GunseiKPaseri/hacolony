@@ -149,6 +149,11 @@ export class PostRepositoryImpl implements PostRepository {
           select: {
             id: true,
             name: true,
+            botConfig: {
+              select: {
+                id: true,
+              },
+            },
           },
         },
       },

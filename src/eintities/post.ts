@@ -5,6 +5,7 @@ export interface Post {
   postedBy: {
     id: string;
     name: string;
+    isBot?: boolean;
   };
   replyToId: string | null;
   replies: Post[];

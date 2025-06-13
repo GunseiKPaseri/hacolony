@@ -17,7 +17,18 @@ export async function GET() {
 
     const postService = container.resolve<PostService>(DI.PostService);
     const posts = await postService.getTimelinePostsByUserId(session.user.id);
-    return NextResponse.json(posts);
+    
+    // BotConfigの存在をisBotフラグに変換
+    const postsWithBotFlag = posts.map(post => ({
+      ...post,
+      postedBy: {
+        ...post.postedBy,
+        isBot: !!post.postedBy.botConfig,
+        botConfig: undefined, // クライアントには送信しない
+      },
+    }));
+    
+    return NextResponse.json(postsWithBotFlag);
   } catch (error) {
     if (error instanceof NotFoundError) {
       return NextResponse.json({ message: error.message }, { status: 404 });
