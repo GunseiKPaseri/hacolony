@@ -7,10 +7,10 @@ import type { Logger } from "pino";
 
 export async function POST(request: Request) {
   const logger = container.resolve<Logger>(DI.Logger);
-  
+
   try {
     const { name, email, password, avatar } = await request.json();
-    
+
     logger.info({ name, email, avatarName: avatar?.name }, "Starting user registration");
 
     const userService = container.resolve<UserService>(DI.UserService);

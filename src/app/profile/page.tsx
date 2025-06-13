@@ -39,7 +39,6 @@ export default function ProfilePage() {
     }
   };
 
-
   return (
     <div className="container py-6">
       <div className="space-y-6">
@@ -71,7 +70,13 @@ export default function ProfilePage() {
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2">
                     {avatar.imageUrl && (
-                      <Image src={avatar.imageUrl} alt={avatar.name} width={40} height={40} className="rounded-full object-cover" />
+                      <Image
+                        src={avatar.imageUrl}
+                        alt={avatar.name}
+                        width={40}
+                        height={40}
+                        className="rounded-full object-cover"
+                      />
                     )}
                     <div>
                       <div className="font-medium">{avatar.name}</div>

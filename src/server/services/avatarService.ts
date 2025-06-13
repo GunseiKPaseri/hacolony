@@ -164,12 +164,15 @@ export class AvatarService {
     return avatar; // nullの場合はnullを返す（呼び出し側で判定）
   }
 
-  async updateAvatar(avatarId: string, props: {
-    name?: string;
-    description?: string;
-    imageUrl?: string;
-    hidden?: boolean;
-  }) {
+  async updateAvatar(
+    avatarId: string,
+    props: {
+      name?: string;
+      description?: string;
+      imageUrl?: string;
+      hidden?: boolean;
+    },
+  ) {
     if (!avatarId || avatarId.trim().length === 0) {
       throw new InvalidInputError("アバターIDが必要です");
     }
@@ -180,7 +183,7 @@ export class AvatarService {
       if (!existingAvatar) {
         return null; // アバターが見つからない場合はnullを返す
       }
-      
+
       if (props.name !== existingAvatar.name) {
         const isDuplicate = await this.avatarRepository.isExistAvatarByName(props.name, existingAvatar.ownerId);
         if (isDuplicate) {

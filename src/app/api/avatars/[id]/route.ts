@@ -34,7 +34,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     console.error("Error details:", {
       name: (error as Error)?.name,
       message: (error as Error)?.message,
-      stack: (error as Error)?.stack
+      stack: (error as Error)?.stack,
     });
     return NextResponse.json({ message: "アバターの取得中にエラーが発生しました" }, { status: 500 });
   }
@@ -52,7 +52,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     const { id: avatarId } = await params;
 
     const avatarService = container.resolve<AvatarService>(DI.AvatarService);
-    
+
     // アバターの所有者確認
     const avatar = await avatarService.getAvatarById(avatarId);
     if (!avatar || avatar.ownerId !== session.user.id) {
@@ -82,7 +82,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     console.error("Error details:", {
       name: (error as Error)?.name,
       message: (error as Error)?.message,
-      stack: (error as Error)?.stack
+      stack: (error as Error)?.stack,
     });
     return NextResponse.json({ message: "アバターの更新中にエラーが発生しました" }, { status: 500 });
   }

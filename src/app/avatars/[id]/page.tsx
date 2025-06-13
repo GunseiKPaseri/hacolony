@@ -79,16 +79,16 @@ export default function AvatarDetailPage({ params }: { params: Promise<{ id: str
 
   const fetchAvatar = async () => {
     if (!avatarId) return;
-    
+
     try {
       setLoading(true);
       const response = await fetch(`/api/avatars/${avatarId}`);
-      
+
       if (response.status === 404) {
         setError("アバターが見つかりません");
         return;
       }
-      
+
       if (!response.ok) {
         throw new Error("アバターの取得に失敗しました");
       }
@@ -188,10 +188,7 @@ export default function AvatarDetailPage({ params }: { params: Promise<{ id: str
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-2xl font-bold">アバター詳細</h1>
             {isOwner && (
-              <Button
-                onClick={() => setIsEditing(!isEditing)}
-                variant={isEditing ? "outline" : "default"}
-              >
+              <Button onClick={() => setIsEditing(!isEditing)} variant={isEditing ? "outline" : "default"}>
                 {isEditing ? "キャンセル" : "編集"}
               </Button>
             )}
@@ -255,9 +252,7 @@ export default function AvatarDetailPage({ params }: { params: Promise<{ id: str
                     )}
                     <div>
                       <h2 className="text-xl font-semibold">{avatar.name}</h2>
-                      {avatar.description && (
-                        <p className="text-gray-600">{avatar.description}</p>
-                      )}
+                      {avatar.description && <p className="text-gray-600">{avatar.description}</p>}
                     </div>
                   </div>
                   <div className="text-sm text-gray-500">
@@ -295,10 +290,7 @@ export default function AvatarDetailPage({ params }: { params: Promise<{ id: str
           <div className="rounded-lg border bg-card p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold">ボット設定</h2>
-              <Button
-                onClick={() => setIsBotEditing(!isBotEditing)}
-                variant={isBotEditing ? "outline" : "default"}
-              >
+              <Button onClick={() => setIsBotEditing(!isBotEditing)} variant={isBotEditing ? "outline" : "default"}>
                 {isBotEditing ? "キャンセル" : botConfig ? "編集" : "作成"}
               </Button>
             </div>
@@ -336,9 +328,7 @@ export default function AvatarDetailPage({ params }: { params: Promise<{ id: str
               {avatar.posts.map((post) => (
                 <div key={post.id} className="border-b pb-4 last:border-b-0">
                   <p className="mb-2">{post.content}</p>
-                  <p className="text-sm text-gray-500">
-                    {new Date(post.createdAt).toLocaleString()}
-                  </p>
+                  <p className="text-sm text-gray-500">{new Date(post.createdAt).toLocaleString()}</p>
                 </div>
               ))}
             </div>

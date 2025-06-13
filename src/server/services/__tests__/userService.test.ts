@@ -59,7 +59,7 @@ describe("UserService", () => {
     it("should create user with valid input", async () => {
       const mockUser = { id: "user1", name: "テストユーザー", email: "test@example.com" };
       const mockAvatar = { id: "avatar1", name: "テストユーザー" };
-      
+
       vi.mocked(mockTransaction.runWithRepository).mockImplementation(async (callback) => {
         const mockRepos = {
           UserRepository: {
@@ -84,7 +84,7 @@ describe("UserService", () => {
       expect(mockTransaction.runWithRepository).toHaveBeenCalled();
       expect(mockLogger.info).toHaveBeenCalledWith(
         { name: "テストユーザー", email: "test@example.com" },
-        "Creating user with self avatar"
+        "Creating user with self avatar",
       );
     });
 
@@ -123,7 +123,7 @@ describe("UserService", () => {
 
       expect(mockLogger.info).toHaveBeenCalledWith(
         { name: "テストユーザー", email: "test@example.com" },
-        "Creating user with self avatar"
+        "Creating user with self avatar",
       );
     });
 
@@ -136,10 +136,10 @@ describe("UserService", () => {
           imageUrl: "https://example.com/custom-avatar.jpg",
         },
       };
-      
+
       const mockUser = { id: "user1", name: "テストユーザー", email: "test@example.com" };
       const mockAvatar = { id: "avatar1", name: "カスタムアバター" };
-      
+
       vi.mocked(mockTransaction.runWithRepository).mockImplementation(async (callback) => {
         const mockRepos = {
           UserRepository: {
@@ -164,23 +164,23 @@ describe("UserService", () => {
       expect(mockTransaction.runWithRepository).toHaveBeenCalled();
       expect(mockLogger.info).toHaveBeenCalledWith(
         { name: "テストユーザー", email: "test@example.com" },
-        "Creating user with self avatar"
+        "Creating user with self avatar",
       );
     });
 
     it("should throw error when avatar name is empty", async () => {
-      const input = { 
-        ...validInput, 
-        avatar: { name: "", description: "説明", imageUrl: "" }
+      const input = {
+        ...validInput,
+        avatar: { name: "", description: "説明", imageUrl: "" },
       };
       await expect(userService.createUser(input)).rejects.toThrow(InvalidInputError);
     });
 
     it("should throw error when avatar is missing", async () => {
-      const input = { 
+      const input = {
         name: "テストユーザー",
-        email: "test@example.com", 
-        password: "password123"
+        email: "test@example.com",
+        password: "password123",
       } as CreateUserInput;
       await expect(userService.createUser(input)).rejects.toThrow(InvalidInputError);
     });

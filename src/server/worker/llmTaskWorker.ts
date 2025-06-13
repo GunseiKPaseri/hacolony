@@ -22,7 +22,7 @@ export class LlmTaskWorker {
       const processingCount = await this.llmTaskQueueRepo.getProcessingCount();
       const maxConcurrent = 3; // LLMタスクは重いので同時実行数を制限
       const availableSlots = Math.max(0, maxConcurrent - processingCount);
-      
+
       if (availableSlots === 0) {
         this.logger.debug({ processingCount, maxConcurrent }, "All slots occupied, skipping LLM task processing");
         return;
@@ -35,18 +35,23 @@ export class LlmTaskWorker {
         return;
       }
 
-      this.logger.info({ 
-        taskCount: tasks.length, 
-        processingCount, 
-        availableSlots 
-      }, "Processing LLM tasks concurrently");
+      this.logger.info(
+        {
+          taskCount: tasks.length,
+          processingCount,
+          availableSlots,
+        },
+        "Processing LLM tasks concurrently",
+      );
 
       // 並行処理でタスクを実行
-      const taskPromises = tasks.map(task => this.processTask(task));
+      const taskPromises = tasks.map((task) => this.processTask(task));
       await Promise.allSettled(taskPromises);
-
     } catch (error) {
-      this.logger.error({ error: error instanceof Error ? error.message : "Unknown error" }, "Error processing LLM tasks");
+      this.logger.error(
+        { error: error instanceof Error ? error.message : "Unknown error" },
+        "Error processing LLM tasks",
+      );
     }
   }
 
@@ -69,7 +74,7 @@ export class LlmTaskWorker {
         if (botTask) {
           const currentContext = botTask.task as PrismaJson.TaskContext;
           let updatedTaskContext: PrismaJson.TaskContext | null = null;
-          
+
           if (currentContext.type === "random_post") {
             if (currentContext.status === "LLM_QUEUED") {
               updatedTaskContext = {
@@ -78,11 +83,14 @@ export class LlmTaskWorker {
                 llmTaskId: currentContext.llmTaskId,
               };
             } else {
-              this.logger.warn({ 
-                taskId: task.id, 
-                botTaskQueueId: task.botTaskQueueId,
-                currentStatus: currentContext.status 
-              }, "Unexpected bot task status for LLM_PROCESSING");
+              this.logger.warn(
+                {
+                  taskId: task.id,
+                  botTaskQueueId: task.botTaskQueueId,
+                  currentStatus: currentContext.status,
+                },
+                "Unexpected bot task status for LLM_PROCESSING",
+              );
               return;
             }
           } else {
@@ -94,15 +102,18 @@ export class LlmTaskWorker {
                 llmTaskId: currentContext.llmTaskId,
               };
             } else {
-              this.logger.warn({ 
-                taskId: task.id, 
-                botTaskQueueId: task.botTaskQueueId,
-                currentStatus: currentContext.status 
-              }, "Unexpected bot task status for LLM_PROCESSING");
+              this.logger.warn(
+                {
+                  taskId: task.id,
+                  botTaskQueueId: task.botTaskQueueId,
+                  currentStatus: currentContext.status,
+                },
+                "Unexpected bot task status for LLM_PROCESSING",
+              );
               return;
             }
           }
-          
+
           if (updatedTaskContext) {
             await this.botTaskQueueRepo.updateTaskContext(task.botTaskQueueId, updatedTaskContext);
           }
@@ -156,7 +167,7 @@ export class LlmTaskWorker {
         if (botTask) {
           const currentContext = botTask.task as PrismaJson.TaskContext;
           let updatedTaskContext: PrismaJson.TaskContext | null = null;
-          
+
           if (currentContext.type === "random_post") {
             if (currentContext.status === "LLM_PROCESSING") {
               updatedTaskContext = {
@@ -166,11 +177,14 @@ export class LlmTaskWorker {
                 postQueueId: postQueue.id,
               };
             } else {
-              this.logger.warn({ 
-                taskId: task.id, 
-                botTaskQueueId: task.botTaskQueueId,
-                currentStatus: currentContext.status 
-              }, "Unexpected bot task status for POST_QUEUED");
+              this.logger.warn(
+                {
+                  taskId: task.id,
+                  botTaskQueueId: task.botTaskQueueId,
+                  currentStatus: currentContext.status,
+                },
+                "Unexpected bot task status for POST_QUEUED",
+              );
               return;
             }
           } else {
@@ -183,15 +197,18 @@ export class LlmTaskWorker {
                 postQueueId: postQueue.id,
               };
             } else {
-              this.logger.warn({ 
-                taskId: task.id, 
-                botTaskQueueId: task.botTaskQueueId,
-                currentStatus: currentContext.status 
-              }, "Unexpected bot task status for POST_QUEUED");
+              this.logger.warn(
+                {
+                  taskId: task.id,
+                  botTaskQueueId: task.botTaskQueueId,
+                  currentStatus: currentContext.status,
+                },
+                "Unexpected bot task status for POST_QUEUED",
+              );
               return;
             }
           }
-          
+
           if (updatedTaskContext) {
             await this.botTaskQueueRepo.updateTaskContext(task.botTaskQueueId, updatedTaskContext);
           }
@@ -206,14 +223,20 @@ export class LlmTaskWorker {
         await QueueStatusManager.notifyLLMTaskCompleted(this.botTaskQueueRepo, task.botTaskQueueId);
       }
 
-      this.logger.info({ taskId: task.id, avatarId: task.avatarId, postQueueId: postQueue.id }, "LLM task completed successfully");
+      this.logger.info(
+        { taskId: task.id, avatarId: task.avatarId, postQueueId: postQueue.id },
+        "LLM task completed successfully",
+      );
     } catch (error) {
-      this.logger.error({ 
-        taskId: task.id, 
-        avatarId: task.avatarId, 
-        botTaskQueueId: task.botTaskQueueId,
-        error: error instanceof Error ? error.message : "Unknown error" 
-      }, "Failed to process LLM task");
+      this.logger.error(
+        {
+          taskId: task.id,
+          avatarId: task.avatarId,
+          botTaskQueueId: task.botTaskQueueId,
+          error: error instanceof Error ? error.message : "Unknown error",
+        },
+        "Failed to process LLM task",
+      );
 
       // Update LlmTaskQueue context with error information
       const errorContext: PrismaJson.LLMContext = {
@@ -232,7 +255,7 @@ export class LlmTaskWorker {
         if (botTask) {
           const currentContext = botTask.task as PrismaJson.TaskContext;
           let failedTaskContext: PrismaJson.TaskContext;
-          
+
           if (currentContext.type === "random_post") {
             failedTaskContext = {
               type: "random_post",

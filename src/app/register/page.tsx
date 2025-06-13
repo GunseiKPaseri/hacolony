@@ -21,7 +21,7 @@ export default function RegisterPage() {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
-    
+
     const formData = new FormData(e.currentTarget);
     const name = formData.get("name") as string;
     const email = formData.get("email") as string;
@@ -85,7 +85,7 @@ export default function RegisterPage() {
               <div className="text-sm text-red-700">{error}</div>
             </div>
           )}
-          
+
           <div className="space-y-4">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
@@ -102,7 +102,7 @@ export default function RegisterPage() {
                 placeholder="山田太郎"
               />
             </div>
-            
+
             <div>
               <label htmlFor="email-address" className="block text-sm font-medium text-gray-700 mb-1">
                 メールアドレス
@@ -117,7 +117,7 @@ export default function RegisterPage() {
                 placeholder="yamada@example.com"
               />
             </div>
-            
+
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
                 パスワード
@@ -134,19 +134,11 @@ export default function RegisterPage() {
               />
             </div>
 
-            <AvatarForm
-              defaultName={userName}
-              onAvatarChange={setAvatarData}
-              className="pt-2"
-            />
+            <AvatarForm defaultName={userName} onAvatarChange={setAvatarData} className="pt-2" />
           </div>
 
           <div>
-            <Button 
-              type="submit" 
-              className="w-full" 
-              disabled={isLoading}
-            >
+            <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? "登録中..." : "登録"}
             </Button>
           </div>

@@ -131,7 +131,7 @@ export class PostRepositoryImpl implements PostRepository {
       },
     });
 
-    const followeeIds = followees.map(f => f.followeeId);
+    const followeeIds = followees.map((f) => f.followeeId);
     // 自分のアバターも含める
     const avatarIds = [user.selfAvatarId, ...followeeIds];
 

@@ -20,7 +20,7 @@ export class PostQueueWorker {
       const processingCount = await this.postQueueRepo.getProcessingCount();
       const maxConcurrent = 8; // 投稿処理は比較的軽いので多めに設定
       const availableSlots = Math.max(0, maxConcurrent - processingCount);
-      
+
       if (availableSlots === 0) {
         this.logger.debug({ processingCount, maxConcurrent }, "All slots occupied, skipping post queue processing");
         return;
@@ -33,18 +33,23 @@ export class PostQueueWorker {
         return;
       }
 
-      this.logger.info({ 
-        postCount: duePosts.length, 
-        processingCount, 
-        availableSlots 
-      }, "Processing post queue concurrently");
+      this.logger.info(
+        {
+          postCount: duePosts.length,
+          processingCount,
+          availableSlots,
+        },
+        "Processing post queue concurrently",
+      );
 
       // 並行処理でタスクを実行
-      const postPromises = duePosts.map(post => this.processPost(post));
+      const postPromises = duePosts.map((post) => this.processPost(post));
       await Promise.allSettled(postPromises);
-
     } catch (error) {
-      this.logger.error({ error: error instanceof Error ? error.message : "Unknown error" }, "Error processing scheduled posts");
+      this.logger.error(
+        { error: error instanceof Error ? error.message : "Unknown error" },
+        "Error processing scheduled posts",
+      );
     }
   }
 
@@ -65,7 +70,7 @@ export class PostQueueWorker {
         if (botTask) {
           const currentContext = botTask.task as PrismaJson.TaskContext;
           let updatedTaskContext: PrismaJson.TaskContext | null = null;
-          
+
           if (currentContext.type === "random_post") {
             // POST_QUEUEDステータスでllmTaskIdとpostQueueIdが必要
             if (currentContext.status === "POST_QUEUED") {
@@ -77,11 +82,14 @@ export class PostQueueWorker {
               };
             } else {
               // 想定外のステータスの場合はエラーとして処理
-              this.logger.warn({ 
-                postQueueId: post.id, 
-                botTaskQueueId: post.botTaskQueueId,
-                currentStatus: currentContext.status 
-              }, "Unexpected bot task status for POST_PROCESSING");
+              this.logger.warn(
+                {
+                  postQueueId: post.id,
+                  botTaskQueueId: post.botTaskQueueId,
+                  currentStatus: currentContext.status,
+                },
+                "Unexpected bot task status for POST_PROCESSING",
+              );
               return;
             }
           } else {
@@ -95,15 +103,18 @@ export class PostQueueWorker {
                 postQueueId: currentContext.postQueueId,
               };
             } else {
-              this.logger.warn({ 
-                postQueueId: post.id, 
-                botTaskQueueId: post.botTaskQueueId,
-                currentStatus: currentContext.status 
-              }, "Unexpected bot task status for POST_PROCESSING");
+              this.logger.warn(
+                {
+                  postQueueId: post.id,
+                  botTaskQueueId: post.botTaskQueueId,
+                  currentStatus: currentContext.status,
+                },
+                "Unexpected bot task status for POST_PROCESSING",
+              );
               return;
             }
           }
-          
+
           if (updatedTaskContext) {
             await this.botTaskQueueRepo.updateTaskContext(post.botTaskQueueId, updatedTaskContext);
             await this.botTaskQueueRepo.updateTaskStatus(post.botTaskQueueId, "PROCESSING");
@@ -134,7 +145,7 @@ export class PostQueueWorker {
         if (botTask) {
           const currentContext = botTask.task as PrismaJson.TaskContext;
           let updatedTaskContext: PrismaJson.TaskContext | null = null;
-          
+
           if (currentContext.type === "random_post") {
             if (currentContext.status === "POST_PROCESSING") {
               updatedTaskContext = {
@@ -145,11 +156,14 @@ export class PostQueueWorker {
                 postId: createdPost.id,
               };
             } else {
-              this.logger.warn({ 
-                postQueueId: post.id, 
-                botTaskQueueId: post.botTaskQueueId,
-                currentStatus: currentContext.status 
-              }, "Unexpected bot task status for POST_COMPLETED");
+              this.logger.warn(
+                {
+                  postQueueId: post.id,
+                  botTaskQueueId: post.botTaskQueueId,
+                  currentStatus: currentContext.status,
+                },
+                "Unexpected bot task status for POST_COMPLETED",
+              );
               return;
             }
           } else {
@@ -163,15 +177,18 @@ export class PostQueueWorker {
                 postId: createdPost.id,
               };
             } else {
-              this.logger.warn({ 
-                postQueueId: post.id, 
-                botTaskQueueId: post.botTaskQueueId,
-                currentStatus: currentContext.status 
-              }, "Unexpected bot task status for POST_COMPLETED");
+              this.logger.warn(
+                {
+                  postQueueId: post.id,
+                  botTaskQueueId: post.botTaskQueueId,
+                  currentStatus: currentContext.status,
+                },
+                "Unexpected bot task status for POST_COMPLETED",
+              );
               return;
             }
           }
-          
+
           if (updatedTaskContext) {
             await this.botTaskQueueRepo.updateTaskContext(post.botTaskQueueId, updatedTaskContext);
             await QueueStatusManager.notifyPostQueueCompleted(this.botTaskQueueRepo, post.botTaskQueueId);
@@ -182,19 +199,25 @@ export class PostQueueWorker {
       // Mark post as processed
       await this.postQueueRepo.markPostAsProcessed(post.id);
 
-      this.logger.info({ 
-        postQueueId: post.id, 
-        createdPostId: createdPost.id, 
-        avatarId: post.avatarId,
-        botTaskQueueId: post.botTaskQueueId
-      }, "Post successfully created from queue");
+      this.logger.info(
+        {
+          postQueueId: post.id,
+          createdPostId: createdPost.id,
+          avatarId: post.avatarId,
+          botTaskQueueId: post.botTaskQueueId,
+        },
+        "Post successfully created from queue",
+      );
     } catch (error) {
-      this.logger.error({ 
-        postQueueId: post.id, 
-        avatarId: post.avatarId,
-        botTaskQueueId: post.botTaskQueueId,
-        error: error instanceof Error ? error.message : "Unknown error" 
-      }, "Failed to post scheduled post");
+      this.logger.error(
+        {
+          postQueueId: post.id,
+          avatarId: post.avatarId,
+          botTaskQueueId: post.botTaskQueueId,
+          error: error instanceof Error ? error.message : "Unknown error",
+        },
+        "Failed to post scheduled post",
+      );
 
       // Update PostQueue context to FAILED
       const failedContext: PrismaJson.PostQueueContext = {
@@ -212,7 +235,7 @@ export class PostQueueWorker {
         if (botTask) {
           const currentContext = botTask.task as PrismaJson.TaskContext;
           let failedTaskContext: PrismaJson.TaskContext;
-          
+
           if (currentContext.type === "random_post") {
             // 現在のコンテキストから利用可能な情報を取得
             failedTaskContext = {

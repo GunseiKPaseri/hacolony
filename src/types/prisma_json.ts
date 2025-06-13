@@ -4,7 +4,7 @@ declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace PrismaJson {
     // Queue全体で使用される外部処理待機状態とタスクキュー待ち状態
-    type QueueProcessingState = 
+    type QueueProcessingState =
       | "QUEUE_WAITING" // タスクキュー待ち状態
       | "EXTERNAL_WAITING" // 外部処理待機状態
       | "PROCESSING" // 処理中
@@ -128,7 +128,7 @@ declare global {
         };
 
     // LlmTaskQueue用のコンテキスト - statusで型を厳密に分離
-    type LLMContext = 
+    type LLMContext =
       | {
           status: "WAITING";
           prompt: string;
@@ -152,7 +152,7 @@ declare global {
         };
 
     // PostQueue用のコンテキスト - statusで型を厳密に分離
-    type PostQueueContext = 
+    type PostQueueContext =
       | {
           status: "SCHEDULED";
           content: string;

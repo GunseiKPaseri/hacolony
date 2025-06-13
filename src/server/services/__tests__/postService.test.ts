@@ -185,9 +185,9 @@ describe("PostService", () => {
         expect.objectContaining({
           error: expect.any(Error),
           postId: "post1",
-          authorUserId: "user1"
+          authorUserId: "user1",
         }),
-        "Background bot reply trigger failed"
+        "Background bot reply trigger failed",
       );
     });
   });

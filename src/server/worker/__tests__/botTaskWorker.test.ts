@@ -1,21 +1,21 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { BotTaskWorker } from '../botTaskWorker';
-import type { Logger } from 'pino';
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { BotTaskWorker } from "../botTaskWorker";
+import type { Logger } from "pino";
 import type {
   BotTaskQueueRepository,
   LlmTaskQueueRepository,
   BotConfigRepository,
   PostRepository,
-} from '../../repository/interface';
+} from "../../repository/interface";
 
 // Mock QueueStatusManager
-vi.mock('../queueStatusManager', () => ({
+vi.mock("../queueStatusManager", () => ({
   QueueStatusManager: {
     setBotTaskWaitingForLLM: vi.fn(),
   },
 }));
 
-describe('BotTaskWorker', () => {
+describe("BotTaskWorker", () => {
   let botTaskWorker: BotTaskWorker;
   let mockLogger: Logger;
   let mockBotConfigRepo: BotConfigRepository;
@@ -66,27 +66,27 @@ describe('BotTaskWorker', () => {
       mockBotConfigRepo,
       mockBotTaskQueueRepo,
       mockLlmTaskQueueRepo,
-      mockPostRepo
+      mockPostRepo,
     );
   });
 
-  describe('processTasks', () => {
-    it('should process random_post task correctly', async () => {
+  describe("processTasks", () => {
+    it("should process random_post task correctly", async () => {
       const mockTask = {
-        id: 'task-123',
-        avatarId: 'avatar-123',
+        id: "task-123",
+        avatarId: "avatar-123",
         task: {
-          type: 'random_post',
+          type: "random_post",
         } as PrismaJson.TaskContext,
       };
 
       const mockBotConfig = {
-        id: 'config-123',
-        prompt: 'Test bot prompt',
+        id: "config-123",
+        prompt: "Test bot prompt",
       };
 
       const mockLlmTask = {
-        id: 'llm-task-123',
+        id: "llm-task-123",
       };
 
       (mockBotTaskQueueRepo.getPendingTasks as any).mockResolvedValue([mockTask]);
@@ -95,49 +95,49 @@ describe('BotTaskWorker', () => {
 
       await botTaskWorker.processTasks();
 
-      expect(mockBotTaskQueueRepo.updateTaskStatus).toHaveBeenCalledWith('task-123', 'PROCESSING');
-      expect(mockBotTaskQueueRepo.updateTaskContext).toHaveBeenCalledWith('task-123', {
-        type: 'random_post',
-        status: 'CREATED',
+      expect(mockBotTaskQueueRepo.updateTaskStatus).toHaveBeenCalledWith("task-123", "PROCESSING");
+      expect(mockBotTaskQueueRepo.updateTaskContext).toHaveBeenCalledWith("task-123", {
+        type: "random_post",
+        status: "CREATED",
       });
       expect(mockLlmTaskQueueRepo.enqueueTask).toHaveBeenCalledWith({
-        avatarId: 'avatar-123',
-        prompt: expect.stringContaining('Test bot prompt'),
-        botTaskQueueId: 'task-123',
+        avatarId: "avatar-123",
+        prompt: expect.stringContaining("Test bot prompt"),
+        botTaskQueueId: "task-123",
         context: {
-          status: 'WAITING',
-          prompt: expect.stringContaining('Test bot prompt'),
+          status: "WAITING",
+          prompt: expect.stringContaining("Test bot prompt"),
         },
       });
-      expect(mockBotTaskQueueRepo.updateTaskContext).toHaveBeenCalledWith('task-123', {
-        type: 'random_post',
-        status: 'LLM_QUEUED',
-        llmTaskId: 'llm-task-123',
+      expect(mockBotTaskQueueRepo.updateTaskContext).toHaveBeenCalledWith("task-123", {
+        type: "random_post",
+        status: "LLM_QUEUED",
+        llmTaskId: "llm-task-123",
       });
     });
 
-    it('should process reply_post task correctly', async () => {
+    it("should process reply_post task correctly", async () => {
       const mockTask = {
-        id: 'task-123',
-        avatarId: 'avatar-123',
+        id: "task-123",
+        avatarId: "avatar-123",
         task: {
-          type: 'reply_post',
-          replyToPostId: 'post-123',
+          type: "reply_post",
+          replyToPostId: "post-123",
         } as PrismaJson.TaskContext,
       };
 
       const mockBotConfig = {
-        id: 'config-123',
-        prompt: 'Test bot prompt',
+        id: "config-123",
+        prompt: "Test bot prompt",
       };
 
       const mockOriginalPost = {
-        id: 'post-123',
-        content: 'Original post content',
+        id: "post-123",
+        content: "Original post content",
       };
 
       const mockLlmTask = {
-        id: 'llm-task-123',
+        id: "llm-task-123",
       };
 
       (mockBotTaskQueueRepo.getPendingTasks as any).mockResolvedValue([mockTask]);
@@ -147,26 +147,26 @@ describe('BotTaskWorker', () => {
 
       await botTaskWorker.processTasks();
 
-      expect(mockBotTaskQueueRepo.updateTaskContext).toHaveBeenCalledWith('task-123', {
-        type: 'reply_post',
-        replyToPostId: 'post-123',
-        status: 'CREATED',
+      expect(mockBotTaskQueueRepo.updateTaskContext).toHaveBeenCalledWith("task-123", {
+        type: "reply_post",
+        replyToPostId: "post-123",
+        status: "CREATED",
       });
-      expect(mockPostRepo.getPostById).toHaveBeenCalledWith('post-123');
-      expect(mockBotTaskQueueRepo.updateTaskContext).toHaveBeenCalledWith('task-123', {
-        type: 'reply_post',
-        replyToPostId: 'post-123',
-        status: 'LLM_QUEUED',
-        llmTaskId: 'llm-task-123',
+      expect(mockPostRepo.getPostById).toHaveBeenCalledWith("post-123");
+      expect(mockBotTaskQueueRepo.updateTaskContext).toHaveBeenCalledWith("task-123", {
+        type: "reply_post",
+        replyToPostId: "post-123",
+        status: "LLM_QUEUED",
+        llmTaskId: "llm-task-123",
       });
     });
 
-    it('should handle missing bot config gracefully', async () => {
+    it("should handle missing bot config gracefully", async () => {
       const mockTask = {
-        id: 'task-123',
-        avatarId: 'avatar-123',
+        id: "task-123",
+        avatarId: "avatar-123",
         task: {
-          type: 'random_post',
+          type: "random_post",
         } as PrismaJson.TaskContext,
       };
 
@@ -175,22 +175,22 @@ describe('BotTaskWorker', () => {
 
       await botTaskWorker.processTasks();
 
-      expect(mockBotTaskQueueRepo.updateTaskContext).toHaveBeenCalledWith('task-123', {
-        type: 'random_post',
-        status: 'FAILED',
-        error: 'No bot config found',
+      expect(mockBotTaskQueueRepo.updateTaskContext).toHaveBeenCalledWith("task-123", {
+        type: "random_post",
+        status: "FAILED",
+        error: "No bot config found",
       });
-      expect(mockBotTaskQueueRepo.updateTaskStatus).toHaveBeenCalledWith('task-123', 'FAILED');
+      expect(mockBotTaskQueueRepo.updateTaskStatus).toHaveBeenCalledWith("task-123", "FAILED");
     });
 
-    it('should skip tasks that are in external waiting state', async () => {
+    it("should skip tasks that are in external waiting state", async () => {
       const mockTask = {
-        id: 'task-123',
-        avatarId: 'avatar-123',
+        id: "task-123",
+        avatarId: "avatar-123",
         task: {
-          type: 'random_post',
-          status: 'LLM_PROCESSING',
-          llmTaskId: 'llm-123',
+          type: "random_post",
+          status: "LLM_PROCESSING",
+          llmTaskId: "llm-123",
         } as PrismaJson.TaskContext,
       };
 

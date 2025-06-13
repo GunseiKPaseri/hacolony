@@ -36,7 +36,7 @@ describe("/api/auth/register", () => {
       if (symbol === DI.Logger) return mockLogger;
       return undefined;
     });
-    
+
     vi.spyOn(console, "error").mockImplementation(() => {});
   });
 
@@ -131,7 +131,10 @@ describe("/api/auth/register", () => {
 
     expect(response.status).toBe(500);
     expect(responseData.message).toBe("ユーザー登録中にエラーが発生しました");
-    expect(mockLogger.error).toHaveBeenCalledWith({ error: expect.any(Error) }, "User registration failed with unexpected error");
+    expect(mockLogger.error).toHaveBeenCalledWith(
+      { error: expect.any(Error) },
+      "User registration failed with unexpected error",
+    );
   });
 
   it("should handle malformed JSON", async () => {
@@ -144,6 +147,9 @@ describe("/api/auth/register", () => {
 
     expect(response.status).toBe(500);
     expect(responseData.message).toBe("ユーザー登録中にエラーが発生しました");
-    expect(mockLogger.error).toHaveBeenCalledWith({ error: expect.any(Error) }, "User registration failed with unexpected error");
+    expect(mockLogger.error).toHaveBeenCalledWith(
+      { error: expect.any(Error) },
+      "User registration failed with unexpected error",
+    );
   });
 });

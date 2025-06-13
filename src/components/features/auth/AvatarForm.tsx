@@ -43,10 +43,8 @@ export function AvatarForm({ defaultName = "", onAvatarChange, className = "" }:
   return (
     <div className={`space-y-4 ${className}`}>
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-3">
-          アバター設定
-        </label>
-        
+        <label className="block text-sm font-medium text-gray-700 mb-3">アバター設定</label>
+
         <div className="space-y-3 rounded-lg border border-gray-200 p-4 bg-gray-50">
           <div>
             <label htmlFor="avatar-name" className="block text-sm font-medium text-gray-700 mb-1">

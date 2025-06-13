@@ -29,9 +29,10 @@ export default function CreateAvatarPage() {
     const prompt = formData.get("prompt");
 
     const endpoint = avatarType === "ai" ? "/api/avatar/ai" : "/api/avatar/self";
-    const body = avatarType === "ai" 
-      ? { name, description, imageUrl, prompt, userId: session?.user?.id }
-      : { name, description, imageUrl, userId: session?.user?.id };
+    const body =
+      avatarType === "ai"
+        ? { name, description, imageUrl, prompt, userId: session?.user?.id }
+        : { name, description, imageUrl, userId: session?.user?.id };
 
     const response = await fetch(endpoint, {
       method: "POST",
@@ -49,7 +50,7 @@ export default function CreateAvatarPage() {
   return (
     <div className="max-w-md mx-auto mt-10">
       <h1 className="text-2xl font-bold mb-6">アバターを作成</h1>
-      
+
       {/* アバタータイプ選択 */}
       <div className="mb-6">
         <label className="block text-sm font-medium mb-3">アバタータイプ</label>
@@ -88,7 +89,7 @@ export default function CreateAvatarPage() {
           <label className="block text-sm font-medium mb-1">説明</label>
           <textarea name="description" className="w-full p-2 border rounded"></textarea>
         </div>
-        
+
         {/* AIアバター選択時のみプロンプトフィールドを表示 */}
         {avatarType === "ai" && (
           <div>
@@ -102,7 +103,7 @@ export default function CreateAvatarPage() {
             ></textarea>
           </div>
         )}
-        
+
         <div>
           <label className="block text-sm font-medium mb-1">画像URL</label>
           <input type="text" name="imageUrl" className="w-full p-2 border rounded" />

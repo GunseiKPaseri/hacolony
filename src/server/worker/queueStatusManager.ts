@@ -5,14 +5,10 @@ import type { BotTaskQueueRepository } from "../repository/interface";
  * 外部処理待機状態とタスクキュー待ち状態を管理
  */
 export class QueueStatusManager {
-  
   /**
    * LLMタスクが完了したときにBotTaskQueueのstatusをQUEUE_WAITINGに変更
    */
-  static async notifyLLMTaskCompleted(
-    botTaskQueueRepo: BotTaskQueueRepository,
-    botTaskQueueId: string
-  ): Promise<void> {
+  static async notifyLLMTaskCompleted(botTaskQueueRepo: BotTaskQueueRepository, botTaskQueueId: string): Promise<void> {
     // BotTaskQueueのステータスをPENDINGに戻す（タスクキュー待ち状態）
     await botTaskQueueRepo.updateTaskStatus(botTaskQueueId, "PENDING");
   }
@@ -20,10 +16,7 @@ export class QueueStatusManager {
   /**
    * LLMタスクが失敗したときにBotTaskQueueのstatusをFAILEDに変更
    */
-  static async notifyLLMTaskFailed(
-    botTaskQueueRepo: BotTaskQueueRepository,
-    botTaskQueueId: string
-  ): Promise<void> {
+  static async notifyLLMTaskFailed(botTaskQueueRepo: BotTaskQueueRepository, botTaskQueueId: string): Promise<void> {
     await botTaskQueueRepo.updateTaskStatus(botTaskQueueId, "FAILED");
   }
 
@@ -32,7 +25,7 @@ export class QueueStatusManager {
    */
   static async notifyPostQueueCompleted(
     botTaskQueueRepo: BotTaskQueueRepository,
-    botTaskQueueId: string
+    botTaskQueueId: string,
   ): Promise<void> {
     await botTaskQueueRepo.updateTaskStatus(botTaskQueueId, "COMPLETED");
   }
@@ -40,10 +33,7 @@ export class QueueStatusManager {
   /**
    * PostQueueタスクが失敗したときにBotTaskQueueのstatusをFAILEDに変更
    */
-  static async notifyPostQueueFailed(
-    botTaskQueueRepo: BotTaskQueueRepository,
-    botTaskQueueId: string
-  ): Promise<void> {
+  static async notifyPostQueueFailed(botTaskQueueRepo: BotTaskQueueRepository, botTaskQueueId: string): Promise<void> {
     await botTaskQueueRepo.updateTaskStatus(botTaskQueueId, "FAILED");
   }
 
@@ -52,7 +42,7 @@ export class QueueStatusManager {
    */
   static async setBotTaskWaitingForLLM(
     _botTaskQueueRepo: BotTaskQueueRepository,
-    _botTaskQueueId: string
+    _botTaskQueueId: string,
   ): Promise<void> {
     // 外部処理待機状態としてPROCESSINGのまま維持
     // コンテキストで詳細な状態を管理
@@ -63,7 +53,7 @@ export class QueueStatusManager {
    */
   static async setBotTaskWaitingForPost(
     _botTaskQueueRepo: BotTaskQueueRepository,
-    _botTaskQueueId: string
+    _botTaskQueueId: string,
   ): Promise<void> {
     // 外部処理待機状態としてPROCESSINGのまま維持
     // コンテキストで詳細な状態を管理

@@ -26,7 +26,7 @@ export class BotTaskWorker {
       const processingCount = await this.botTaskQueueRepo.getProcessingCount();
       const maxConcurrent = 5; // 最大同時処理数
       const availableSlots = Math.max(0, maxConcurrent - processingCount);
-      
+
       if (availableSlots === 0) {
         this.logger.debug({ processingCount, maxConcurrent }, "All slots occupied, skipping bot task processing");
         return;
@@ -39,18 +39,23 @@ export class BotTaskWorker {
         return;
       }
 
-      this.logger.info({ 
-        taskCount: tasks.length, 
-        processingCount, 
-        availableSlots 
-      }, "Processing bot tasks concurrently");
+      this.logger.info(
+        {
+          taskCount: tasks.length,
+          processingCount,
+          availableSlots,
+        },
+        "Processing bot tasks concurrently",
+      );
 
       // 並行処理でタスクを実行
-      const taskPromises = tasks.map(task => this.processTask(task));
+      const taskPromises = tasks.map((task) => this.processTask(task));
       await Promise.allSettled(taskPromises);
-
     } catch (error) {
-      this.logger.error({ error: error instanceof Error ? error.message : "Unknown error" }, "Error processing bot tasks");
+      this.logger.error(
+        { error: error instanceof Error ? error.message : "Unknown error" },
+        "Error processing bot tasks",
+      );
     }
   }
 
@@ -58,12 +63,10 @@ export class BotTaskWorker {
     try {
       // 現在のコンテキストを確認
       const currentContext = task.task as PrismaJson.TaskContext;
-      
+
       // タスクキュー待ち状態のみ処理
       // 未設定、CREATED、POST_QUEUEDの場合に処理を継続
-      if (currentContext.status && 
-          currentContext.status !== "CREATED" && 
-          currentContext.status !== "POST_QUEUED") {
+      if (currentContext.status && currentContext.status !== "CREATED" && currentContext.status !== "POST_QUEUED") {
         return; // 外部処理待機状態のタスクはスキップ
       }
 
@@ -75,7 +78,7 @@ export class BotTaskWorker {
         return;
       }
 
-      // Mark task as processing (overall queue status)  
+      // Mark task as processing (overall queue status)
       await this.botTaskQueueRepo.updateTaskStatus(task.id, "PROCESSING");
 
       // Update TaskContext to CREATED status if not set
@@ -152,10 +155,15 @@ export class BotTaskWorker {
 
       // Set overall status to EXTERNAL_WAITING (waiting for LLM processing)
       await QueueStatusManager.setBotTaskWaitingForLLM(this.botTaskQueueRepo, task.id);
-      this.logger.info({ taskId: task.id, llmTaskId: llmTask.id, avatarId: task.avatarId }, "Bot task queued to LLM with status LLM_QUEUED");
-
+      this.logger.info(
+        { taskId: task.id, llmTaskId: llmTask.id, avatarId: task.avatarId },
+        "Bot task queued to LLM with status LLM_QUEUED",
+      );
     } catch (error) {
-      this.logger.error({ taskId: task.id, avatarId: task.avatarId, error: error instanceof Error ? error.message : "Unknown error" }, "Failed to process bot task");
+      this.logger.error(
+        { taskId: task.id, avatarId: task.avatarId, error: error instanceof Error ? error.message : "Unknown error" },
+        "Failed to process bot task",
+      );
       const currentContext = task.task as PrismaJson.TaskContext;
       let failedTaskContext: PrismaJson.TaskContext;
       if (currentContext.type === "random_post") {

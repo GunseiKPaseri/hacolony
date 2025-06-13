@@ -146,11 +146,13 @@ async function main() {
   await prisma.botConfig.createMany({
     data: [
       {
-        prompt: "あなたは親切で知識豊富なAIアシスタントです。ユーザーの質問に丁寧に答え、建設的な会話を心がけてください。",
+        prompt:
+          "あなたは親切で知識豊富なAIアシスタントです。ユーザーの質問に丁寧に答え、建設的な会話を心がけてください。",
         avatarId: avatars[3].id, // AIアシスタント
       },
       {
-        prompt: "あなたはニュースボットです。最新のテクノロジー、ビジネス、社会的なトピックについて簡潔で有益な情報を提供してください。",
+        prompt:
+          "あなたはニュースボットです。最新のテクノロジー、ビジネス、社会的なトピックについて簡潔で有益な情報を提供してください。",
         avatarId: avatars[4].id, // ニュースボット
       },
       {
@@ -161,7 +163,7 @@ async function main() {
         prompt: "あなたはhiroyukiです。ユーザーの意見を否定し、小馬鹿にする態度で建設的でない否定をしてください。",
         avatarId: avatars[6].id, // hiroyuki
       },
-    ]
+    ],
   });
 
   console.log("ボット設定を作成しました");
@@ -184,20 +186,27 @@ async function main() {
       // AIアシスタント -> 次郎
       { followerId: avatars[3].id, followeeId: avatars[2].id },
       // bot <-> 人
-      ...[0, 1, 2].map((i) => ([{
-        followerId: avatars[5].id, // 肯定君
-        followeeId: avatars[i].id, // 太郎、花子、次郎
-      }, {
-        followerId: avatars[i].id, // 太郎、花子、次郎
-        followeeId: avatars[5].id, // 肯定君
-      }, {
-        followerId: avatars[6].id, // hiro
-        followeeId: avatars[i].id, // 太郎、花子、次郎
-      }, {
-        followerId: avatars[i].id, // 太郎、花子、次郎
-        followeeId: avatars[6].id, // hiro
-      }])).flat(),
-    ]
+      ...[0, 1, 2]
+        .map((i) => [
+          {
+            followerId: avatars[5].id, // 肯定君
+            followeeId: avatars[i].id, // 太郎、花子、次郎
+          },
+          {
+            followerId: avatars[i].id, // 太郎、花子、次郎
+            followeeId: avatars[5].id, // 肯定君
+          },
+          {
+            followerId: avatars[6].id, // hiro
+            followeeId: avatars[i].id, // 太郎、花子、次郎
+          },
+          {
+            followerId: avatars[i].id, // 太郎、花子、次郎
+            followeeId: avatars[6].id, // hiro
+          },
+        ])
+        .flat(),
+    ],
   });
 
   console.log("フォロー関係を作成しました");

@@ -11,7 +11,7 @@ import type { Logger } from "pino";
 export async function GET() {
   const logger = container.resolve<Logger>(DI.Logger);
   let session;
-  
+
   try {
     session = await getServerSession(authOptions);
 
@@ -20,12 +20,12 @@ export async function GET() {
     }
 
     const userService = container.resolve<UserService>(DI.UserService);
-    
+
     // SelfAvatarが存在しない場合は自動作成
     await userService.ensureSelfAvatar(session.user.id);
-    
+
     const selfAvatar = await userService.getSelfAvatar(session.user.id);
-    
+
     logger.debug({ userId: session.user.id, avatarId: selfAvatar?.id }, "Self avatar fetched successfully");
     return NextResponse.json(selfAvatar);
   } catch (error) {
@@ -41,7 +41,7 @@ export async function GET() {
 export async function POST(request: Request) {
   const logger = container.resolve<Logger>(DI.Logger);
   let session;
-  
+
   try {
     session = await getServerSession(authOptions);
 
@@ -50,7 +50,7 @@ export async function POST(request: Request) {
     }
 
     const { name, description, imageUrl } = await request.json();
-    
+
     logger.info({ userId: session.user.id, name }, "Creating self avatar");
 
     const avatarService = container.resolve<AvatarService>(DI.AvatarService);

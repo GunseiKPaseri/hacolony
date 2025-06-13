@@ -121,7 +121,9 @@ describe("/api/posts", () => {
       };
 
       vi.mocked(getServerSession).mockResolvedValue(mockSession);
-      vi.mocked(mockPostService.getTimelinePostsByUserId).mockRejectedValue(new NotFoundError("ユーザーが見つかりません"));
+      vi.mocked(mockPostService.getTimelinePostsByUserId).mockRejectedValue(
+        new NotFoundError("ユーザーが見つかりません"),
+      );
 
       const response = await GET();
       const responseData = await response.json();

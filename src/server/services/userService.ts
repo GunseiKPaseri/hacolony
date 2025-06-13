@@ -141,7 +141,10 @@ export class UserService {
     return user.selfAvatar;
   }
 
-  async ensureSelfAvatar(userId: string, avatarInfo?: { name?: string; description?: string; imageUrl?: string }): Promise<void> {
+  async ensureSelfAvatar(
+    userId: string,
+    avatarInfo?: { name?: string; description?: string; imageUrl?: string },
+  ): Promise<void> {
     if (!userId || userId.trim().length === 0) {
       throw new InvalidInputError("ユーザーIDが必要です");
     }

@@ -14,11 +14,14 @@ export class BotReplyService {
   async triggerBotReplies(postId: string, authorAvatarId: string): Promise<void> {
     try {
       const botFollowers = await this.avatarRepo.getBotFollowers(authorAvatarId);
-      this.logger.info({ 
-        postId, 
-        authorAvatarId, 
-        botFollowersCount: botFollowers.length 
-      }, "Found bot followers for avatar");
+      this.logger.info(
+        {
+          postId,
+          authorAvatarId,
+          botFollowersCount: botFollowers.length,
+        },
+        "Found bot followers for avatar",
+      );
 
       for (const followerAvatar of botFollowers) {
         try {
@@ -32,19 +35,25 @@ export class BotReplyService {
             },
           });
         } catch (error) {
-          this.logger.warn({ 
-            avatarId: followerAvatar.id, 
-            postId, 
-            error: error instanceof Error ? error.message : "Unknown error" 
-          }, "Could not queue bot task for avatar");
+          this.logger.warn(
+            {
+              avatarId: followerAvatar.id,
+              postId,
+              error: error instanceof Error ? error.message : "Unknown error",
+            },
+            "Could not queue bot task for avatar",
+          );
         }
       }
     } catch (error) {
-      this.logger.error({ 
-        postId, 
-        authorAvatarId, 
-        error: error instanceof Error ? error.message : "Unknown error" 
-      }, "Error triggering bot replies");
+      this.logger.error(
+        {
+          postId,
+          authorAvatarId,
+          error: error instanceof Error ? error.message : "Unknown error",
+        },
+        "Error triggering bot replies",
+      );
     }
   }
 
@@ -54,9 +63,12 @@ export class BotReplyService {
       // For now, we'll implement a simple version
       this.logger.info({}, "Triggering random bot posts");
     } catch (error) {
-      this.logger.error({ 
-        error: error instanceof Error ? error.message : "Unknown error" 
-      }, "Error triggering random bot posts");
+      this.logger.error(
+        {
+          error: error instanceof Error ? error.message : "Unknown error",
+        },
+        "Error triggering random bot posts",
+      );
     }
   }
 }

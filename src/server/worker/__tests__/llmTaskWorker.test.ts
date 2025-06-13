@@ -1,22 +1,18 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { LlmTaskWorker } from '../llmTaskWorker';
-import type { Logger } from 'pino';
-import type {
-  LlmTaskQueueRepository,
-  PostQueueRepository,
-  BotTaskQueueRepository,
-} from '../../repository/interface';
-import type { OllamaClient } from '../../client/OllamaClient';
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { LlmTaskWorker } from "../llmTaskWorker";
+import type { Logger } from "pino";
+import type { LlmTaskQueueRepository, PostQueueRepository, BotTaskQueueRepository } from "../../repository/interface";
+import type { OllamaClient } from "../../client/OllamaClient";
 
 // Mock QueueStatusManager
-vi.mock('../queueStatusManager', () => ({
+vi.mock("../queueStatusManager", () => ({
   QueueStatusManager: {
     notifyLLMTaskCompleted: vi.fn(),
     notifyLLMTaskFailed: vi.fn(),
   },
 }));
 
-describe('LlmTaskWorker', () => {
+describe("LlmTaskWorker", () => {
   let llmTaskWorker: LlmTaskWorker;
   let mockLogger: Logger;
   let mockLlmTaskQueueRepo: LlmTaskQueueRepository;
@@ -59,7 +55,7 @@ describe('LlmTaskWorker', () => {
     };
 
     mockOllamaClient = {
-      generatePost: vi.fn().mockResolvedValue('Generated content'),
+      generatePost: vi.fn().mockResolvedValue("Generated content"),
     } as any;
 
     llmTaskWorker = new LlmTaskWorker(
@@ -67,33 +63,33 @@ describe('LlmTaskWorker', () => {
       mockLlmTaskQueueRepo,
       mockPostQueueRepo,
       mockBotTaskQueueRepo,
-      mockOllamaClient
+      mockOllamaClient,
     );
   });
 
-  describe('processTasks', () => {
-    it('should process LLM task and create post queue correctly', async () => {
+  describe("processTasks", () => {
+    it("should process LLM task and create post queue correctly", async () => {
       const mockLlmTask = {
-        id: 'llm-task-123',
-        prompt: 'Generate a post',
-        avatarId: 'avatar-123',
-        botTaskQueueId: 'bot-task-123',
+        id: "llm-task-123",
+        prompt: "Generate a post",
+        avatarId: "avatar-123",
+        botTaskQueueId: "bot-task-123",
       };
 
       const mockBotTask = {
-        id: 'bot-task-123',
+        id: "bot-task-123",
         task: {
-          type: 'random_post',
-          status: 'LLM_QUEUED',
-          llmTaskId: 'llm-task-123',
+          type: "random_post",
+          status: "LLM_QUEUED",
+          llmTaskId: "llm-task-123",
         } as PrismaJson.TaskContext,
       };
 
       const mockPostQueue = {
-        id: 'post-queue-123',
+        id: "post-queue-123",
       };
 
-      const mockResponse = 'Generated post content';
+      const mockResponse = "Generated post content";
 
       (mockLlmTaskQueueRepo.getPendingTasks as any).mockResolvedValue([mockLlmTask]);
       (mockBotTaskQueueRepo.getTaskById as any).mockResolvedValue(mockBotTask);
@@ -102,76 +98,76 @@ describe('LlmTaskWorker', () => {
 
       await llmTaskWorker.processTasks();
 
-      expect(mockLlmTaskQueueRepo.updateTaskStatus).toHaveBeenCalledWith('llm-task-123', 'PROCESSING');
-      expect(mockLlmTaskQueueRepo.updateTaskContext).toHaveBeenCalledWith('llm-task-123', {
-        status: 'PROCESSING',
-        prompt: 'Generate a post',
+      expect(mockLlmTaskQueueRepo.updateTaskStatus).toHaveBeenCalledWith("llm-task-123", "PROCESSING");
+      expect(mockLlmTaskQueueRepo.updateTaskContext).toHaveBeenCalledWith("llm-task-123", {
+        status: "PROCESSING",
+        prompt: "Generate a post",
         startedAt: expect.any(String),
       });
 
       // First call: LLM_PROCESSING
-      expect(mockBotTaskQueueRepo.updateTaskContext).toHaveBeenNthCalledWith(1, 'bot-task-123', {
-        type: 'random_post',
-        status: 'LLM_PROCESSING',
-        llmTaskId: 'llm-task-123',
+      expect(mockBotTaskQueueRepo.updateTaskContext).toHaveBeenNthCalledWith(1, "bot-task-123", {
+        type: "random_post",
+        status: "LLM_PROCESSING",
+        llmTaskId: "llm-task-123",
       });
 
-      expect(mockOllamaClient.generatePost).toHaveBeenCalledWith('Generate a post');
+      expect(mockOllamaClient.generatePost).toHaveBeenCalledWith("Generate a post");
 
-      expect(mockLlmTaskQueueRepo.updateTaskContext).toHaveBeenCalledWith('llm-task-123', {
-        status: 'RESPONSED',
-        prompt: 'Generate a post',
+      expect(mockLlmTaskQueueRepo.updateTaskContext).toHaveBeenCalledWith("llm-task-123", {
+        status: "RESPONSED",
+        prompt: "Generate a post",
         response: mockResponse,
         completedAt: expect.any(String),
       });
 
       expect(mockPostQueueRepo.schedulePost).toHaveBeenCalledWith({
-        avatarId: 'avatar-123',
+        avatarId: "avatar-123",
         content: mockResponse,
         scheduledAt: expect.any(Date),
         context: {
-          status: 'SCHEDULED',
+          status: "SCHEDULED",
           content: mockResponse,
           scheduledAt: expect.any(String),
         },
         replyToId: undefined,
-        botTaskQueueId: 'bot-task-123',
+        botTaskQueueId: "bot-task-123",
       });
 
       // Second call: POST_QUEUED
-      expect(mockBotTaskQueueRepo.updateTaskContext).toHaveBeenNthCalledWith(2, 'bot-task-123', {
-        type: 'random_post',
-        status: 'POST_QUEUED',
-        llmTaskId: 'llm-task-123',
-        postQueueId: 'post-queue-123',
+      expect(mockBotTaskQueueRepo.updateTaskContext).toHaveBeenNthCalledWith(2, "bot-task-123", {
+        type: "random_post",
+        status: "POST_QUEUED",
+        llmTaskId: "llm-task-123",
+        postQueueId: "post-queue-123",
       });
 
-      expect(mockLlmTaskQueueRepo.updateTaskStatus).toHaveBeenCalledWith('llm-task-123', 'COMPLETED');
+      expect(mockLlmTaskQueueRepo.updateTaskStatus).toHaveBeenCalledWith("llm-task-123", "COMPLETED");
     });
 
-    it('should handle reply_post task correctly', async () => {
+    it("should handle reply_post task correctly", async () => {
       const mockLlmTask = {
-        id: 'llm-task-123',
-        prompt: 'Reply to post',
-        avatarId: 'avatar-123',
-        botTaskQueueId: 'bot-task-123',
+        id: "llm-task-123",
+        prompt: "Reply to post",
+        avatarId: "avatar-123",
+        botTaskQueueId: "bot-task-123",
       };
 
       const mockBotTask = {
-        id: 'bot-task-123',
+        id: "bot-task-123",
         task: {
-          type: 'reply_post',
-          replyToPostId: 'original-post-123',
-          status: 'LLM_QUEUED',
-          llmTaskId: 'llm-task-123',
+          type: "reply_post",
+          replyToPostId: "original-post-123",
+          status: "LLM_QUEUED",
+          llmTaskId: "llm-task-123",
         } as PrismaJson.TaskContext,
       };
 
       const mockPostQueue = {
-        id: 'post-queue-123',
+        id: "post-queue-123",
       };
 
-      const mockResponse = 'Reply content';
+      const mockResponse = "Reply content";
 
       (mockLlmTaskQueueRepo.getPendingTasks as any).mockResolvedValue([mockLlmTask]);
       (mockBotTaskQueueRepo.getTaskById as any).mockResolvedValue(mockBotTask);
@@ -181,46 +177,46 @@ describe('LlmTaskWorker', () => {
       await llmTaskWorker.processTasks();
 
       expect(mockPostQueueRepo.schedulePost).toHaveBeenCalledWith({
-        avatarId: 'avatar-123',
+        avatarId: "avatar-123",
         content: mockResponse,
         scheduledAt: expect.any(Date),
         context: {
-          status: 'SCHEDULED',
+          status: "SCHEDULED",
           content: mockResponse,
           scheduledAt: expect.any(String),
         },
-        replyToId: 'original-post-123',
-        botTaskQueueId: 'bot-task-123',
+        replyToId: "original-post-123",
+        botTaskQueueId: "bot-task-123",
       });
 
       // Second call: POST_QUEUED
-      expect(mockBotTaskQueueRepo.updateTaskContext).toHaveBeenNthCalledWith(2, 'bot-task-123', {
-        type: 'reply_post',
-        replyToPostId: 'original-post-123',
-        status: 'POST_QUEUED',
-        llmTaskId: 'llm-task-123',
-        postQueueId: 'post-queue-123',
+      expect(mockBotTaskQueueRepo.updateTaskContext).toHaveBeenNthCalledWith(2, "bot-task-123", {
+        type: "reply_post",
+        replyToPostId: "original-post-123",
+        status: "POST_QUEUED",
+        llmTaskId: "llm-task-123",
+        postQueueId: "post-queue-123",
       });
     });
 
-    it('should handle LLM generation failure', async () => {
+    it("should handle LLM generation failure", async () => {
       const mockLlmTask = {
-        id: 'llm-task-123',
-        prompt: 'Generate a post',
-        avatarId: 'avatar-123',
-        botTaskQueueId: 'bot-task-123',
+        id: "llm-task-123",
+        prompt: "Generate a post",
+        avatarId: "avatar-123",
+        botTaskQueueId: "bot-task-123",
       };
 
       const mockBotTask = {
-        id: 'bot-task-123',
+        id: "bot-task-123",
         task: {
-          type: 'random_post',
-          status: 'LLM_QUEUED',
-          llmTaskId: 'llm-task-123',
+          type: "random_post",
+          status: "LLM_QUEUED",
+          llmTaskId: "llm-task-123",
         } as PrismaJson.TaskContext,
       };
 
-      const error = new Error('LLM generation failed');
+      const error = new Error("LLM generation failed");
 
       (mockLlmTaskQueueRepo.getPendingTasks as any).mockResolvedValue([mockLlmTask]);
       (mockBotTaskQueueRepo.getTaskById as any).mockResolvedValue(mockBotTask);
@@ -228,20 +224,20 @@ describe('LlmTaskWorker', () => {
 
       await llmTaskWorker.processTasks();
 
-      expect(mockLlmTaskQueueRepo.updateTaskContext).toHaveBeenCalledWith('llm-task-123', {
-        status: 'FAILED',
-        prompt: 'Generate a post',
-        error: 'LLM generation failed',
+      expect(mockLlmTaskQueueRepo.updateTaskContext).toHaveBeenCalledWith("llm-task-123", {
+        status: "FAILED",
+        prompt: "Generate a post",
+        error: "LLM generation failed",
         failedAt: expect.any(String),
       });
 
-      expect(mockLlmTaskQueueRepo.updateTaskStatus).toHaveBeenCalledWith('llm-task-123', 'FAILED');
+      expect(mockLlmTaskQueueRepo.updateTaskStatus).toHaveBeenCalledWith("llm-task-123", "FAILED");
 
       // Second call: FAILED
-      expect(mockBotTaskQueueRepo.updateTaskContext).toHaveBeenNthCalledWith(2, 'bot-task-123', {
-        type: 'random_post',
-        status: 'FAILED',
-        error: 'LLM generation failed',
+      expect(mockBotTaskQueueRepo.updateTaskContext).toHaveBeenNthCalledWith(2, "bot-task-123", {
+        type: "random_post",
+        status: "FAILED",
+        error: "LLM generation failed",
       });
     });
   });

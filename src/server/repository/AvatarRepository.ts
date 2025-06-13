@@ -66,7 +66,7 @@ export class AvatarRepositoryImpl implements AvatarRepository {
       where: { id: avatarId },
       include: {
         posts: {
-          orderBy: { createdAt: 'desc' }
+          orderBy: { createdAt: "desc" },
         },
         followers: {
           select: {
@@ -74,10 +74,10 @@ export class AvatarRepositoryImpl implements AvatarRepository {
               select: {
                 id: true,
                 name: true,
-                imageUrl: true
-              }
-            }
-          }
+                imageUrl: true,
+              },
+            },
+          },
         },
         followees: {
           select: {
@@ -85,38 +85,41 @@ export class AvatarRepositoryImpl implements AvatarRepository {
               select: {
                 id: true,
                 name: true,
-                imageUrl: true
-              }
-            }
-          }
+                imageUrl: true,
+              },
+            },
+          },
         },
         botConfig: {
           select: {
             id: true,
-            prompt: true
-          }
-        }
-      }
+            prompt: true,
+          },
+        },
+      },
     });
 
     if (!avatar) return null;
 
     return {
       ...avatar,
-      followers: avatar.followers.map(f => f.follower),
-      followees: avatar.followees.map(f => f.followee),
+      followers: avatar.followers.map((f) => f.follower),
+      followees: avatar.followees.map((f) => f.followee),
     };
   }
 
-  async updateAvatar(avatarId: string, props: {
-    name?: string;
-    description?: string;
-    imageUrl?: string;
-    hidden?: boolean;
-  }) {
+  async updateAvatar(
+    avatarId: string,
+    props: {
+      name?: string;
+      description?: string;
+      imageUrl?: string;
+      hidden?: boolean;
+    },
+  ) {
     return await this.prisma.avatar.update({
       where: { id: avatarId },
-      data: props
+      data: props,
     });
   }
 
@@ -146,13 +149,13 @@ export class AvatarRepositoryImpl implements AvatarRepository {
         },
         botConfig: {
           isNot: null,
-        }
+        },
       },
       include: {
         botConfig: true,
       },
     });
-    return botFollowers.filter((f)  => f.botConfig !== null) as {
+    return botFollowers.filter((f) => f.botConfig !== null) as {
       botConfig: {
         id: string;
         avatarId: string;

@@ -32,28 +32,28 @@ type PostsAtomState = {
 const mergePosts = (prevPosts: PostsAtomState, newPosts: PostResponse[]): PostsAtomState => {
   // 投稿を時系列順でソート（古い順）
   const sortedPosts = [...newPosts].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
-  
+
   for (const newPost of sortedPosts) {
     if (prevPosts.originlist.has(newPost.id)) {
       continue; // Skip if the post already exists
     }
     const newPostObject = { ...newPost, replies: [] };
     prevPosts.originlist.set(newPost.id, newPostObject);
-    
+
     if (newPost.replyToId) {
       const parentPost = prevPosts.originlist.get(newPost.replyToId);
       if (parentPost) {
         // 返信を時系列順で挿入
-        const insertIndex = parentPost.replies.findIndex(reply => 
-          new Date(reply.createdAt).getTime() > new Date(newPost.createdAt).getTime()
+        const insertIndex = parentPost.replies.findIndex(
+          (reply) => new Date(reply.createdAt).getTime() > new Date(newPost.createdAt).getTime(),
         );
-        
+
         if (insertIndex === -1) {
           parentPost.replies.push(newPostObject);
         } else {
           parentPost.replies.splice(insertIndex, 0, newPostObject);
         }
-        
+
         // 親投稿がトップレベルの場合、タイムラインを更新
         if (parentPost.replyToId === null) {
           prevPosts.timeline = [parentPost, ...prevPosts.timeline.filter((post) => post.id !== parentPost.id)];
@@ -61,10 +61,10 @@ const mergePosts = (prevPosts: PostsAtomState, newPosts: PostResponse[]): PostsA
       }
     } else {
       // トップレベル投稿は新しい順でタイムラインに追加
-      const timelineInsertIndex = prevPosts.timeline.findIndex(post => 
-        new Date(post.createdAt).getTime() < new Date(newPost.createdAt).getTime()
+      const timelineInsertIndex = prevPosts.timeline.findIndex(
+        (post) => new Date(post.createdAt).getTime() < new Date(newPost.createdAt).getTime(),
       );
-      
+
       if (timelineInsertIndex === -1) {
         prevPosts.timeline.push(newPostObject);
       } else {
