@@ -89,9 +89,10 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       return NextResponse.json({ message: "アクセス権限がありません" }, { status: 403 });
     }
 
-    // 既存のBotConfigを更新（実装が必要）
-    // 現在は新規作成のみサポート
-    return NextResponse.json({ message: "BotConfig更新は未実装です" }, { status: 501 });
+    const botConfigRepository = container.resolve<BotConfigRepository>(DI.BotConfigRepository);
+    const botConfig = await botConfigRepository.updateBotConfig(avatarId, prompt);
+
+    return NextResponse.json(botConfig);
   } catch (error) {
     console.error("Error updating bot config:", error);
     return NextResponse.json({ message: "ボット設定の更新中にエラーが発生しました" }, { status: 500 });

@@ -40,6 +40,7 @@ describe("BotTaskWorker", () => {
     mockBotConfigRepo = {
       getBotConfigByAvatarId: vi.fn().mockResolvedValue(null),
       createBotConfig: vi.fn().mockResolvedValue({}),
+      updateBotConfig: vi.fn().mockResolvedValue({}),
     };
 
     mockBotTaskQueueRepo = {

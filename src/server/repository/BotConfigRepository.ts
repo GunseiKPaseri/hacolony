@@ -33,4 +33,21 @@ export class BotConfigRepositoryImpl implements BotConfigRepository {
 
     return botConfig;
   }
+
+  async updateBotConfig(avatarId: string, prompt: string): Promise<{ id: string; prompt: string }> {
+    const botConfig = await this.prisma.botConfig.update({
+      where: {
+        avatarId,
+      },
+      data: {
+        prompt,
+      },
+      select: {
+        id: true,
+        prompt: true,
+      },
+    });
+
+    return botConfig;
+  }
 }
