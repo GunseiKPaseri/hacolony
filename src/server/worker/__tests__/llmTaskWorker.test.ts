@@ -82,11 +82,20 @@ describe("LlmTaskWorker", () => {
         botTaskQueueId: "bot-task-123",
       } as unknown as LlmTaskQueue;
 
-      const mockBotTask = {
+      const mockBotTask1 = {
         id: "bot-task-123",
         task: {
           type: "random_post",
           status: "LLM_QUEUED",
+          llmTaskId: "llm-task-123",
+        } as PrismaJson.TaskContext,
+      } as unknown as BotTaskQueue;
+
+      const mockBotTask2 = {
+        id: "bot-task-123",
+        task: {
+          type: "random_post",
+          status: "LLM_PROCESSING",
           llmTaskId: "llm-task-123",
         } as PrismaJson.TaskContext,
       } as unknown as BotTaskQueue;
@@ -98,7 +107,10 @@ describe("LlmTaskWorker", () => {
       const mockResponse = "Generated post content";
 
       vi.mocked(mockLlmTaskQueueRepo.getPendingTasks).mockResolvedValue([mockLlmTask]);
-      vi.mocked(mockBotTaskQueueRepo.getTaskById).mockResolvedValue(mockBotTask);
+      vi.mocked(mockBotTaskQueueRepo.getTaskById)
+        .mockResolvedValueOnce(mockBotTask1) // First call: LLM_QUEUED status
+        .mockResolvedValueOnce(mockBotTask2) // Second call: LLM_PROCESSING status
+        .mockResolvedValueOnce(mockBotTask2); // Third call for notifyLLMTaskCompleted
       vi.mocked(mockOllamaClient.generatePost).mockResolvedValue(mockResponse);
       vi.mocked(mockPostQueueRepo.schedulePost).mockResolvedValue(mockPostQueue);
 
@@ -159,12 +171,22 @@ describe("LlmTaskWorker", () => {
         botTaskQueueId: "bot-task-123",
       } as unknown as LlmTaskQueue;
 
-      const mockBotTask = {
+      const mockBotTask1 = {
         id: "bot-task-123",
         task: {
           type: "reply_post",
           replyToPostId: "original-post-123",
           status: "LLM_QUEUED",
+          llmTaskId: "llm-task-123",
+        } as PrismaJson.TaskContext,
+      } as unknown as BotTaskQueue;
+
+      const mockBotTask2 = {
+        id: "bot-task-123",
+        task: {
+          type: "reply_post",
+          replyToPostId: "original-post-123",
+          status: "LLM_PROCESSING",
           llmTaskId: "llm-task-123",
         } as PrismaJson.TaskContext,
       } as unknown as BotTaskQueue;
@@ -176,7 +198,10 @@ describe("LlmTaskWorker", () => {
       const mockResponse = "Reply content";
 
       vi.mocked(mockLlmTaskQueueRepo.getPendingTasks).mockResolvedValue([mockLlmTask]);
-      vi.mocked(mockBotTaskQueueRepo.getTaskById).mockResolvedValue(mockBotTask);
+      vi.mocked(mockBotTaskQueueRepo.getTaskById)
+        .mockResolvedValueOnce(mockBotTask1) // First call: LLM_QUEUED status
+        .mockResolvedValueOnce(mockBotTask2) // Second call: LLM_PROCESSING status
+        .mockResolvedValueOnce(mockBotTask2); // Third call for notifyLLMTaskCompleted
       vi.mocked(mockOllamaClient.generatePost).mockResolvedValue(mockResponse);
       vi.mocked(mockPostQueueRepo.schedulePost).mockResolvedValue(mockPostQueue);
 

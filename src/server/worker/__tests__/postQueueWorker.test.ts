@@ -72,11 +72,21 @@ describe("PostQueueWorker", () => {
         botTaskQueueId: "bot-task-123",
       } as unknown as PostQueue;
 
-      const mockBotTask = {
+      const mockBotTask1 = {
         id: "bot-task-123",
         task: {
           type: "random_post",
           status: "POST_QUEUED",
+          llmTaskId: "llm-task-123",
+          postQueueId: "post-queue-123",
+        } as PrismaJson.TaskContext,
+      } as unknown as BotTaskQueue;
+
+      const mockBotTask2 = {
+        id: "bot-task-123",
+        task: {
+          type: "random_post",
+          status: "POST_PROCESSING",
           llmTaskId: "llm-task-123",
           postQueueId: "post-queue-123",
         } as PrismaJson.TaskContext,
@@ -88,7 +98,9 @@ describe("PostQueueWorker", () => {
       } as unknown as Post;
 
       vi.mocked(mockPostQueueRepo.getDuePosts).mockResolvedValue([mockDuePost]);
-      vi.mocked(mockBotTaskQueueRepo.getTaskById).mockResolvedValue(mockBotTask);
+      vi.mocked(mockBotTaskQueueRepo.getTaskById)
+        .mockResolvedValueOnce(mockBotTask1) // First call: POST_QUEUED status
+        .mockResolvedValueOnce(mockBotTask2); // Second call: POST_PROCESSING status
       vi.mocked(mockPostRepo.createPostByAvatarId).mockResolvedValue(mockCreatedPost);
 
       await postQueueWorker.processDuePosts();
@@ -144,12 +156,23 @@ describe("PostQueueWorker", () => {
         botTaskQueueId: "bot-task-123",
       } as unknown as PostQueue;
 
-      const mockBotTask = {
+      const mockBotTask1 = {
         id: "bot-task-123",
         task: {
           type: "reply_post",
           replyToPostId: "original-post-123",
           status: "POST_QUEUED",
+          llmTaskId: "llm-task-123",
+          postQueueId: "post-queue-123",
+        } as PrismaJson.TaskContext,
+      } as unknown as BotTaskQueue;
+
+      const mockBotTask2 = {
+        id: "bot-task-123",
+        task: {
+          type: "reply_post",
+          replyToPostId: "original-post-123",
+          status: "POST_PROCESSING",
           llmTaskId: "llm-task-123",
           postQueueId: "post-queue-123",
         } as PrismaJson.TaskContext,
@@ -161,7 +184,9 @@ describe("PostQueueWorker", () => {
       } as unknown as Post;
 
       vi.mocked(mockPostQueueRepo.getDuePosts).mockResolvedValue([mockDuePost]);
-      vi.mocked(mockBotTaskQueueRepo.getTaskById).mockResolvedValue(mockBotTask);
+      vi.mocked(mockBotTaskQueueRepo.getTaskById)
+        .mockResolvedValueOnce(mockBotTask1) // First call: POST_QUEUED status
+        .mockResolvedValueOnce(mockBotTask2); // Second call: POST_PROCESSING status
       vi.mocked(mockPostRepo.createPostByAvatarId).mockResolvedValue(mockCreatedPost);
 
       await postQueueWorker.processDuePosts();
@@ -193,7 +218,7 @@ describe("PostQueueWorker", () => {
         botTaskQueueId: "bot-task-123",
       } as unknown as PostQueue;
 
-      const mockBotTask = {
+      const mockBotTask1 = {
         id: "bot-task-123",
         task: {
           type: "random_post",
@@ -203,10 +228,22 @@ describe("PostQueueWorker", () => {
         } as PrismaJson.TaskContext,
       } as unknown as BotTaskQueue;
 
+      const mockBotTask2 = {
+        id: "bot-task-123",
+        task: {
+          type: "random_post",
+          status: "POST_PROCESSING",
+          llmTaskId: "llm-task-123",
+          postQueueId: "post-queue-123",
+        } as PrismaJson.TaskContext,
+      } as unknown as BotTaskQueue;
+
       const error = new Error("Post creation failed");
 
       vi.mocked(mockPostQueueRepo.getDuePosts).mockResolvedValue([mockDuePost]);
-      vi.mocked(mockBotTaskQueueRepo.getTaskById).mockResolvedValue(mockBotTask);
+      vi.mocked(mockBotTaskQueueRepo.getTaskById)
+        .mockResolvedValueOnce(mockBotTask1) // First call: POST_QUEUED status
+        .mockResolvedValueOnce(mockBotTask2); // Second call: POST_PROCESSING status
       vi.mocked(mockPostRepo.createPostByAvatarId).mockRejectedValue(error);
 
       await postQueueWorker.processDuePosts();
@@ -224,6 +261,8 @@ describe("PostQueueWorker", () => {
         type: "random_post",
         status: "FAILED",
         error: "Post creation failed",
+        llmTaskId: "llm-task-123",
+        postQueueId: "post-queue-123",
       });
     });
 
