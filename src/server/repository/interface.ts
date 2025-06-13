@@ -65,6 +65,7 @@ export interface PostRepository {
 export interface BotTaskQueueRepository {
   enqueueTask(params: { avatarId: string; task: PrismaJson.TaskContext }): Promise<BotTaskQueue>;
   getPendingTasks(limit?: number): Promise<BotTaskQueue[]>;
+  getProcessingCount(): Promise<number>;
   updateTaskStatus(id: string, status: string): Promise<void>;
   updateTaskContext(id: string, taskContext: PrismaJson.TaskContext): Promise<void>;
   getTaskById(id: string): Promise<BotTaskQueue | null>;
@@ -78,6 +79,7 @@ export interface LlmTaskQueueRepository {
     botTaskQueueId?: string;
   }): Promise<LlmTaskQueue>;
   getPendingTasks(limit?: number): Promise<LlmTaskQueue[]>;
+  getProcessingCount(): Promise<number>;
   updateTaskStatus(id: string, status: string): Promise<void>;
   updateTaskContext(id: string, context: PrismaJson.LLMContext): Promise<void>;
 }
@@ -87,11 +89,15 @@ export interface PostQueueRepository {
     avatarId: string;
     content: string;
     scheduledAt: Date;
+    context?: PrismaJson.PostQueueContext;
     replyToId?: string;
     botTaskQueueId?: string;
   }): Promise<PostQueue>;
   getDuePosts(limit?: number): Promise<PostQueue[]>;
+  getProcessingCount(): Promise<number>;
+  updatePostContext(id: string, context: PrismaJson.PostQueueContext): Promise<void>;
   markPostAsProcessed(id: string): Promise<void>;
+  getPostById(id: string): Promise<PostQueue | null>;
 }
 
 export interface UserRepository {

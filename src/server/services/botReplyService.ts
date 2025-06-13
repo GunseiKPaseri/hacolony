@@ -28,6 +28,7 @@ export class BotReplyService {
             task: {
               type: "reply_post",
               replyToPostId: postId,
+              status: "CREATED",
             },
           });
         } catch (error) {

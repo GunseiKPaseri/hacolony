@@ -11,6 +11,7 @@ export class PostQueueRepositoryImpl implements PostQueueRepository {
     avatarId: string;
     content: string;
     scheduledAt: Date;
+    context?: PrismaJson.PostQueueContext;
     replyToId?: string;
     botTaskQueueId?: string;
   }): Promise<PostQueue> {
@@ -19,6 +20,7 @@ export class PostQueueRepositoryImpl implements PostQueueRepository {
         avatarId: params.avatarId,
         content: params.content,
         scheduledAt: params.scheduledAt,
+        context: params.context,
         replyToId: params.replyToId,
         botTaskQueueId: params.botTaskQueueId,
       },
@@ -44,6 +46,16 @@ export class PostQueueRepositoryImpl implements PostQueueRepository {
     });
   }
 
+  async updatePostContext(id: string, context: PrismaJson.PostQueueContext): Promise<void> {
+    await this.prisma.postQueue.update({
+      where: { id },
+      data: {
+        context: context,
+        updatedAt: new Date(),
+      },
+    });
+  }
+
   async markPostAsProcessed(id: string): Promise<void> {
     await this.prisma.postQueue.update({
       where: { id },
@@ -51,6 +63,20 @@ export class PostQueueRepositoryImpl implements PostQueueRepository {
         status: "COMPLETED",
         updatedAt: new Date(),
       },
+    });
+  }
+
+  async getProcessingCount(): Promise<number> {
+    return await this.prisma.postQueue.count({
+      where: {
+        status: "PROCESSING",
+      },
+    });
+  }
+
+  async getPostById(id: string): Promise<PostQueue | null> {
+    return await this.prisma.postQueue.findUnique({
+      where: { id },
     });
   }
 }

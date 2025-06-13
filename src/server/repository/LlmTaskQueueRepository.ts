@@ -50,6 +50,14 @@ export class LlmTaskQueueRepositoryImpl implements LlmTaskQueueRepository {
     });
   }
 
+  async getProcessingCount(): Promise<number> {
+    return await this.prisma.llmTaskQueue.count({
+      where: {
+        status: "PROCESSING",
+      },
+    });
+  }
+
   async updateTaskContext(id: string, context: PrismaJson.LLMContext): Promise<void> {
     await this.prisma.llmTaskQueue.update({
       where: { id },

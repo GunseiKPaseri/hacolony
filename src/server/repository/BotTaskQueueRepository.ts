@@ -54,6 +54,14 @@ export class BotTaskQueueRepositoryImpl implements BotTaskQueueRepository {
     });
   }
 
+  async getProcessingCount(): Promise<number> {
+    return await this.prisma.botTaskQueue.count({
+      where: {
+        status: "PROCESSING",
+      },
+    });
+  }
+
   async getTaskById(id: string): Promise<BotTaskQueue | null> {
     return await this.prisma.botTaskQueue.findUnique({
       where: { id },
