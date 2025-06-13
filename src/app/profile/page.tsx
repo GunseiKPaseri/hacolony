@@ -46,11 +46,7 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-4">
               <Button variant="ghost" size="sm" asChild>
@@ -111,7 +107,7 @@ export default function ProfilePage() {
           className="space-y-6"
         >
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">あなたのアバター</h2>
-          
+
           {avatars.length === 0 ? (
             <div className="text-center py-12">
               <User className="mx-auto h-12 w-12 text-gray-400 mb-4" />
@@ -180,9 +176,7 @@ export default function ProfilePage() {
                             </div>
                           )}
                         </div>
-                        <div className="text-xs text-gray-400">
-                          詳細を見る →
-                        </div>
+                        <div className="text-xs text-gray-400">詳細を見る →</div>
                       </div>
                     </div>
                   </Link>

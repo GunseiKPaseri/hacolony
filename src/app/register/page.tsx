@@ -94,12 +94,8 @@ export default function RegisterPage() {
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-teal-600 shadow-lg">
               <UserPlus className="h-8 w-8 text-white" />
             </div>
-            <h2 className="mt-6 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
-              アカウント作成
-            </h2>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-              新しいアカウントを作成してはじめましょう
-            </p>
+            <h2 className="mt-6 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">アカウント作成</h2>
+            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">新しいアカウントを作成してはじめましょう</p>
           </motion.div>
 
           {/* Form */}
@@ -143,7 +139,10 @@ export default function RegisterPage() {
                 </div>
 
                 <div>
-                  <label htmlFor="email-address" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label
+                    htmlFor="email-address"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                  >
                     メールアドレス
                   </label>
                   <div className="relative">
@@ -193,8 +192,8 @@ export default function RegisterPage() {
                 </motion.div>
               </div>
 
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 disabled={isLoading}
                 className="w-full bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 text-white font-medium py-3 px-4 rounded-lg transition duration-200 transform hover:scale-[1.02] shadow-lg group disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
@@ -215,8 +214,8 @@ export default function RegisterPage() {
           >
             <p className="text-sm text-gray-600 dark:text-gray-400">
               すでにアカウントをお持ちの方は{" "}
-              <Link 
-                href="/login" 
+              <Link
+                href="/login"
                 className="font-medium text-green-600 hover:text-green-500 dark:text-green-400 dark:hover:text-green-300 transition-colors"
               >
                 ログイン

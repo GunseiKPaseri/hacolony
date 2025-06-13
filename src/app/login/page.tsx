@@ -69,12 +69,8 @@ export default function LoginPage() {
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-600 shadow-lg">
               <User className="h-8 w-8 text-white" />
             </div>
-            <h2 className="mt-6 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
-              おかえりなさい
-            </h2>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-              アカウントにログインしてください
-            </p>
+            <h2 className="mt-6 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">おかえりなさい</h2>
+            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">アカウントにログインしてください</p>
           </motion.div>
 
           {/* Form */}
@@ -97,7 +93,10 @@ export default function LoginPage() {
 
               <div className="space-y-4">
                 <div>
-                  <label htmlFor="email-address" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label
+                    htmlFor="email-address"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                  >
                     メールアドレス
                   </label>
                   <div className="relative">
@@ -137,8 +136,8 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium py-3 px-4 rounded-lg transition duration-200 transform hover:scale-[1.02] shadow-lg group"
               >
                 <span className="flex items-center justify-center">
@@ -158,8 +157,8 @@ export default function LoginPage() {
           >
             <p className="text-sm text-gray-600 dark:text-gray-400">
               アカウントをお持ちでない方は{" "}
-              <Link 
-                href="/register" 
+              <Link
+                href="/register"
                 className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
               >
                 新規登録

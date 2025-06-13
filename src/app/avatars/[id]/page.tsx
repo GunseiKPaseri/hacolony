@@ -6,19 +6,19 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { 
-  ArrowLeft, 
-  Edit3, 
-  Save, 
-  X, 
-  Bot, 
-  User, 
-  MessageCircle, 
-  Users, 
-  UserPlus, 
-  Eye, 
+import {
+  ArrowLeft,
+  Edit3,
+  Save,
+  X,
+  Bot,
+  User,
+  MessageCircle,
+  Users,
+  UserPlus,
+  Eye,
   EyeOff,
-  Sparkles
+  Sparkles,
 } from "lucide-react";
 
 interface Avatar {
@@ -199,21 +199,19 @@ export default function AvatarDetailPage({ params }: { params: Promise<{ id: str
     <div className="min-h-screen bg-gradient-to-br from-cyan-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <Button variant="ghost" size="sm" onClick={() => router.back()}>
               <ArrowLeft className="w-4 h-4 mr-2" />
               戻る
             </Button>
             {isOwner && (
-              <Button 
-                onClick={() => setIsEditing(!isEditing)} 
+              <Button
+                onClick={() => setIsEditing(!isEditing)}
                 variant={isEditing ? "outline" : "default"}
-                className={isEditing ? "" : "bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700"}
+                className={
+                  isEditing ? "" : "bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700"
+                }
               >
                 {isEditing ? (
                   <>
@@ -248,141 +246,148 @@ export default function AvatarDetailPage({ params }: { params: Promise<{ id: str
               </div>
             </div>
 
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-4">
-              {isEditing ? (
-                <div className="space-y-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">アバター名</label>
-                    <input
-                      type="text"
-                      value={editForm.name}
-                      onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white/50 backdrop-blur-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 dark:bg-gray-700/50 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
-                      placeholder="アバター名を入力"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">説明</label>
-                    <textarea
-                      value={editForm.description}
-                      onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white/50 backdrop-blur-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 dark:bg-gray-700/50 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
-                      rows={3}
-                      placeholder="アバターの説明を入力"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">画像URL</label>
-                    <input
-                      type="url"
-                      value={editForm.imageUrl}
-                      onChange={(e) => setEditForm({ ...editForm, imageUrl: e.target.value })}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white/50 backdrop-blur-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 dark:bg-gray-700/50 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
-                      placeholder="https://example.com/avatar.jpg"
-                    />
-                  </div>
-                  <div className="flex items-center space-x-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                    <input
-                      id="hidden-checkbox"
-                      type="checkbox"
-                      checked={editForm.hidden}
-                      onChange={(e) => setEditForm({ ...editForm, hidden: e.target.checked })}
-                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                    />
-                    <label htmlFor="hidden-checkbox" className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
-                      {editForm.hidden ? <EyeOff className="w-4 h-4 mr-2" /> : <Eye className="w-4 h-4 mr-2" />}
-                      非表示にする
-                    </label>
-                  </div>
-                  <Button 
-                    onClick={handleSave}
-                    className="w-full bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 text-white font-medium py-3 px-4 rounded-lg transition duration-200 transform hover:scale-[1.02] shadow-lg"
-                  >
-                    <Save className="w-4 h-4 mr-2" />
-                    変更を保存
-                  </Button>
-                </div>
-              ) : (
-                <div className="space-y-6">
-                  <div className="flex items-center space-x-4">
-                    <div className="relative">
-                      {avatar.imageUrl ? (
-                        <Image
-                          src={avatar.imageUrl}
-                          alt={avatar.name}
-                          width={80}
-                          height={80}
-                          className="rounded-full object-cover shadow-lg"
-                        />
-                      ) : (
-                        <div className="w-20 h-20 rounded-full bg-gradient-to-r from-blue-400 to-cyan-500 flex items-center justify-center shadow-lg">
-                          <User className="h-10 w-10 text-white" />
-                        </div>
-                      )}
-                      {avatar.botConfig && (
-                        <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center shadow-md">
-                          <Bot className="h-4 w-4 text-white" />
-                        </div>
-                      )}
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-4">
+                {isEditing ? (
+                  <div className="space-y-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        アバター名
+                      </label>
+                      <input
+                        type="text"
+                        value={editForm.name}
+                        onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white/50 backdrop-blur-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 dark:bg-gray-700/50 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+                        placeholder="アバター名を入力"
+                      />
                     </div>
-                    <div className="flex-1">
-                      <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{avatar.name}</h2>
-                      {avatar.description && (
-                        <p className="text-gray-600 dark:text-gray-400 mt-1">{avatar.description}</p>
-                      )}
-                      <div className="flex items-center space-x-4 mt-3 text-sm">
-                        <div className="flex items-center space-x-1 text-gray-500 dark:text-gray-400">
-                          <MessageCircle className="h-4 w-4" />
-                          <span>作成日: {new Date(avatar.createdAt).toLocaleDateString()}</span>
-                        </div>
-                        <div className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium ${
-                          avatar.hidden 
-                            ? "bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400" 
-                            : "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400"
-                        }`}>
-                          {avatar.hidden ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
-                          <span>{avatar.hidden ? "非表示" : "表示中"}</span>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">説明</label>
+                      <textarea
+                        value={editForm.description}
+                        onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white/50 backdrop-blur-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 dark:bg-gray-700/50 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+                        rows={3}
+                        placeholder="アバターの説明を入力"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">画像URL</label>
+                      <input
+                        type="url"
+                        value={editForm.imageUrl}
+                        onChange={(e) => setEditForm({ ...editForm, imageUrl: e.target.value })}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white/50 backdrop-blur-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 dark:bg-gray-700/50 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
+                        placeholder="https://example.com/avatar.jpg"
+                      />
+                    </div>
+                    <div className="flex items-center space-x-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                      <input
+                        id="hidden-checkbox"
+                        type="checkbox"
+                        checked={editForm.hidden}
+                        onChange={(e) => setEditForm({ ...editForm, hidden: e.target.checked })}
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                      />
+                      <label
+                        htmlFor="hidden-checkbox"
+                        className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer"
+                      >
+                        {editForm.hidden ? <EyeOff className="w-4 h-4 mr-2" /> : <Eye className="w-4 h-4 mr-2" />}
+                        非表示にする
+                      </label>
+                    </div>
+                    <Button
+                      onClick={handleSave}
+                      className="w-full bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 text-white font-medium py-3 px-4 rounded-lg transition duration-200 transform hover:scale-[1.02] shadow-lg"
+                    >
+                      <Save className="w-4 h-4 mr-2" />
+                      変更を保存
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    <div className="flex items-center space-x-4">
+                      <div className="relative">
+                        {avatar.imageUrl ? (
+                          <Image
+                            src={avatar.imageUrl}
+                            alt={avatar.name}
+                            width={80}
+                            height={80}
+                            className="rounded-full object-cover shadow-lg"
+                          />
+                        ) : (
+                          <div className="w-20 h-20 rounded-full bg-gradient-to-r from-blue-400 to-cyan-500 flex items-center justify-center shadow-lg">
+                            <User className="h-10 w-10 text-white" />
+                          </div>
+                        )}
+                        {avatar.botConfig && (
+                          <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center shadow-md">
+                            <Bot className="h-4 w-4 text-white" />
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{avatar.name}</h2>
+                        {avatar.description && (
+                          <p className="text-gray-600 dark:text-gray-400 mt-1">{avatar.description}</p>
+                        )}
+                        <div className="flex items-center space-x-4 mt-3 text-sm">
+                          <div className="flex items-center space-x-1 text-gray-500 dark:text-gray-400">
+                            <MessageCircle className="h-4 w-4" />
+                            <span>作成日: {new Date(avatar.createdAt).toLocaleDateString()}</span>
+                          </div>
+                          <div
+                            className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium ${
+                              avatar.hidden
+                                ? "bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400"
+                                : "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400"
+                            }`}
+                          >
+                            {avatar.hidden ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                            <span>{avatar.hidden ? "非表示" : "表示中"}</span>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
 
-            <div className="space-y-6">
-              <div className="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-xl p-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                  <Sparkles className="w-5 h-5 mr-2 text-blue-500" />
-                  統計情報
-                </h3>
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="text-center p-4 bg-white/50 dark:bg-gray-800/50 rounded-lg">
-                    <div className="flex items-center justify-center mb-2">
-                      <MessageCircle className="w-5 h-5 text-blue-500" />
+              <div className="space-y-6">
+                <div className="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-xl p-6">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                    <Sparkles className="w-5 h-5 mr-2 text-blue-500" />
+                    統計情報
+                  </h3>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="text-center p-4 bg-white/50 dark:bg-gray-800/50 rounded-lg">
+                      <div className="flex items-center justify-center mb-2">
+                        <MessageCircle className="w-5 h-5 text-blue-500" />
+                      </div>
+                      <div className="text-2xl font-bold text-gray-900 dark:text-white">{avatar.posts.length}</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">投稿</div>
                     </div>
-                    <div className="text-2xl font-bold text-gray-900 dark:text-white">{avatar.posts.length}</div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">投稿</div>
-                  </div>
-                  <div className="text-center p-4 bg-white/50 dark:bg-gray-800/50 rounded-lg">
-                    <div className="flex items-center justify-center mb-2">
-                      <Users className="w-5 h-5 text-green-500" />
+                    <div className="text-center p-4 bg-white/50 dark:bg-gray-800/50 rounded-lg">
+                      <div className="flex items-center justify-center mb-2">
+                        <Users className="w-5 h-5 text-green-500" />
+                      </div>
+                      <div className="text-2xl font-bold text-gray-900 dark:text-white">{avatar.followers.length}</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">フォロワー</div>
                     </div>
-                    <div className="text-2xl font-bold text-gray-900 dark:text-white">{avatar.followers.length}</div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">フォロワー</div>
-                  </div>
-                  <div className="text-center p-4 bg-white/50 dark:bg-gray-800/50 rounded-lg">
-                    <div className="flex items-center justify-center mb-2">
-                      <UserPlus className="w-5 h-5 text-purple-500" />
+                    <div className="text-center p-4 bg-white/50 dark:bg-gray-800/50 rounded-lg">
+                      <div className="flex items-center justify-center mb-2">
+                        <UserPlus className="w-5 h-5 text-purple-500" />
+                      </div>
+                      <div className="text-2xl font-bold text-gray-900 dark:text-white">{avatar.followees.length}</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">フォロー中</div>
                     </div>
-                    <div className="text-2xl font-bold text-gray-900 dark:text-white">{avatar.followees.length}</div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">フォロー中</div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
           </motion.div>
 
           {/* ボット設定 */}
@@ -400,10 +405,14 @@ export default function AvatarDetailPage({ params }: { params: Promise<{ id: str
                   </div>
                   <h2 className="text-2xl font-bold text-gray-900 dark:text-white">AI設定</h2>
                 </div>
-                <Button 
-                  onClick={() => setIsBotEditing(!isBotEditing)} 
+                <Button
+                  onClick={() => setIsBotEditing(!isBotEditing)}
                   variant={isBotEditing ? "outline" : "default"}
-                  className={isBotEditing ? "" : "bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"}
+                  className={
+                    isBotEditing
+                      ? ""
+                      : "bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
+                  }
                 >
                   {isBotEditing ? (
                     <>
@@ -436,7 +445,7 @@ export default function AvatarDetailPage({ params }: { params: Promise<{ id: str
                       placeholder="例：あなたは明るく親しみやすい性格のAIアシスタントです。常に丁寧語で話し、ユーザーの質問に対して親切で分かりやすい回答を心がけてください。"
                     />
                   </div>
-                  <Button 
+                  <Button
                     onClick={handleBotConfigSave}
                     className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-medium py-3 px-4 rounded-lg transition duration-200 transform hover:scale-[1.02] shadow-lg"
                   >
@@ -459,7 +468,9 @@ export default function AvatarDetailPage({ params }: { params: Promise<{ id: str
                 <div className="text-center py-8">
                   <Bot className="mx-auto h-12 w-12 text-gray-400 mb-4" />
                   <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">AI設定が未設定です</h3>
-                  <p className="text-gray-500 dark:text-gray-400 mb-4">AIプロンプトを設定して、このアバターを自動投稿させることができます</p>
+                  <p className="text-gray-500 dark:text-gray-400 mb-4">
+                    AIプロンプトを設定して、このアバターを自動投稿させることができます
+                  </p>
                 </div>
               )}
             </motion.div>
@@ -478,7 +489,7 @@ export default function AvatarDetailPage({ params }: { params: Promise<{ id: str
               </div>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">投稿一覧</h2>
             </div>
-            
+
             {avatar.posts.length > 0 ? (
               <div className="space-y-4">
                 {avatar.posts.map((post, index) => (
@@ -520,7 +531,7 @@ export default function AvatarDetailPage({ params }: { params: Promise<{ id: str
                 </div>
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white">フォロワー</h2>
               </div>
-              
+
               {avatar.followers.length > 0 ? (
                 <div className="space-y-3">
                   {avatar.followers.map((follower, index) => (
@@ -569,7 +580,7 @@ export default function AvatarDetailPage({ params }: { params: Promise<{ id: str
                 </div>
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white">フォロー中</h2>
               </div>
-              
+
               {avatar.followees.length > 0 ? (
                 <div className="space-y-3">
                   {avatar.followees.map((followee, index) => (
@@ -600,7 +611,9 @@ export default function AvatarDetailPage({ params }: { params: Promise<{ id: str
               ) : (
                 <div className="text-center py-8">
                   <UserPlus className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">フォロー中のアバターがありません</h3>
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                    フォロー中のアバターがありません
+                  </h3>
                   <p className="text-gray-500 dark:text-gray-400">まだ誰もフォローしていません</p>
                 </div>
               )}

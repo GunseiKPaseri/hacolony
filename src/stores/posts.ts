@@ -1,5 +1,5 @@
 import { atomWithSuspenseQuery } from "jotai-tanstack-query";
-import { Post } from "@/eintities/post";
+import { Post } from "@/entities/post";
 import { atom, useAtomValue, useSetAtom } from "jotai";
 
 interface PostResponse {

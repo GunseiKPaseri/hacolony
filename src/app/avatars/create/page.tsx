@@ -3,17 +3,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { 
-  User, 
-  Bot, 
-  Type, 
-  MessageSquare, 
-  Sparkles, 
-  ArrowLeft, 
-  Save, 
-  Image as ImageIcon,
-  Zap
-} from "lucide-react";
+import { User, Bot, Type, MessageSquare, Sparkles, ArrowLeft, Save, Image as ImageIcon, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
@@ -29,7 +19,7 @@ export default function CreateAvatarPage() {
     name: "",
     description: "",
     imageUrl: "",
-    prompt: ""
+    prompt: "",
   });
 
   useEffect(() => {
@@ -54,7 +44,7 @@ export default function CreateAvatarPage() {
   }
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
     setError(null);
   };
 
@@ -73,20 +63,21 @@ export default function CreateAvatarPage() {
       }
 
       const endpoint = avatarType === "ai" ? "/api/avatar/ai" : "/api/avatar/self";
-      const body = avatarType === "ai"
-        ? { 
-            name: formData.name.trim(), 
-            description: formData.description.trim() || undefined, 
-            imageUrl: formData.imageUrl.trim() || undefined, 
-            prompt: formData.prompt.trim(), 
-            userId: session?.user?.id 
-          }
-        : { 
-            name: formData.name.trim(), 
-            description: formData.description.trim() || undefined, 
-            imageUrl: formData.imageUrl.trim() || undefined, 
-            userId: session?.user?.id 
-          };
+      const body =
+        avatarType === "ai"
+          ? {
+              name: formData.name.trim(),
+              description: formData.description.trim() || undefined,
+              imageUrl: formData.imageUrl.trim() || undefined,
+              prompt: formData.prompt.trim(),
+              userId: session?.user?.id,
+            }
+          : {
+              name: formData.name.trim(),
+              description: formData.description.trim() || undefined,
+              imageUrl: formData.imageUrl.trim() || undefined,
+              userId: session?.user?.id,
+            };
 
       const response = await fetch(endpoint, {
         method: "POST",
@@ -112,11 +103,7 @@ export default function CreateAvatarPage() {
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <div className="max-w-2xl mx-auto px-4 py-8">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <Button variant="ghost" size="sm" asChild>
               <Link href="/profile">
@@ -165,11 +152,7 @@ export default function CreateAvatarPage() {
               onClick={() => setAvatarType("self")}
             >
               <div className="flex items-center space-x-3">
-                <div className={`p-3 rounded-lg ${
-                  avatarType === "self" 
-                    ? "bg-orange-500" 
-                    : "bg-gray-400"
-                }`}>
+                <div className={`p-3 rounded-lg ${avatarType === "self" ? "bg-orange-500" : "bg-gray-400"}`}>
                   <User className="h-6 w-6 text-white" />
                 </div>
                 <div>
@@ -198,11 +181,7 @@ export default function CreateAvatarPage() {
               onClick={() => setAvatarType("ai")}
             >
               <div className="flex items-center space-x-3">
-                <div className={`p-3 rounded-lg ${
-                  avatarType === "ai" 
-                    ? "bg-purple-500" 
-                    : "bg-gray-400"
-                }`}>
+                <div className={`p-3 rounded-lg ${avatarType === "ai" ? "bg-purple-500" : "bg-gray-400"}`}>
                   <Bot className="h-6 w-6 text-white" />
                 </div>
                 <div>
@@ -235,9 +214,7 @@ export default function CreateAvatarPage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Name Field */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                アバター名 *
-              </label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">アバター名 *</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Type className="h-5 w-5 text-gray-400" />
@@ -255,9 +232,7 @@ export default function CreateAvatarPage() {
 
             {/* Description Field */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                説明
-              </label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">説明</label>
               <div className="relative">
                 <div className="absolute top-3 left-3 pointer-events-none">
                   <MessageSquare className="h-5 w-5 text-gray-400" />
@@ -305,9 +280,7 @@ export default function CreateAvatarPage() {
 
             {/* Image URL Field */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                画像URL
-              </label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">画像URL</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <ImageIcon className="h-5 w-5 text-gray-400" />
