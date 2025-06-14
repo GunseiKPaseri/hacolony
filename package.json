@@ -17,7 +17,11 @@
     "test:watch": "vitest watch",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
-    "db:seed": "tsx src/server/prisma/seed.ts"
+    "db:seed": "tsx src/server/prisma/seed.ts",
+    "db:generate": "prisma generate --schema ./src/server/prisma/schema.prisma",
+    "db:migrate": "prisma migrate deploy --schema ./src/server/prisma/schema.prisma",
+    "db:studio": "prisma studio --schema ./src/server/prisma/schema.prisma",
+    "pre-push": "npm run lint && npm run check && npm run fmt && npm test"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.9.1",
