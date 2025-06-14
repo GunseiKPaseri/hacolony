@@ -8,11 +8,14 @@
     "build": "next build",
     "start": "next start",
     "start:with-scheduler": "node scripts/start-server.ts",
-    "lint": "prisma validate --schema ./src/infrastructure/prisma/schema.prisma && next lint",
-    "fmt": "npm run fmt:prettier && npm run fmt:prisma && next lint --fix",
+    "fmt": "npm run fmt:prettier && npm run fmt:prisma",
     "fmt:prettier": "prettier --write .",
     "fmt:prisma": "prisma format --schema ./src/infrastructure/prisma/schema.prisma",
-    "check": "tsc --noEmit",
+    "fmt:linter": "next lint --fix",
+    "check": "npm run check:ts && npm run check:prisma && next lint",
+    "check:ts": "tsc --noEmit",
+    "check:prisma": "prisma validate --schema ./src/infrastructure/prisma/schema.prisma",
+    "check:linter": "next lint",
     "test": "vitest run",
     "test:watch": "vitest watch",
     "test:ui": "vitest --ui",
@@ -21,7 +24,7 @@
     "db:generate": "prisma generate --schema ./src/infrastructure/prisma/schema.prisma",
     "db:migrate": "prisma migrate deploy --schema ./src/infrastructure/prisma/schema.prisma",
     "db:studio": "prisma studio --schema ./src/infrastructure/prisma/schema.prisma",
-    "pre-push": "npm run lint && npm run check && npm run fmt && npm test"
+    "pre-push": "npm run check && npm run fmt && npm test"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.9.1",

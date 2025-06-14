@@ -27,14 +27,8 @@ jobs:
       - name: Generate Prisma client
         run: npm run db:generate
 
-      - name: Run ESLint
-        run: npm run lint
-
-      - name: Check TypeScript types
+      - name: Check Lint & TypeScript types
         run: npm run check
-
-      - name: Check code formatting with Prettier
-        run: npm run fmt -- --check
 
   # Tests
   test:

@@ -48,11 +48,8 @@ jobs:
       - name: Generate Prisma client
         run: npm run db:generate
 
-      - name: Type check
+      - name: Lint & Type check
         run: npm run check
-
-      - name: Lint check
-        run: npm run lint
 
   # Full checks (only for non-draft PRs)
   full-checks:

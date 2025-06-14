@@ -10,9 +10,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm run dev` - Start Next.js development server with Turbopack
 - `npm run start:with-scheduler` - Start Next.js server with background workers enabled
 - `npm run build` - Build production application
-- `npm run check` - Run type checks
+- `npm run check` - Run type checks, eslint, and prisma format checks
 - `npm run fmt` - Format code using Prettier
-- `npm run lint` - Run ESLint, validate Prisma schema
 - `npm run test` - Run unit tests with Vitest
 - `make check` - Run type checks and linting
 

@@ -16,12 +16,10 @@ db/fmt:
 	npm run fmt:prisma
 db/seed: db/fmt db/generate db/sync-force
 	npm run db:seed
-lint:
-	npm run lint
 fmt:
 	npm run fmt
 check:
 	npm run check
 test:
 	npm run test
-pre-push: lint fmt check test
+pre-push: fmt check test
