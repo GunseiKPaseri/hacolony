@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { GET, POST } from "../route";
-import { InvalidInputError, NotFoundError } from "@/server/repository/util";
+import { InvalidInputError, NotFoundError } from "@/infrastructure/repository/util";
 import { container } from "@/server/di";
-import { PostService, type CreatePostInput } from "@/server/services/postService";
+import { PostService, type CreatePostInput } from "@/application/services/postService";
 import { DI } from "@/server/di.type";
 import { getServerSession } from "next-auth";
 import type { Post } from "@/generated/client";

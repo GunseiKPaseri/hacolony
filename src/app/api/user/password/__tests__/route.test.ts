@@ -4,8 +4,8 @@ import { getServerSession } from "next-auth";
 import type { Session } from "next-auth";
 import { PATCH } from "../route";
 import { container } from "@/server/di";
-import { UserService } from "@/server/services/userService";
-import { InvalidInputError, NotFoundError } from "@/server/repository/util";
+import { UserService } from "@/application/services/userService";
+import { InvalidInputError, NotFoundError } from "@/infrastructure/repository/util";
 import { DI } from "@/server/di.type";
 
 // Mock external dependencies

@@ -2,9 +2,9 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { container } from "@/server/di";
 import { authOptions } from "../../auth/[...nextauth]/route";
-import { UserService } from "@/server/services/userService";
+import { UserService } from "@/application/services/userService";
 import { DI } from "@/server/di.type";
-import { InvalidInputError, NotFoundError } from "@/server/repository/util";
+import { InvalidInputError, NotFoundError } from "@/infrastructure/repository/util";
 import type { Logger } from "pino";
 
 export async function PATCH(request: Request) {

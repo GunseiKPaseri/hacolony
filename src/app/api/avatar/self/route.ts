@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route";
-import { InvalidInputError, NotFoundError } from "@/server/repository/util";
+import { InvalidInputError, NotFoundError } from "@/infrastructure/repository/util";
 import { container } from "@/server/di";
-import { UserService } from "@/server/services/userService";
-import { AvatarService } from "@/server/services/avatarService";
+import { UserService } from "@/application/services/userService";
+import { AvatarService } from "@/application/services/avatarService";
 import { DI } from "@/server/di.type";
 import type { Logger } from "pino";
 

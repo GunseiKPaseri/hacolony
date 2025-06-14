@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { POST } from "../route";
-import { InvalidInputError } from "@/server/repository/util";
+import { InvalidInputError } from "@/infrastructure/repository/util";
 import { container } from "@/server/di";
-import { UserService } from "@/server/services/userService";
+import { UserService } from "@/application/services/userService";
 import { DI } from "@/server/di.type";
 
 // DIコンテナをモック
