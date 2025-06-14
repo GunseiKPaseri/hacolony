@@ -53,7 +53,8 @@ describe("PostItem", () => {
     render(<PostItem post={mockPost} onReply={mockOnReply} />);
 
     // formatRelativeTime()の結果は環境によって異なるため、時間が含まれていることを確認
-    expect(screen.getByText(/日前|時間前|分前/)).toBeInTheDocument();
+    const timeElements = screen.getAllByText(/日前|時間前|分前/);
+    expect(timeElements.length).toBeGreaterThan(0);
   });
 
   it("should show reply badge when isReply is true", () => {
