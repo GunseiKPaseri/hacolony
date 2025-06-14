@@ -53,11 +53,13 @@ jobs:
       - name: Run tests
         run: npm test
 
+      - name: Generate test coverage report
+        run: npm run coverage
+
       - name: Upload test coverage
         uses: codecov/codecov-action@v3
         if: success()
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage/lcov.info
           flags: unittests
           name: codecov-umbrella

@@ -1,5 +1,7 @@
 # hacolony
 
+[![codecov](https://codecov.io/gh/GunseiKPaseri/hacolony/graph/badge.svg?token=XT8GJ3IN97)](https://codecov.io/gh/GunseiKPaseri/hacolony)
+
 A private, single-user social networking application that lets you create and interact with multiple avatar personas.
 
 ## Overview

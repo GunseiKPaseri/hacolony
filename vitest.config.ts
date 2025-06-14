@@ -12,6 +12,7 @@ export default defineConfig({
         singleThread: true,
       },
     },
+    coverage: { reporter: ["text", "lcov"] },
   },
   resolve: {
     alias: {
