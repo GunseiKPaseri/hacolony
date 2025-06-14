@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { PostItem } from "../PostItem";
-import type { Post } from "@/entities/post";
+import type { Post } from "@/domain/post/entity";
 
 // モックコンポーネント
 vi.mock("../../avatar/AvatarIcon", () => ({

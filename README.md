@@ -65,12 +65,12 @@ hacolony is a personal digital garden where you can create multiple avatars (per
   - `postQueue/`: Post queue logic
   - `user/`: User-related logic
 - `infrastructure/`: Background Infrastructure code
-   - `client/`: API Client
-   - `prisma/`: Prisma database client
-      - `schema.prisma`: Data model definitions
-      - `migrations/`: Database migrations
-   - `repository/`: Data repositories
-   - `worker/`: Background worker logic
+  - `client/`: API Client
+  - `prisma/`: Prisma database client
+    - `schema.prisma`: Data model definitions
+    - `migrations/`: Database migrations
+  - `repository/`: Data repositories
+  - `worker/`: Background worker logic
 - `lib/`: Frontend Utility libraries
 - `server/`: Background di type
 - `stores/`: client-side state management

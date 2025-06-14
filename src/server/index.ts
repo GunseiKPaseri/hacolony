@@ -1,6 +1,6 @@
 import "./di"; // Initialize DI container
 import { container } from "tsyringe";
-import { Scheduler } from "./worker/scheduler";
+import { Scheduler } from "../infrastructure/worker/scheduler";
 
 export async function initializeServer() {
   const scheduler = container.resolve(Scheduler);

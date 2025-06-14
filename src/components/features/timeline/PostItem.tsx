@@ -1,5 +1,5 @@
 "use client";
-import type { Post } from "@/entities/post";
+import type { Post } from "@/domain/post/entity";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle, Repeat2, Heart, Share, MoreHorizontal, Bot } from "lucide-react";

@@ -3,15 +3,15 @@ name: Dependency Security Check
 on:
   schedule:
     # Run daily at 6 AM UTC
-    - cron: '0 6 * * *'
+    - cron: "0 6 * * *"
   push:
     paths:
-      - 'package.json'
-      - 'package-lock.json'
+      - "package.json"
+      - "package-lock.json"
   pull_request:
     paths:
-      - 'package.json'
-      - 'package-lock.json'
+      - "package.json"
+      - "package-lock.json"
   workflow_dispatch:
 
 jobs:
@@ -26,8 +26,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -58,8 +58,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Check for outdated dependencies
         run: |
@@ -75,7 +75,7 @@ jobs:
           echo "\`\`\`" >> dependency-report.md
           npm outdated || echo "All dependencies are up to date!" >> dependency-report.md
           echo "\`\`\`" >> dependency-report.md
-          
+
           echo "" >> dependency-report.md
           echo "### Dependency Update Suggestions" >> dependency-report.md
           echo "" >> dependency-report.md
@@ -100,8 +100,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -113,7 +113,7 @@ jobs:
         run: |
           license-checker --summary > license-summary.txt
           license-checker --csv > license-details.csv
-          
+
           # Check for problematic licenses
           license-checker --failOn 'GPL-2.0;GPL-3.0;AGPL-1.0;AGPL-3.0' || {
             echo "⚠️ Found potentially problematic licenses!"
@@ -139,8 +139,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -152,7 +152,7 @@ jobs:
         run: |
           echo "## 📊 Bundle Size Analysis" > bundle-analysis.md
           echo "" >> bundle-analysis.md
-          
+
           if [ -d ".next" ]; then
             echo "### Build Output" >> bundle-analysis.md
             echo "" >> bundle-analysis.md
@@ -216,7 +216,7 @@ jobs:
           echo "| Outdated Check | ${{ needs.outdated-check.result == 'success' && '✅ Passed' || '❌ Failed' }} | [View Report](./dependency-report.md) |" >> $GITHUB_STEP_SUMMARY
           echo "| License Check | ${{ needs.license-check.result == 'success' && '✅ Passed' || '❌ Failed' }} | [View Report](./license-summary.txt) |" >> $GITHUB_STEP_SUMMARY
           echo "| Bundle Analysis | ${{ needs.bundle-analysis.result == 'success' && '✅ Passed' || '❌ Failed' }} | [View Report](./bundle-analysis.md) |" >> $GITHUB_STEP_SUMMARY
-          
+
           if [[ "${{ needs.security-audit.result }}" != "success" ]]; then
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "⚠️ **Security vulnerabilities found!** Please review and update dependencies." >> $GITHUB_STEP_SUMMARY

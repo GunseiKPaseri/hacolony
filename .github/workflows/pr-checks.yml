@@ -3,7 +3,7 @@ name: Pull Request Checks
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
-    branches: [ main, develop ]
+    branches: [main, develop]
 
 concurrency:
   group: pr-checks-${{ github.event.pull_request.number }}
@@ -39,8 +39,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -67,8 +67,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -100,8 +100,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -135,16 +135,16 @@ jobs:
           CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
           echo "Changed files:"
           echo "$CHANGED_FILES"
-          
+
           # Count changes by type
           TS_FILES=$(echo "$CHANGED_FILES" | grep -E "\.(ts|tsx)$" | wc -l)
           TEST_FILES=$(echo "$CHANGED_FILES" | grep "\.test\." | wc -l)
           CONFIG_FILES=$(echo "$CHANGED_FILES" | grep -E "(package\.json|tsconfig|\.config\.|\.yml|\.yaml)" | wc -l)
-          
+
           echo "TypeScript files changed: $TS_FILES"
           echo "Test files changed: $TEST_FILES"
           echo "Config files changed: $CONFIG_FILES"
-          
+
           # Generate summary
           echo "## 📂 Changed Files Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -176,11 +176,11 @@ jobs:
           ADDITIONS=$(git diff --shortstat origin/main...HEAD | grep -o '[0-9]\+ insertion' | grep -o '[0-9]\+' || echo "0")
           DELETIONS=$(git diff --shortstat origin/main...HEAD | grep -o '[0-9]\+ deletion' | grep -o '[0-9]\+' || echo "0")
           FILES_CHANGED=$(git diff --name-only origin/main...HEAD | wc -l)
-          
+
           echo "Files changed: $FILES_CHANGED"
           echo "Lines added: $ADDITIONS"
           echo "Lines deleted: $DELETIONS"
-          
+
           # Determine PR size
           TOTAL_CHANGES=$((ADDITIONS + DELETIONS))
           if [ $TOTAL_CHANGES -gt 1000 ]; then
@@ -196,7 +196,7 @@ jobs:
             SIZE="🟢 Small"
             echo "✅ Small PR - easy to review!"
           fi
-          
+
           echo "## 📏 PR Size Analysis" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Size:** $SIZE" >> $GITHUB_STEP_SUMMARY
@@ -219,7 +219,7 @@ jobs:
         run: |
           echo "## 🔍 Pull Request Check Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           if [ "${{ needs.check-draft.outputs.is-draft }}" = "true" ]; then
             echo "🚧 **Status:** Draft PR - Limited checks performed" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
@@ -235,7 +235,7 @@ jobs:
             echo "| Full Checks | ${{ needs.full-checks.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
             echo "| Security Check | ${{ needs.security-check.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
           fi
-          
+
           echo "" >> $GITHUB_STEP_SUMMARY
           if [[ "${{ needs.quick-validation.result }}" == "success" && 
                 ("${{ needs.check-draft.outputs.is-draft }}" == "true" || 
