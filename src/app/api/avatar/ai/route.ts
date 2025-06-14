@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route";
-import { InvalidInputError, NotFoundError } from "@/server/repository/util";
+import { InvalidInputError, NotFoundError } from "@/infrastructure/repository/util";
 import { container } from "@/server/di";
-import { AvatarService } from "@/server/services/avatarService";
+import { AvatarService } from "@/application/services/avatarService";
 import { DI } from "@/server/di.type";
 
 export async function POST(request: Request) {

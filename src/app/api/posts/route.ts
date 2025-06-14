@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { container } from "@/server/di";
 import { authOptions } from "../auth/[...nextauth]/route";
-import { InvalidInputError, NotFoundError } from "@/server/repository/util";
-import { PostService } from "@/server/services/postService";
+import { InvalidInputError, NotFoundError } from "@/infrastructure/repository/util";
+import { PostService } from "@/application/services/postService";
 import { DI } from "@/server/di.type";
 import type { Logger } from "pino";
 

@@ -2,21 +2,21 @@ import "reflect-metadata";
 import { container } from "tsyringe";
 
 // Services
-import { BotReplyService } from "./services/botReplyService";
-import { UserService } from "./services/userService";
-import { AvatarService } from "./services/avatarService";
-import { PostService } from "./services/postService";
-import { BotTaskWorker } from "./worker/botTaskWorker";
-import { LlmTaskWorker } from "./worker/llmTaskWorker";
-import { PostQueueWorker } from "./worker/postQueueWorker";
-import { OllamaClient } from "./client/OllamaClient";
-import { Scheduler } from "./worker/scheduler";
+import { BotReplyService } from "../application/services/botReplyService";
+import { UserService } from "../application/services/userService";
+import { AvatarService } from "../application/services/avatarService";
+import { PostService } from "../application/services/postService";
+import { BotTaskWorker } from "../infrastructure/worker/botTaskWorker";
+import { LlmTaskWorker } from "../infrastructure/worker/llmTaskWorker";
+import { PostQueueWorker } from "../infrastructure/worker/postQueueWorker";
+import { OllamaClient } from "../infrastructure/client/OllamaClient";
+import { Scheduler } from "../infrastructure/worker/scheduler";
 import { logger } from "../utils/logger";
 
-import { prisma } from "./prisma/prisma";
+import { prisma } from "../infrastructure/prisma/prisma";
 import { DI } from "./di.type";
-import { DIRegistRepository } from "./repository/diRegist";
-import { DBTransaction } from "./repository/util";
+import { DIRegistRepository } from "../infrastructure/repository/diRegist";
+import { DBTransaction } from "../infrastructure/repository/util";
 
 // db implementations
 container.registerInstance(DI.Prisma, prisma);
