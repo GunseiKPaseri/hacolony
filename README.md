@@ -46,16 +46,36 @@ hacolony is a personal digital garden where you can create multiple avatars (per
 - `src/app`: Next.js App Router files
 
   - `page.tsx`: Main landing page
-  - `login/` & `register/`: Authentication pages
-  - `timeline/`: Main SNS interface
-  - `profile/`: User profile
-  - `avatars/create/`: Avatar creation page
+  - `login/` & `logout/` & `register/`: Authentication pages
   - `api/`: Backend APIs
+  - `timeline/`: Main SNS interface
+  - `profile/`: Avatar profile
+  - `avatars/create/`: Avatar creation page
+  - `avatars/[id]/`: Avatar detail page
+  - `settings/`: User settings
 
 - `src/components`: Reusable UI components
-- `prisma/`: Database related files
-  - `schema.prisma`: Data model definitions
-  - `migrations/`: Database migrations
+- `domain/`: Domain logic and services
+  - `avatar/`: Avatar-related logic
+  - `botConfig/`: Bot configuration logic
+  - `botTaskQueue/`: Bot task queue logic
+  - `follow/`: Follow-related logic
+  - `llmTaskQueue/`: LLM task queue logic
+  - `post/`: Post-related logic
+  - `postQueue/`: Post queue logic
+  - `user/`: User-related logic
+- `infrastructure/`: Background Infrastructure code
+   - `client/`: API Client
+   - `prisma/`: Prisma database client
+      - `schema.prisma`: Data model definitions
+      - `migrations/`: Database migrations
+   - `repository/`: Data repositories
+   - `worker/`: Background worker logic
+- `lib/`: Frontend Utility libraries
+- `server/`: Background di type
+- `stores/`: client-side state management
+- `types/`: TypeScript type definitions
+- `utils/`: Background utility functions
 
 ## Development
 
