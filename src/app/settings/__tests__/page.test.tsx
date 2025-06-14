@@ -24,6 +24,9 @@ vi.mock("framer-motion", () => ({
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
 
+// Mock console.error to suppress expected error messages in tests
+let mockConsoleError: ReturnType<typeof vi.spyOn>;
+
 describe("SettingsPage", () => {
   const mockSession = {
     user: {
@@ -40,6 +43,7 @@ describe("SettingsPage", () => {
     vi.clearAllMocks();
     mockFetch.mockClear();
     mockUpdate.mockClear();
+    mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
     vi.mocked(useSession).mockReturnValue({
       data: mockSession,
       update: mockUpdate,
@@ -50,6 +54,7 @@ describe("SettingsPage", () => {
   afterEach(() => {
     cleanup();
     vi.clearAllMocks();
+    mockConsoleError.mockRestore();
   });
 
   it("should render settings page with user information", () => {
