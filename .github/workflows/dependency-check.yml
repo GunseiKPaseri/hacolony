@@ -1,0 +1,223 @@
+name: Dependency Security Check
+
+on:
+  schedule:
+    # Run daily at 6 AM UTC
+    - cron: '0 6 * * *'
+  push:
+    paths:
+      - 'package.json'
+      - 'package-lock.json'
+  pull_request:
+    paths:
+      - 'package.json'
+      - 'package-lock.json'
+  workflow_dispatch:
+
+jobs:
+  # Audit dependencies for security vulnerabilities
+  security-audit:
+    name: 🔒 Security Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        run: |
+          npm audit --audit-level moderate || {
+            echo "Security vulnerabilities found!"
+            npm audit --audit-level moderate --json > audit-results.json
+            exit 1
+          }
+
+      - name: Upload audit results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: audit-results
+          path: audit-results.json
+
+  # Check for outdated dependencies
+  outdated-check:
+    name: 📦 Outdated Dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Check for outdated dependencies
+        run: |
+          npm outdated || true
+          npx npm-check-updates --format group
+
+      - name: Generate dependency report
+        run: |
+          echo "## 📦 Dependency Status Report" > dependency-report.md
+          echo "" >> dependency-report.md
+          echo "### Outdated Dependencies" >> dependency-report.md
+          echo "" >> dependency-report.md
+          echo "\`\`\`" >> dependency-report.md
+          npm outdated || echo "All dependencies are up to date!" >> dependency-report.md
+          echo "\`\`\`" >> dependency-report.md
+          
+          echo "" >> dependency-report.md
+          echo "### Dependency Update Suggestions" >> dependency-report.md
+          echo "" >> dependency-report.md
+          echo "\`\`\`" >> dependency-report.md
+          npx npm-check-updates --format group >> dependency-report.md
+          echo "\`\`\`" >> dependency-report.md
+
+      - name: Upload dependency report
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-report
+          path: dependency-report.md
+
+  # License compliance check
+  license-check:
+    name: ⚖️ License Compliance
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install license checker
+        run: npm install -g license-checker
+
+      - name: Check licenses
+        run: |
+          license-checker --summary > license-summary.txt
+          license-checker --csv > license-details.csv
+          
+          # Check for problematic licenses
+          license-checker --failOn 'GPL-2.0;GPL-3.0;AGPL-1.0;AGPL-3.0' || {
+            echo "⚠️ Found potentially problematic licenses!"
+            license-checker --onlyAllow 'MIT;ISC;Apache-2.0;BSD-2-Clause;BSD-3-Clause;Unlicense' || true
+          }
+
+      - name: Upload license report
+        uses: actions/upload-artifact@v4
+        with:
+          name: license-report
+          path: |
+            license-summary.txt
+            license-details.csv
+
+  # Bundle size analysis
+  bundle-analysis:
+    name: 📊 Bundle Size Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+
+      - name: Analyze bundle size
+        run: |
+          echo "## 📊 Bundle Size Analysis" > bundle-analysis.md
+          echo "" >> bundle-analysis.md
+          
+          if [ -d ".next" ]; then
+            echo "### Build Output" >> bundle-analysis.md
+            echo "" >> bundle-analysis.md
+            echo "\`\`\`" >> bundle-analysis.md
+            du -sh .next/ >> bundle-analysis.md
+            echo "\`\`\`" >> bundle-analysis.md
+            
+            echo "" >> bundle-analysis.md
+            echo "### Detailed Analysis" >> bundle-analysis.md
+            echo "" >> bundle-analysis.md
+            echo "\`\`\`" >> bundle-analysis.md
+            find .next -name "*.js" -type f -exec du -h {} + | sort -hr | head -20 >> bundle-analysis.md
+            echo "\`\`\`" >> bundle-analysis.md
+          fi
+
+      - name: Upload bundle analysis
+        uses: actions/upload-artifact@v4
+        with:
+          name: bundle-analysis
+          path: bundle-analysis.md
+
+  # Dependency vulnerability scanning with Snyk
+  snyk-scan:
+    name: 🛡️ Snyk Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/node@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high
+
+      - name: Upload Snyk report
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: snyk.sarif
+
+  # Summary report
+  dependency-summary:
+    name: 📋 Dependency Summary
+    runs-on: ubuntu-latest
+    needs: [security-audit, outdated-check, license-check, bundle-analysis]
+    if: always()
+    steps:
+      - name: Download all reports
+        uses: actions/download-artifact@v4
+
+      - name: Generate summary report
+        run: |
+          echo "## 🔍 Dependency Check Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check Type | Status | Report |" >> $GITHUB_STEP_SUMMARY
+          echo "|------------|--------|---------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Security Audit | ${{ needs.security-audit.result == 'success' && '✅ Passed' || '❌ Failed' }} | [View Details](./audit-results.json) |" >> $GITHUB_STEP_SUMMARY
+          echo "| Outdated Check | ${{ needs.outdated-check.result == 'success' && '✅ Passed' || '❌ Failed' }} | [View Report](./dependency-report.md) |" >> $GITHUB_STEP_SUMMARY
+          echo "| License Check | ${{ needs.license-check.result == 'success' && '✅ Passed' || '❌ Failed' }} | [View Report](./license-summary.txt) |" >> $GITHUB_STEP_SUMMARY
+          echo "| Bundle Analysis | ${{ needs.bundle-analysis.result == 'success' && '✅ Passed' || '❌ Failed' }} | [View Report](./bundle-analysis.md) |" >> $GITHUB_STEP_SUMMARY
+          
+          if [[ "${{ needs.security-audit.result }}" != "success" ]]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "⚠️ **Security vulnerabilities found!** Please review and update dependencies." >> $GITHUB_STEP_SUMMARY
+          fi
