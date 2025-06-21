@@ -13,15 +13,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm run check` - Run type checks, eslint, and prisma format checks
 - `npm run fmt` - Format code using Prettier
 - `npm run test` - Run unit tests with Vitest
+- `npm run test:watch` - Run tests in watch mode
+- `npm run test:ui` - Run tests with UI interface
+- `npm run coverage` - Run tests with coverage report
 - `make check` - Run type checks and linting
 
 ### Database Operations
 
 - `make db/migrate` - Run Prisma migrations with custom schema path
 - `make db/generate` - Generate Prisma client
-- `make db/sync-force` - Push schema changes to database
+- `make db/sync` - Push schema changes to database
+- `make db/sync-force` - Push schema changes with force reset
 - `make db/studio` - Open Prisma Studio for database management
-- Schema location: `./src/server/prisma/schema.prisma`
+- `make db/seed` - Seed database with initial data
+- Schema location: `./src/infrastructure/prisma/schema.prisma`
 
 ### Makefile Commands
 
