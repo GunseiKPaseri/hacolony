@@ -150,7 +150,7 @@ export class LlmTaskWorker {
       const postContext: PrismaJson.PostQueueContext = {
         status: "SCHEDULED",
         content: response,
-        scheduledAt: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
+        scheduledAt: new Date(Date.now()).toISOString(),
       };
 
       // Schedule post in PostQueue
