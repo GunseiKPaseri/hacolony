@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { NextResponse } from "next/server";
 import { InvalidInputError } from "@/infrastructure/repository/util";
 import { container } from "@/server/di";

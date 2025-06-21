@@ -3,7 +3,13 @@
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Image, MapPin, Smile, Calendar, X } from "lucide-react";
+import {
+  Image as ImageIcon,
+  MapPin as MapPinIcon,
+  Smile as SmileIcon,
+  Calendar as CalendarIcon,
+  X as XIcon,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface PostFormProps {
@@ -63,7 +69,7 @@ export function PostForm({ onSubmit, error }: PostFormProps) {
               <div className="flex items-center justify-between">
                 <div className="text-sm text-red-700 dark:text-red-400">{error}</div>
                 <Button variant="ghost" size="sm" className="h-6 w-6 p-0 text-red-500 hover:text-red-700">
-                  <X className="h-4 w-4" />
+                  <XIcon className="h-4 w-4" />
                 </Button>
               </div>
             </motion.div>
@@ -114,7 +120,7 @@ export function PostForm({ onSubmit, error }: PostFormProps) {
                           disabled
                           aria-label="画像追加"
                         >
-                          <Image className="h-4 w-4" />
+                          <ImageIcon className="h-4 w-4" />
                         </Button>
                         <Button
                           type="button"
@@ -123,7 +129,7 @@ export function PostForm({ onSubmit, error }: PostFormProps) {
                           className="h-8 w-8 p-0 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/20"
                           disabled
                         >
-                          <MapPin className="h-4 w-4" />
+                          <MapPinIcon className="h-4 w-4" />
                         </Button>
                         <Button
                           type="button"
@@ -132,7 +138,7 @@ export function PostForm({ onSubmit, error }: PostFormProps) {
                           className="h-8 w-8 p-0 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/20"
                           disabled
                         >
-                          <Smile className="h-4 w-4" />
+                          <SmileIcon className="h-4 w-4" />
                         </Button>
                         <Button
                           type="button"
@@ -141,7 +147,7 @@ export function PostForm({ onSubmit, error }: PostFormProps) {
                           className="h-8 w-8 p-0 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/20"
                           disabled
                         >
-                          <Calendar className="h-4 w-4" />
+                          <CalendarIcon className="h-4 w-4" />
                         </Button>
                       </div>
 

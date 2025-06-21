@@ -22,4 +22,7 @@ check:
 	npm run check
 test:
 	npm run test
-pre-push: fmt check test
+build:
+	npm run build
+pre-push: fmt check test build
+	echo "Pre-push checks passed. Ready to push changes."
