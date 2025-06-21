@@ -43,7 +43,7 @@ describe("SettingsPage", () => {
     vi.clearAllMocks();
     mockFetch.mockClear();
     mockUpdate.mockClear();
-    mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+    mockConsoleError = vi.spyOn(console, "error").mockImplementation(() => {});
     vi.mocked(useSession).mockReturnValue({
       data: mockSession,
       update: mockUpdate,
