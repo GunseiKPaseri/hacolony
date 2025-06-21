@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import { InvalidInputError, NotFoundError } from "@/infrastructure/repository/util";
 import { container } from "@/server/di";
 import { UserService } from "@/application/services/userService";

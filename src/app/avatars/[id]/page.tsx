@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { motion } from "framer-motion";
@@ -82,17 +82,7 @@ export default function AvatarDetailPage({ params }: { params: Promise<{ id: str
     getParams();
   }, [params]);
 
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/login");
-      return;
-    }
-    if (status === "authenticated" && avatarId) {
-      fetchAvatar();
-    }
-  }, [status, avatarId, router]); // fetchAvatarはuseCallbackで包む必要があるが、現在の実装では問題ない
-
-  const fetchAvatar = async () => {
+  const fetchAvatar = useCallback(async () => {
     if (!avatarId) return;
 
     try {
@@ -124,7 +114,17 @@ export default function AvatarDetailPage({ params }: { params: Promise<{ id: str
     } finally {
       setLoading(false);
     }
-  };
+  }, [avatarId]);
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login");
+      return;
+    }
+    if (status === "authenticated" && avatarId) {
+      fetchAvatar();
+    }
+  }, [status, avatarId, router, fetchAvatar]);
 
   const handleSave = async () => {
     try {

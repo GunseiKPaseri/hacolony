@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 
 export interface AvatarFormData {
   name: string;
@@ -89,9 +90,11 @@ export function AvatarForm({ defaultName = "", onAvatarChange, className = "" }:
             />
             {avatarData.imageUrl && (
               <div className="mt-2">
-                <img
+                <Image
                   src={avatarData.imageUrl}
                   alt="アバタープレビュー"
+                  width={64}
+                  height={64}
                   className="w-16 h-16 rounded-full object-cover border-2 border-gray-300"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
