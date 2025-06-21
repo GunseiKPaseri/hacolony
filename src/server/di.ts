@@ -39,6 +39,14 @@ container.registerSingleton(DI.LlmTaskWorker, LlmTaskWorker);
 container.registerSingleton(DI.PostQueueWorker, PostQueueWorker);
 container.registerSingleton(DI.Scheduler, Scheduler);
 
-container.resolve<Scheduler>(DI.Scheduler).start();
+// Start scheduler asynchronously
+(async () => {
+  try {
+    const scheduler = container.resolve<Scheduler>(DI.Scheduler);
+    await scheduler.start();
+  } catch (error) {
+    logger.error("Failed to start scheduler:", error);
+  }
+})();
 
 export { container };
